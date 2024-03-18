@@ -1,0 +1,139 @@
+﻿@{
+    ViewData["Title"] = " Page";
+    Layout = "~/Views/Shared/User_Layout.cshtml";
+}
+
+<div class="login-container">
+    <div class="login-box">
+        <h2>Sign up</h2>
+        <form action="login.php" method="post">
+            <div class="input-group">
+                <label for="username">Username:</label>
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="input-group">
+                <label for="email">Email:</label>
+                <i class="fas fa-envelope input-icon"></i>
+                <input type="text" id="email" name="email" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password:</label>
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="remember-password">
+                <label for=""><input type="checkbox">Remember Me</label>
+                <a href="#">Forget Password</a>
+            </div>
+            <button type="submit" value="Send Message" class="btn btn-primary py-3 px-5">Register</button>
+            <div class="create-account">
+                <p>Create A New Account? <a style="color:#FFA45C;" href="/Page/Login" class="register-link">Sign in</a></p>
+            </div>
+        </form>
+    </div>
+</div>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f2f2f2;
+    }
+
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+
+    .login-box {
+        background-color: #fff;
+        padding: 40px;
+        border-radius: 5px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 450px;
+        margin: 20px;
+    }
+
+        .login-box h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+    .input-group {
+        position: relative;
+        margin-bottom: 15px;
+        text-align: left;
+    }
+
+        .input-group input {
+            width: 100%;
+            padding: 8px;
+            padding-left: 30px; /* Thêm đệm bên trái cho phù hợp với biểu tượng */
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .input-group .input-icon {
+            position: absolute;
+            left: 8px;
+            top: 60%;
+        }
+
+    .remember-password {
+        font-size: 14px;
+        font-weight: 500;
+        margin: -15px 0 15px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+        .remember-password label input {
+            accent-color: #fff;
+            margin-right: 3px;
+        }
+
+        .remember-password a {
+            text-decoration: none;
+        }
+
+            .remember-password a:hover {
+                text-decoration: underline;
+            }
+
+    .create-account {
+        font-size: 14.5px;
+        text-align: center;
+        margin: 25px;
+    }
+
+        .create-account p a {
+            color: #fff;
+            font-weight: 600px;
+            text-decoration: none;
+        }
+
+            .create-account p a:hover {
+                text-decoration: underline;
+            }
+
+    button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+</style>

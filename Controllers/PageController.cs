@@ -47,6 +47,18 @@ namespace OnlineJwellery_Shopping.Controllers
         {
             return View();
         }
+        public async Task<IActionResult> Thankyou()
+        {
+            return View();
+        }
+        public async Task<IActionResult> Login()
+        {
+            return View();
+        }
+        public async Task<IActionResult> Register()
+        {
+            return View();
+        }
     }
 }
 

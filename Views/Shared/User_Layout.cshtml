@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <link rel="stylesheet" href="~/css/open-iconic-bootstrap.min.css">
     <link rel="stylesheet" href="~/css/animate.css">
@@ -25,6 +26,48 @@
     <link rel="stylesheet" href="~/css/flaticon.css">
     <link rel="stylesheet" href="~/css/icomoon.css">
     <link rel="stylesheet" href="~/css/style.css">
+    <style>
+        .cart-dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            min-width: 210px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            transition: opacity 0.5s ease; 
+            opacity: 0; 
+            pointer-events: none; 
+            margin-left: -25px;
+            border-radius: 20px;
+        }
+
+            .cart-dropdown-content a {
+                color: #333;
+                padding: 22px 16px;
+                text-decoration: none;
+                display: block;
+                font-family:'Open Sans','Arial','sans-serif';
+                font-size: 14px;
+                border-radius: 20px;
+                padding-left: 10px;
+            }
+
+                .cart-dropdown-content a i {
+                    margin-right: 10px;
+                    color: #0000FF;
+                }
+
+                .cart-dropdown-content a:hover {
+                    background-color: #f1f1f1;
+                }
+
+            .cart-dropdown-content.show {
+                display: block;
+                opacity: 1; 
+                pointer-events: auto; 
+            }
+
+    </style>
 </head>
 <body class="goto-here">
     <div class="py-1 bg-black">
@@ -71,7 +114,27 @@
                     <li class="nav-item"><a href="/Page/About" class="nav-link">About</a></li>
                     <li class="nav-item"><a href="/Page/Blog" class="nav-link">Blog</a></li>
                     <li class="nav-item"><a href="/Page/Contact" class="nav-link">Contact</a></li>
-                    <li class="nav-item cta cta-colored"><a href="cart.html" class="nav-link"><span class="icon-shopping_cart"></span>[0]</a></li>
+
+                    <li class="nav-item cta cta-colored">
+                        <a href="cart.html" class="nav-link"><span class="icon-shopping_cart"></span>[0]</a>
+
+                    </li>
+                    <li class="nav-item cta cta-colored">
+                        <a href="#" class="nav-link" onclick="showCartDropdown()">
+                            <span class="icon-user" style="font-size:11px; color: #333; margin-top: 10px;"></span>
+                        </a>
+                        <div class="cart-dropdown-content" id="cartDropdownContent">
+                            <a href="/MyOrder/MyOrder"><i class="fas fa-file-alt text-dark"></i> MyOrder</a>
+                            <a href="#"><i class="fas fa-sign-out-alt text-dark"></i> Logout</a>
+                            <a href="/Page/Login"><i class="fas fa-sign-in-alt text-dark"></i> Login</a>
+                            <a href="/Page/Register"><i class="fas fa-user-plus text-dark"></i> Register</a>
+                        </div>
+
+
+
+                    </li>
+
+
 
                 </ul>
             </div>
@@ -156,7 +219,22 @@
             </div>
         </div>
     </footer>
-
+    <script>
+        function showCartDropdown() {
+            var cartDropdownContent = document.getElementById("cartDropdownContent");
+            if (cartDropdownContent.classList.contains("show")) {
+                cartDropdownContent.classList.remove("show"); 
+                setTimeout(function () {
+                    cartDropdownContent.style.display = "none"; 
+                }, 500);
+            } else {
+                cartDropdownContent.style.display = "block"; 
+                setTimeout(function () {
+                    cartDropdownContent.classList.add("show"); 
+                }, 50); 
+            }
+        }
+    </script>
     <!-- loader -->
     <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee" /><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00" /></svg></div>
 
