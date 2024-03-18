@@ -43,6 +43,10 @@ namespace OnlineJwellery_Shopping.Controllers
         {
             return View();
         }
+        public async Task<IActionResult> BlogDetails()
+        {
+            return View();
+        }
         public async Task<IActionResult> About()
         {
             return View();
