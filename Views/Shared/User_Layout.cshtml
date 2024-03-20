@@ -122,20 +122,28 @@
                     <li class="nav-item cta cta-colored">
                         <a href="#" class="nav-link" onclick="showCartDropdown()">
                             <span class="icon-user" style="font-size:11px; color: #333; margin-top: 10px;"></span>
+                            @if (@Context.Session.GetString("Username") != null)
+                            {
+                                <span>@Context.Session.GetString("Username")</span>
+                            }
+                            else
+                            {
+                                <span>Guest</span> 
+                            }
                         </a>
                         <div class="cart-dropdown-content" id="cartDropdownContent">
-                            <a href="/MyOrder/MyOrder"><i class="fas fa-file-alt text-dark"></i> MyOrder</a>
-                            <a href="#"><i class="fas fa-sign-out-alt text-dark"></i> Logout</a>
-                            <a href="/Page/Login"><i class="fas fa-sign-in-alt text-dark"></i> Login</a>
-                            <a href="/Page/Register"><i class="fas fa-user-plus text-dark"></i> Register</a>
+                            @if (@Context.Session.GetString("Username") != null)
+                            {
+                                <a href="/MyOrder/MyOrder"><i class="fas fa-file-alt text-dark"></i> MyOrder</a>
+                                <a asp-controller="Page" asp-action="logout"><i class="fas fa-sign-out-alt text-dark"></i> Logout</a>
+                            }
+                            else
+                            {
+                                <a href="/Page/Login"><i class="fas fa-sign-in-alt text-dark"></i> Login</a>
+                                <a href="/Page/Register"><i class="fas fa-user-plus text-dark"></i> Register</a>
+                            }
                         </div>
-
-
-
                     </li>
-
-
-
                 </ul>
             </div>
         </div>
