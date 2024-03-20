@@ -6,198 +6,155 @@
     <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
         <ul>
             <li>Admin</li>
-            <li>Forms</li>
+            <li>Product</li>
         </ul>
-        <a href="https://justboil.me/" onclick="alert('Coming soon'); return false" target="_blank" class="button blue">
-            <span class="icon"><i class="mdi mdi-credit-card-outline"></i></span>
-            <span>Premium Demo</span>
-        </a>
+
     </div>
+
 </section>
 <section class="is-hero-bar">
     <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
         <h1 class="title">
-            Forms
+            List of products
         </h1>
-        <button class="button light">Button</button>
+    </div>
+    <div class="col-sm-2">
+
+        <a class="btn btn-add " asp-controller="Admin" asp-action="addProduct" title="Thêm">
+            <i class="fas fa-plus"></i>
+            Add Product
+        </a>
     </div>
 </section>
 <section class="section main-section">
-    <div class="card mb-6">
-        <header class="card-header">
-            <p class="card-header-title">
-                <span class="icon"><i class="mdi mdi-ballot"></i></span>
-                Forms
-            </p>
-        </header>
+
+    <div class="card has-table">
+
         <div class="card-content">
-            <form method="get">
-                <div class="field">
-                    <label class="label">From</label>
-                    <div class="field-body">
-                        <div class="field">
-                            <div class="control icons-left">
-                                <input class="input" type="text" placeholder="Name">
-                                <span class="icon left"><i class="mdi mdi-account"></i></span>
-                            </div>
-                        </div>
-                        <div class="field">
-                            <div class="control icons-left icons-right">
-                                <input class="input" type="email" placeholder="Email" value="alex@smith.com">
-                                <span class="icon left"><i class="mdi mdi-mail"></i></span>
-                                <span class="icon right"><i class="mdi mdi-check"></i></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="field-body">
-                        <div class="field">
-                            <div class="field addons">
-                                <div class="control">
-                                    <input class="input" value="+44" size="3" readonly>
-                                </div>
-                                <div class="control expanded">
-                                    <input class="input" type="tel" placeholder="Your phone number">
-                                </div>
-                            </div>
-                            <p class="help">Do not enter the first zero</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="field">
-                    <label class="label">Department</label>
-                    <div class="control">
-                        <div class="select">
-                            <select>
-                                <option>Business development</option>
-                                <option>Marketing</option>
-                                <option>Sales</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <hr>
-                <div class="field">
-                    <label class="label">Subject</label>
+            <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0" id="sampleTable">
+                <thead>
+                    <tr>
+                        <th width="10"><input type="checkbox" id="all"></th>
+                        <th>ProductId</th>
+                        <th>Thumbnail</th>
+                        <th>ProductName</th>
+                        <th>Price</th>
+                        <th>StoneType</th>
+                        <th>TotalWeight</th>
+                        <th>Color</th>
+                        <th>GoldAgeId</th>
+                        <th>Size</th>
+                        <th>Material</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td width="10"><input type="checkbox" name="check1" value="1"></td>
+                        <td>1</td>
+                        <td></td>
+                        <td>Product 1</td>
+                        <td>$50.00</td>
+                        <td>Diamond</td>
+                        <td>5 grams</td>
+                        <td>Gold</td>
+                        <td>1</td>
+                        <td>Medium</td>
+                        <td>Gold</td>
+                        <td>
+                            <a class="btn btn-primary" asp-controller="Admin" asp-action="editProduct">
+                                <i class="fas fa-edit"></i> Edit
+                            </a> |
+                            <button class="btn btn-danger">Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="10"><input type="checkbox" name="check1" value="1"></td>
+                        <td>2</td>
+                        <td></td>
+                        <td>Product 2</td>
+                        <td>$60.00</td>
+                        <td>Sapphire</td>
+                        <td>7 grams</td>
+                        <td>Silver</td>
+                        <td>2</td>
+                        <td>Large</td>
+                        <td>Silver</td>
+                        <td>
+                            <a class="btn btn-primary" asp-controller="Admin" asp-action="editProduct">
+                                <i class="fas fa-edit"></i> Edit
+                            </a> |                            <button class="btn btn-danger">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
-                    <div class="control">
-                        <input class="input" type="text" placeholder="e.g. Partnership opportunity">
-                    </div>
-                    <p class="help">
-                        This field is required
-                    </p>
-                </div>
 
-                <div class="field">
-                    <label class="label">Question</label>
-                    <div class="control">
-                        <textarea class="textarea" placeholder="Explain how we can help you"></textarea>
+            <div class="table-pagination">
+                <div class="flex items-center justify-between">
+                    <div class="buttons">
+                        <button type="button" class="button active">1</button>
+                        <button type="button" class="button">2</button>
+                        <button type="button" class="button">3</button>
                     </div>
-                </div>
-                <hr>
-
-                <div class="field grouped">
-                    <div class="control">
-                        <button type="submit" class="button green">
-                            Submit
-                        </button>
-                    </div>
-                    <div class="control">
-                        <button type="reset" class="button red">
-                            Reset
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="card">
-        <header class="card-header">
-            <p class="card-header-title">
-                <span class="icon"><i class="mdi mdi-ballot-outline"></i></span>
-                Custom elements
-            </p>
-        </header>
-        <div class="card-content">
-            <div class="field">
-                <label class="label">Checkbox</label>
-                <div class="field-body">
-                    <div class="field grouped multiline">
-                        <div class="control">
-                            <label class="checkbox">
-                                <input type="checkbox" value="lorem" checked>
-                                <span class="check"></span>
-                                <span class="control-label">Lorem</span>
-                            </label>
-                        </div>
-                        <div class="control">
-                            <label class="checkbox">
-                                <input type="checkbox" value="ipsum">
-                                <span class="check"></span>
-                                <span class="control-label">Ipsum</span>
-                            </label>
-                        </div>
-                        <div class="control">
-                            <label class="checkbox">
-                                <input type="checkbox" value="dolore">
-                                <span class="check is-primary"></span>
-                                <span class="control-label">Dolore</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <hr>
-            <div class="field">
-                <label class="label">Radio</label>
-                <div class="field-body">
-                    <div class="field grouped multiline">
-                        <div class="control">
-                            <label class="radio">
-                                <input type="radio" name="sample-radio" value="one" checked>
-                                <span class="check"></span>
-                                <span class="control-label">One</span>
-                            </label>
-                        </div>
-                        <div class="control">
-                            <label class="radio">
-                                <input type="radio" name="sample-radio" value="two">
-                                <span class="check"></span>
-                                <span class="control-label">Two</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <hr>
-            <div class="field">
-                <label class="label">Switch</label>
-                <div class="field-body">
-                    <div class="field">
-                        <label class="switch">
-                            <input type="checkbox" value="false">
-                            <span class="check"></span>
-                            <span class="control-label">Default</span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-            <hr>
-            <div class="field">
-                <label class="label">File</label>
-                <div class="field-body">
-                    <div class="field file">
-                        <label class="upload control">
-                            <a class="button blue">
-                                Upload
-                            </a>
-                            <input type="file">
-                        </label>
-                    </div>
+                    <small>Page 1 of 3</small>
                 </div>
             </div>
         </div>
     </div>
+
 </section>
+<style>
+    .btn-primary {
+        color: rgb(245 157 57);
+        background-color: rgb(251 226 197);
+        border-color: none;
+        /* border-top-left-radius: 10px !important; */
+        /* border-bottom-right-radius: 10px !important; */
+        border-radius: .357rem;
+        border: none;
+        font-weight: 600;
+        padding: 5px 20px; /* Điều chỉnh kích thước theo ý muốn */
+    }
+    .btn-add{
+        color:white;
+        background-color: black;
+        border-color: none;
+        /* border-top-left-radius: 10px !important; */
+        /* border-bottom-right-radius: 10px !important; */
+        border-radius: .357rem;
+        border: none;
+        font-weight: 600;
+        padding: 10px 20px; /* Điều chỉnh kích thước theo ý muốn */
+    }
+
+    .btn-danger {
+        color: #FFF;
+        background-color: #dc3545;
+        border-color: #dc3545;
+        border-color: none;
+        /* border-top-left-radius: 10px !important; */
+        /* border-bottom-right-radius: 10px !important; */
+        border-radius: .357rem;
+        border: none;
+        font-weight: 600;
+        padding: 5px 20px;
+    }
+
+        .btn-danger:hover {
+            color: #FFF;
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+
+        .btn-danger:focus, .btn-danger.focus {
+            -webkit-box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.5);
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.5);
+        }
+
+        .btn-danger.disabled, .btn-danger:disabled {
+            color: #FFF;
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+</style>

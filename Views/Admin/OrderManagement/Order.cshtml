@@ -6,148 +6,93 @@
     <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
         <ul>
             <li>Admin</li>
-            <li>Profile</li>
+            <li>Order</li>
         </ul>
-        <a href="https://justboil.me/" onclick="alert('Coming soon'); return false" target="_blank" class="button blue">
-            <span class="icon"><i class="mdi mdi-credit-card-outline"></i></span>
-            <span>Premium Demo</span>
-        </a>
+
     </div>
 </section>
 <section class="is-hero-bar">
     <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
         <h1 class="title">
-            Profile
+            Order List
         </h1>
-        <button class="button light">Button</button>
     </div>
 </section>
 <section class="section main-section">
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2 mb-6">
-        <div class="card">
-            <header class="card-header">
-                <p class="card-header-title">
-                    <span class="icon"><i class="mdi mdi-account-circle"></i></span>
-                    Edit Profile
-                </p>
-            </header>
-            <div class="card-content">
-                <form>
-                    <div class="field">
-                        <label class="label">Avatar</label>
-                        <div class="field-body">
-                            <div class="field file">
-                                <label class="upload control">
-                                    <a class="button blue">
-                                        Upload
-                                    </a>
-                                    <input type="file">
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="field">
-                        <label class="label">Name</label>
-                        <div class="field-body">
-                            <div class="field">
-                                <div class="control">
-                                    <input type="text" autocomplete="on" name="name" value="John Doe" class="input" required>
-                                </div>
-                                <p class="help">Required. Your name</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label class="label">E-mail</label>
-                        <div class="field-body">
-                            <div class="field">
-                                <div class="control">
-                                    <input type="email" autocomplete="on" name="email" value="user@example.com" class="input" required>
-                                </div>
-                                <p class="help">Required. Your e-mail</p>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="field">
-                        <div class="control">
-                            <button type="submit" class="button green">
-                                Submit
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="card">
-            <header class="card-header">
-                <p class="card-header-title">
-                    <span class="icon"><i class="mdi mdi-account"></i></span>
-                    Profile
-                </p>
-            </header>
-            <div class="card-content">
-                <div class="image w-48 h-48 mx-auto">
-                    <img src="https://avatars.dicebear.com/v2/initials/john-doe.svg" alt="John Doe" class="rounded-full">
-                </div>
-                <hr>
-                <div class="field">
-                    <label class="label">Name</label>
-                    <div class="control">
-                        <input type="text" readonly value="John Doe" class="input is-static">
-                    </div>
-                </div>
-                <hr>
-                <div class="field">
-                    <label class="label">E-mail</label>
-                    <div class="control">
-                        <input type="text" readonly value="user@example.com" class="input is-static">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <header class="card-header">
-            <p class="card-header-title">
-                <span class="icon"><i class="mdi mdi-lock"></i></span>
-                Change Password
-            </p>
-        </header>
+
+    <div class="card has-table">
+
         <div class="card-content">
-            <form>
-                <div class="field">
-                    <label class="label">Current password</label>
-                    <div class="control">
-                        <input type="password" name="password_current" autocomplete="current-password" class="input" required>
+            <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0" id="sampleTable">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Order Date</th>
+                        <th>Total Amount</th>
+                        <th>Full Name</th>
+                        <th>Shipping Method</th>
+                        <th>Payment Method</th>
+                        <th>Status</th>
+                        <th>IsPaid</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>2024-03-18</td>
+                        <td>$100.00</td>
+                        <td>John Doe</td>
+                        <td>Express</td>
+                        <td>COD</td>
+                        <td><span class="badge bg-primary">Confirmed</span></td>
+                        <td>unpaid</td>
+                        <td>
+                            <a asp-action="detailOrder" class="btn btn-primary" style="background-color:green; color:white;">Details</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>2024-03-19</td>
+                        <td>$80.00</td>
+                        <td>Jane Smith</td>
+                        <td>Standard</td>
+                        <td>PayPal</td>
+                        <td><span class="badge bg-info">Shipping</span></td>
+                        <td>paid</td>
+                        <td>
+                            <a asp-action="detailOrder" class="btn btn-primary" style="background-color:green; color:white;">Details</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+
+            <div class="table-pagination">
+                <div class="flex items-center justify-between">
+                    <div class="buttons">
+                        <button type="button" class="button active">1</button>
+                        <button type="button" class="button">2</button>
+                        <button type="button" class="button">3</button>
                     </div>
-                    <p class="help">Required. Your current password</p>
+                    <small>Page 1 of 3</small>
                 </div>
-                <hr>
-                <div class="field">
-                    <label class="label">New password</label>
-                    <div class="control">
-                        <input type="password" autocomplete="new-password" name="password" class="input" required>
-                    </div>
-                    <p class="help">Required. New password</p>
-                </div>
-                <div class="field">
-                    <label class="label">Confirm password</label>
-                    <div class="control">
-                        <input type="password" autocomplete="new-password" name="password_confirmation" class="input" required>
-                    </div>
-                    <p class="help">Required. New password one more time</p>
-                </div>
-                <hr>
-                <div class="field">
-                    <div class="control">
-                        <button type="submit" class="button green">
-                            Submit
-                        </button>
-                    </div>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
+
 </section>
+<style>
+    .btn-primary {
+        color: rgb(245 157 57);
+        background-color: rgb(251 226 197);
+        border-color: none;
+        /* border-top-left-radius: 10px !important; */
+        /* border-bottom-right-radius: 10px !important; */
+        border-radius: .357rem;
+        border: none;
+        font-weight: 600;
+        padding: 5px 20px; /* Điều chỉnh kích thước theo ý muốn */
+    }
+</style>

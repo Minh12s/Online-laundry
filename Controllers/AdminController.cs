@@ -27,9 +27,29 @@ namespace OnlineJwellery_Shopping.Controllers
             return View("CustomerManagement/Customer");
         }
         [Authentication]
+        public IActionResult OrderUser()
+        {
+            return View("CustomerManagement/OrderUser");
+        }
+        [Authentication]
+        public IActionResult OrderDetailsUser()
+        {
+            return View("CustomerManagement/OrderDetailsUser");
+        }
+        [Authentication]
         public IActionResult Product()
         {
             return View("ProductManagement/Product");
+        }
+        [Authentication]
+        public IActionResult editProduct()
+        {
+            return View("ProductManagement/editProduct");
+        }
+        [Authentication]
+        public IActionResult addProduct()
+        {
+            return View("ProductManagement/addProduct");
         }
         [Authentication]
         public IActionResult Order()
@@ -37,9 +57,14 @@ namespace OnlineJwellery_Shopping.Controllers
             return View("OrderManagement/Order");
         }
         [Authentication]
-        public IActionResult Revenue()
+        public IActionResult detailOrder()
         {
-            return View("RevenueManagement/Revenue");
+            return View("OrderManagement/detailOrder");
+        }
+        [Authentication]
+        public IActionResult Blog()
+        {
+            return View("BlogManagement/Blog");
         }
     }
 }

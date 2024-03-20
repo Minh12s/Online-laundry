@@ -1,35 +1,36 @@
 ﻿@{
-    ViewData["Title"] = "Customer";
+    ViewData["Title"] = "Blog";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 <section class="is-title-bar">
     <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
         <ul>
             <li>Admin</li>
-            <li>Customer</li>
+            <li>Blog</li>
         </ul>
-       
+
     </div>
 </section>
 <section class="is-hero-bar">
     <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
         <h1 class="title">
-            List of customers
+            List of blogs
         </h1>
     </div>
 </section>
 <section class="section main-section">
-   
+
     <div class="card has-table">
-       
+
         <div class="card-content">
             <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0" id="sampleTable">
                 <thead>
                     <tr>
                         <th width="10"><input type="checkbox" id="all"></th>
-                        <th>UserId</th>
-                        <th>Username</th>
-                        <th>Email</th>
+                        <th>Id</th>
+                        <th>Title</th>
+                        <th>Content</th>
+                        <th>BlogDate</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -37,19 +38,23 @@
                     <tr>
                         <td width="10"><input type="checkbox" name="check1" value="1"></td>
                         <td>1</td>
-                        <td>JohnDoe</td>
-                        <td>johndoe@example.com</td>
+                        <td>Sample Title 1</td>
+                        <td>Sample Content 1</td>
+                        <td>2024-03-20</td>
+
                         <td>
-                            <a href="/Admin/OrderUser" class="btn btn-primary" style="background-color:green; color:white;">Order</a>
+                            <a href="#" class="btn btn-primary" style="background-color:green; color:white;">Details</a>
                         </td>
                     </tr>
                     <tr>
                         <td width="10"><input type="checkbox" name="check1" value="1"></td>
                         <td>2</td>
-                        <td>JaneSmith</td>
-                        <td>janesmith@example.com</td>
+                        <td>Sample Title 2</td>
+                        <td>Sample Content 2</td>
+                        <td>2024-03-21</td>
+
                         <td>
-                            <a href="/Admin/OrderUser" class="btn btn-primary" style="background-color:green; color:white;">Order</a>
+                            <a href="#" class="btn btn-primary" style="background-color:green; color:white;">Details</a>
                         </td>
                     </tr>
                 </tbody>
