@@ -17,10 +17,10 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-6 mb-5 ftco-animate">
-                <a href="~/images/menu-2.jpg" class="image-popup"><img src="~/images/product-10.jpg" class="img-fluid" alt="Colorlib Template"></a>
+                <a href="~/images/menu-2.jpg" class="image-popup"><img src="@ViewBag.ProductThumbnail" class="img-fluid" alt="Colorlib Template"></a>
             </div>
             <div class="col-lg-6 product-details pl-md-5 ftco-animate">
-                <h3>Young Woman Wearing Dress</h3>
+                <h3>@ViewBag.ProductName</h3>
                 <div class="rating d-flex">
                     <p class="text-left mr-4">
                         <a href="#" class="mr-2">5.0</a>
@@ -37,25 +37,47 @@
                         <a href="#" class="mr-2" style="color: #000;">500 <span style="color: #bbb;">Sold</span></a>
                     </p>
                 </div>
-                <p class="price"><span>$120.00</span></p>
-                <p>A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth.</p>
-                <p>
-                    On her way she met a copy. The copy warned the Little Blind Text, that where it came from it would have been rewritten a thousand times and everything that was left from its origin would be the word "and" and the Little Blind Text should turn around and return to its own, safe country. But nothing the copy said could convince her and so it didn’t take long until a few insidious Copy Writers ambushed her, made her drunk with Longe and Parole and dragged her into their agency, where they abused her for their.
-                </p>
+                <p class="price"><span>@ViewBag.ProductPrice</span></p>
+                <ul class="details-list">
+                    <li>
+                        <span>CertificationCode: </span>
+                        <span>  @ViewBag.CertificationCode</span>
+                    </li>
+
+                    <li class="">
+                        <span>Brand: </span>
+                        <span> @ViewBag.BrandName</span>
+                    </li>
+
+                    <li class="">
+                        <span>StoneType:  </span>
+                        <span>  @ViewBag.StoneType</span>
+                    </li>
+
+                    <li class="">
+                        <span>Material:   </span>
+                        <span>  @ViewBag.Material </span>
+                    </li>
+
+                    <li class="">
+                        <span>TotalWeight:   </span>
+                        <span>   @ViewBag.TotalWeight</span>
+                    </li>
+
+                    <li class="">
+                        <span>Color:  </span>
+                        <span> @ViewBag.Color</span>
+
+                    </li>
+
+                    <li class="">
+                        <span>GoldAge:    </span>
+                        <span>  @ViewBag.GoldAge </span>
+                    </li>
+
+                </ul>
                 <div class="row mt-4">
-                    <div class="col-md-6">
-                        <div class="form-group d-flex">
-                            <div class="select-wrap">
-                                <div class="icon"><span class="ion-ios-arrow-down"></span></div>
-                                <select name="" id="" class="form-control">
-                                    <option value="">Small</option>
-                                    <option value="">Medium</option>
-                                    <option value="">Large</option>
-                                    <option value="">Extra Large</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+
                     <div class="w-100"></div>
                     <div class="input-group col-md-6 d-flex mb-3">
                         <span class="input-group-btn mr-2">
@@ -212,3 +234,27 @@
         </div>
     </div>
 </section>
+
+
+<style>
+    .details-list {
+        list-style-type: none;
+        padding: 0;
+    }
+
+        .details-list li {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .details-list span:first-child {
+            flex: 1;
+        }
+
+        .details-list span:last-child {
+            flex: 2;
+            text-align: left;
+            margin-right: 20px;
+        }
+</style>

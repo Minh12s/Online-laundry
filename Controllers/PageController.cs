@@ -36,14 +36,143 @@ namespace OnlineJwellery_Shopping.Controllers
             return View();
         }
         [Authentication]
-        public async Task<IActionResult> Details()
+        public async Task<IActionResult> Details(int id)
         {
-            return View();
+            // Lấy chi tiết sản phẩm từ cơ sở dữ liệu dựa trên ID được cung cấp
+            var product = await db.Product.Include(p => p.Category)
+                                           .Include(p => p.Brand)
+                                           .Include(p => p.GoldAge)
+                                           .FirstOrDefaultAsync(p => p.ProductId == id);
+
+            if (product == null)
+            {
+                // Xử lý trường hợp không tìm thấy sản phẩm với ID cụ thể
+                return NotFound();
+            }
+
+            var relatedProducts = await db.Product
+                .Where(p => p.CategoryId == product.CategoryId && p.ProductId != id)
+                .Take(4) // Số lượng sản phẩm liên quan bạn muốn hiển thị
+                .ToListAsync();
+
+            ViewBag.RelatedProducts = relatedProducts;
+
+            // Đặt các thuộc tính ViewBag cho chi tiết sản phẩm
+            ViewBag.ProductId = product.ProductId;
+            ViewBag.ProductThumbnail = product.Thumbnail;  // Đường dẫn ảnh sản phẩm
+            ViewBag.ProductName = product.ProductName; // Tên sản phẩm
+            ViewBag.ProductPrice = product.Price;      // Giá sản phẩm
+            ViewBag.ProductCategory = product.Category?.CategoryName;
+
+            // Đặt các thuộc tính ViewBag cho sự có sẵn của sản phẩm
+            ViewBag.ProductAvailability = product.Qty;
+
+            // Đặt thông tin Brand vào ViewBag để sử dụng trong view
+            ViewBag.BrandName = product.Brand?.BrandName; // Tên Brand
+
+            // Đặt thông tin GoldAge vào ViewBag để sử dụng trong view
+            ViewBag.GoldAge = product.GoldAge?.Age; // Tên GoldAge
+
+            // Đặt các thuộc tính ViewBag cho thông tin khác của sản phẩm
+            ViewBag.StoneType = product.StoneType;
+            ViewBag.TotalWeight = product.TotalWeight;
+            ViewBag.Color = product.Color;
+            ViewBag.Size = product.Size;
+            ViewBag.Material = product.Material;
+            ViewBag.CertificationCode = product.CertificationCode;
+
+            return View(product);
+        }
+
+        [Authentication]
+        public async Task<IActionResult> Category(int page = 1, int pageSize = 9, decimal? minPrice = null, decimal? maxPrice = null)
+        {
+            // kế thừa các logic chung từ BaseController
+
+
+            // Lấy danh sách sản phẩm với phân trang
+            var query = db.Product
+    .Include(p => p.Category) // Include the Category information
+    .OrderBy(p => p.ProductId)
+    .Skip((page - 1) * pageSize)
+    .Take(pageSize);
+
+            // Lọc theo giá
+            if (minPrice != null)
+            {
+                query = query.Where(p => p.Price >= minPrice);
+            }
+
+            if (maxPrice != null)
+            {
+                query = query.Where(p => p.Price <= maxPrice);
+            }
+
+            var productList = await query.ToListAsync();
+            // Tính toán và chuyển thông tin phân trang vào ViewBag hoặc ViewModel
+            ViewBag.TotalProductCount = await db.Product.CountAsync(); // Tổng số sản phẩm
+            ViewBag.TotalPages = (int)Math.Ceiling((double)ViewBag.TotalProductCount / pageSize);
+            ViewBag.CurrentPage = page;
+            ViewBag.Categories = await db.Category.ToListAsync();
+
+            return View(productList);
         }
         [Authentication]
-        public async Task<IActionResult> Category()
+        public async Task<IActionResult> Shop(int? id, string searchString, int? minPrice, int? maxPrice, int page = 1, int pageSize = 9)
         {
-            return View();
+
+       
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var category = db.Category.Find(id);
+
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.SearchString = searchString;
+
+            var productsInCategory = db.Product
+                .Include(p => p.Category)
+                .Where(p => p.CategoryId == id);
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                productsInCategory = productsInCategory.Where(p => p.ProductName.Contains(searchString));
+            }
+
+            // Lọc theo giá
+            if (minPrice != null)
+            {
+                productsInCategory = productsInCategory.Where(p => p.Price >= minPrice);
+            }
+
+            if (maxPrice != null)
+            {
+                productsInCategory = productsInCategory.Where(p => p.Price <= maxPrice);
+            }
+
+            // Tính toán và chuyển thông tin phân trang vào ViewBag hoặc ViewModel
+            ViewBag.CategoryId = id;
+            ViewBag.TotalProductCount = productsInCategory.Count(); // Đếm số lượng sản phẩm sau khi áp dụng tìm kiếm
+            ViewBag.TotalPages = (int)Math.Ceiling((double)ViewBag.TotalProductCount / pageSize);
+            ViewBag.CurrentPage = page;
+
+            // Lấy danh sách sản phẩm với phân trang
+            var paginatedProducts = productsInCategory
+                .OrderBy(p => p.ProductId)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.ProductsInCategory = paginatedProducts;
+            ViewBag.Categories = db.Category.ToList();
+
+            return View(paginatedProducts);
         }
         [Authentication]
         public async Task<IActionResult> Checkout()
