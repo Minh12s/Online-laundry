@@ -101,22 +101,17 @@
             <div class="collapse navbar-collapse" id="ftco-nav">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item active"><a href="/Page/Home" class="nav-link">Home</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Shop</a>
-                        <div class="dropdown-menu" aria-labelledby="dropdown04">
-                            <a class="dropdown-item" href="/Page/Category">Shop</a>
-                            <a class="dropdown-item" href="/Page/Details">Single Product</a>
-                            <a class="dropdown-item" href="/Cart/Index">Cart</a>
-                            <a class="dropdown-item" href="/Favorite/Index">Favorite</a>
-                            <a class="dropdown-item" href="/Page/Checkout">Checkout</a>
-                        </div>
-                    </li>
+                    <li class="nav-item"><a href="/Page/Category" class="nav-link">Shop</a></li>
                     <li class="nav-item"><a href="/Page/About" class="nav-link">About</a></li>
                     <li class="nav-item"><a href="/Page/Blog" class="nav-link">Blog</a></li>
                     <li class="nav-item"><a href="/Page/Contact" class="nav-link">Contact</a></li>
 
                     <li class="nav-item cta cta-colored">
-                        <a href="cart.html" class="nav-link"><span class="icon-shopping_cart"></span>[0]</a>
+                        <a href="/Cart/Index" class="nav-link"><span class="icon-shopping_cart"></span>[@ViewData["CartItemCount"]]</a>
+
+                    </li>
+                    <li class="nav-item cta cta-colored">
+                        <a style="font-size:11px;" href="/Favorite/Index" class="nav-link"><span class="icon-favorite"></span></a>
 
                     </li>
                     <li class="nav-item cta cta-colored">
@@ -128,7 +123,7 @@
                             }
                             else
                             {
-                                <span>Guest</span> 
+                                <span>Guest</span>
                             }
                         </a>
                         <div class="cart-dropdown-content" id="cartDropdownContent">

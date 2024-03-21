@@ -1,7 +1,18 @@
-﻿@{
+﻿@model IEnumerable<CartItem>
+@{
     Layout = "~/Views/Shared/User_Layout.cshtml";
     ViewData["Title"] = "Cart";
 }
+<style>
+    .quantity .btn-update {
+        display: none;
+    }
+
+    .quantity:hover .btn-update {
+        display: inline-block;
+    }
+</style>
+
 <div class="hero-wrap hero-bread" style="background-image: url('/images/anhbg1.jpg');">
     <div class="container">
         <div class="row no-gutters slider-text align-items-center justify-content-center">
@@ -27,78 +38,105 @@
                                 <th>Price</th>
                                 <th>Quantity</th>
                                 <th>Total</th>
+                                <th>&nbsp;</th> <!-- Add this column for the Update button -->
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="text-center">
-                                <td class="product-remove"><a href="#"><span class="ion-ios-close"></span></a></td>
+                            @if (Model != null)
+                            {
+                                foreach (var item in Model)
+                                {
+                                    <tr class="text-center">
+                                        <td class="product-remove">
+                                            <form method="post" asp-action="RemoveFromCart" asp-route-id="@item.ProductId">
+                                                <button style="width: 30px; height: 30px; background-color: white; border: 1px solid #ccc; border-radius: 0;" type="submit" class="btn btn-danger">
+                                                    <span class="ion-ios-close"></span>
+                                                </button>
+                                            </form>
+                                        </td>
+                                        <td class="image-prod"><div class="img" style="background-image: url(@item.Thumbnail);"></div></td>
+                                        <td class="product-name">
+                                            <h3>@item.ProductName</h3>
+                                        </td>
+                                        <td class="price">$@item.Price</td>
+                                        <td class="quantity">
+                                            <form method="post" asp-controller="Cart" asp-action="UpdateQuantity" asp-route-productId="@item.ProductId">
+                                                <div class="input-group mb-3">
+                                                    <input style="margin-top:30px;" type="number" name="quantity" class="quantity form-control input-number" value="@item.Qty">
+                                                </div>
 
-                                <td class="image-prod"><div class="img" style="background-image: url(/images/product-34.jpg);"></div></td>
+                                                <button type="submit" style="border: none; padding: 20px 20px;" class="btn btn-primary py-3 px-5 btn-update">Update</button>
 
-                                <td class="product-name">
-                                    <h3>Young Woman Wearing Dress</h3>
-                                    <p>Far far away, behind the word mountains, far from the countries</p>
-                                </td>
 
-                                <td class="price">$4.90</td>
+                                                @if (TempData["ProductId"] != null && Convert.ToInt32(TempData["ProductId"]) == item.ProductId)
+                                                {
+                                                    <div class="alert alert-danger" role="alert">
+                                                        <span style="font-size:15px">Requested quantity exceeds available quantity!</span>
+                                                    </div>
+                                                }
+                                            </form>
+                                        </td>
+                                        <td class="total">$@(item.Price * item.Qty)</td>
+                                    </tr>
+                                }
+                            }
 
-                                <td class="quantity">
-                                    <div class="input-group mb-3">
-                                        <input type="text" name="quantity" class="quantity form-control input-number" value="1" min="1" max="100">
-                                    </div>
-                                </td>
-
-                                <td class="total">$4.90</td>
-                            </tr><!-- END TR-->
-
-                            <tr class="text-center">
-                                <td class="product-remove"><a href="#"><span class="ion-ios-close"></span></a></td>
-
-                                <td class="image-prod"><div class="img" style="background-image: url(/images/product-45.jpg);"></div></td>
-
-                                <td class="product-name">
-                                    <h3>Young Woman Wearing Dress</h3>
-                                    <p>Far far away, behind the word mountains, far from the countries</p>
-                                </td>
-
-                                <td class="price">$15.70</td>
-
-                                <td class="quantity">
-                                    <div class="input-group mb-3">
-                                        <input type="text" name="quantity" class="quantity form-control input-number" value="1" min="1" max="100">
-                                    </div>
-                                </td>
-
-                                <td class="total">$15.70</td>
-                            </tr><!-- END TR-->
+                            else
+                            {
+                                <tr>
+                                    <td colspan="7" class="text-center">No items in the cart!</td> <!-- Update colspan to 7 -->
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
+        <div class="shoping__cart__btns d-flex justify-content-between">
+            <p class="mb-0">
+                <button style="border: 1px solid white; background-color:white; width:200px;" type="submit" class="primary-btn cart-btn" href="#">CONTINUE SHOPPING</button>
+            </p>
+            <form method="post" asp-action="ClearCart">
+                <button style="border: 1px solid white; background-color:white; width:200px;" type="submit" class="primary-btn cart-btn">
+                    <span style="margin-right:10px;" class="fa fa-spinner fa-spin"></span>
+                    CLEAR CART
+                </button>
+            </form>
+        </div>
+
+
         <div class="row justify-content-center">
             <div class="col col-lg-5 col-md-6 mt-5 cart-wrap ftco-animate">
                 <div class="cart-total mb-3">
                     <h3>Cart Totals</h3>
+                    @{
+                        decimal subtotal = Model?.Sum(item => item.Price * item.Qty) ?? 0;
+                        decimal delivery = 5.00m; // You may change this value according to your logic
+                        decimal discount = 3.00m; // You may change this value according to your logic
+                        decimal total = subtotal + delivery - discount;
+                    }
                     <p class="d-flex">
                         <span>Subtotal</span>
-                        <span>$20.60</span>
+                        <span>$@subtotal</span>
                     </p>
                     <p class="d-flex">
                         <span>Delivery</span>
-                        <span>$0.00</span>
+                        <span>$@delivery</span>
                     </p>
                     <p class="d-flex">
                         <span>Discount</span>
-                        <span>$3.00</span>
+                        <span>$@discount</span>
                     </p>
                     <hr>
                     <p class="d-flex total-price">
                         <span>Total</span>
-                        <span>$17.60</span>
+                        <span>$@total</span>
                     </p>
                 </div>
-                <p class="text-center"><a href="checkout.html" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
+                <p class="text-center">
+                    <a href="#" class="btn btn-primary py-3 px-4">Continue Shopping</a>
+                </p>
+
             </div>
         </div>
     </div>

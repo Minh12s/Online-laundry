@@ -33,11 +33,16 @@ namespace OnlineJwellery_Shopping.Controllers
         [Authentication]
         public async Task<IActionResult> Home()
         {
+            // kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
+
             return View();
         }
         [Authentication]
         public async Task<IActionResult> Details(int id)
         {
+            // kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
             // Lấy chi tiết sản phẩm từ cơ sở dữ liệu dựa trên ID được cung cấp
             var product = await db.Product.Include(p => p.Category)
                                            .Include(p => p.Brand)
@@ -88,6 +93,7 @@ namespace OnlineJwellery_Shopping.Controllers
         public async Task<IActionResult> Category(int page = 1, int pageSize = 9, decimal? minPrice = null, decimal? maxPrice = null)
         {
             // kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
 
 
             // Lấy danh sách sản phẩm với phân trang
@@ -121,7 +127,8 @@ namespace OnlineJwellery_Shopping.Controllers
         public async Task<IActionResult> Shop(int? id, string searchString, int? minPrice, int? maxPrice, int page = 1, int pageSize = 9)
         {
 
-       
+            // kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
             if (id == null)
             {
                 return NotFound();
@@ -177,37 +184,50 @@ namespace OnlineJwellery_Shopping.Controllers
         [Authentication]
         public async Task<IActionResult> Checkout()
         {
+            // kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
             return View();
         }
         [Authentication]
         public async Task<IActionResult> Contact()
         {
+            // kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
             return View();
         }
         [Authentication]
         public async Task<IActionResult> Blog()
         {
+            // kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
             return View();
         }
         [Authentication]
         public async Task<IActionResult> BlogDetails()
         {
+            // kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
             return View();
         }
         [Authentication]
         public async Task<IActionResult> About()
         {
+            // kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
             return View();
         }
         [Authentication]
         public async Task<IActionResult> Thankyou()
         {
+            // kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
             return View();
         }
 
         [HttpGet]
         public IActionResult Login()
         {
+
             if (HttpContext.Session.GetString("Username") == null)
             {
                 return View();

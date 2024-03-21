@@ -38,21 +38,21 @@ namespace OnlineJwellery_Shopping.Controllers
                 .Where(f => f.UserId == userId)
                 .Count();
         }
-        //protected async Task SetCommonViewData()
-        //{
-        //    var cartItems = HttpContext.Session.Get<List<CartItem>>("cart");
-        //    ViewData["CartItemCount"] = cartItems != null ? cartItems.Count : 0;
+        protected async Task SetCommonViewData()
+        {
+            var cartItems = HttpContext.Session.Get<List<CartItem>>("cart");
+            ViewData["CartItemCount"] = cartItems != null ? cartItems.Count : 0;
 
-        //    var usernameFromSession = HttpContext.Session.GetString("Username");
-        //    var currentUser = await _context.User.SingleOrDefaultAsync(u => u.Username == usernameFromSession);
+            var usernameFromSession = HttpContext.Session.GetString("Username");
+            var currentUser = await _context.User.SingleOrDefaultAsync(u => u.Username == usernameFromSession);
 
-        //    if (currentUser == null)
-        //    {
-        //        RedirectToAction("login", "Page");
-        //    }
+            if (currentUser == null)
+            {
+                RedirectToAction("login", "Page");
+            }
 
-        //    ViewBag.FavoriteCount = GetFavoriteCount(currentUser.UserId);
-        //}
+            ViewBag.FavoriteCount = GetFavoriteCount(currentUser.UserId);
+        }
     }
 }
 
