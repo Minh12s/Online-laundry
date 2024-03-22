@@ -5,7 +5,7 @@
 <section class="is-title-bar">
     <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
         <ul>
-            <li>Admin</li>
+            <li style="margin-left:-50px;">Admin</li>
             <li>Product</li>
         </ul>
 
@@ -14,9 +14,7 @@
 </section>
 <section class="is-hero-bar">
     <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
-        <h1 class="title">
-            List of products
-        </h1>
+   
     </div>
     <div class="col-sm-2">
 
@@ -29,7 +27,16 @@
 <section class="section main-section">
 
     <div class="card has-table">
+        <header class="card-header">
+            <p class="card-header-title">
+                @*<span class="icon"><i class="mdi mdi-shopping"></i></span>*@
+                Product
+            </p>
 
+            <a href="#" class="card-header-icon">
+                <span class="icon"><i class="mdi mdi-reload"></i></span>
+            </a>
+        </header>
         <div class="card-content">
             <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0" id="sampleTable">
                 <thead>
@@ -39,53 +46,48 @@
                         <th>Thumbnail</th>
                         <th>ProductName</th>
                         <th>Price</th>
+                        <th>qty</th>
                         <th>StoneType</th>
                         <th>TotalWeight</th>
                         <th>Color</th>
-                        <th>GoldAgeId</th>
+                        <th>Category</th>
+                        <th>Brand</th>
+                        <th>GoldAge</th>
                         <th>Size</th>
                         <th>Material</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td width="10"><input type="checkbox" name="check1" value="1"></td>
-                        <td>1</td>
-                        <td></td>
-                        <td>Product 1</td>
-                        <td>$50.00</td>
-                        <td>Diamond</td>
-                        <td>5 grams</td>
-                        <td>Gold</td>
-                        <td>1</td>
-                        <td>Medium</td>
-                        <td>Gold</td>
-                        <td>
-                            <a class="btn btn-primary" asp-controller="Admin" asp-action="editProduct">
-                                <i class="fas fa-edit"></i> Edit
-                            </a> |
-                            <button class="btn btn-danger">Delete</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td width="10"><input type="checkbox" name="check1" value="1"></td>
-                        <td>2</td>
-                        <td></td>
-                        <td>Product 2</td>
-                        <td>$60.00</td>
-                        <td>Sapphire</td>
-                        <td>7 grams</td>
-                        <td>Silver</td>
-                        <td>2</td>
-                        <td>Large</td>
-                        <td>Silver</td>
-                        <td>
-                            <a class="btn btn-primary" asp-controller="Admin" asp-action="editProduct">
-                                <i class="fas fa-edit"></i> Edit
-                            </a> |                            <button class="btn btn-danger">Delete</button>
-                        </td>
-                    </tr>
+                    @foreach (var product in Model)
+                    {
+                        <tr>
+                            <td width="10"><input type="checkbox" name="check1" value="@product.ProductId"></td>
+                            <td>@product.ProductId</td>
+                            <td><img src="@product.Thumbnail" alt="Thumbnail" width="50" height="50"></td>
+                            <td>@product.ProductName</td>
+                            <td>@product.Price</td>
+                            <td>@product.Qty</td>
+
+                            <td>@product.StoneType</td>
+                            <td>@product.TotalWeight</td>
+                            <td>@product.Color</td>
+                            <td>@product.Category.CategoryName</td>
+                            <td>@product.Brand.BrandName</td>
+                            <td>@product.GoldAge.Age</td>
+                            <td>@product.Size</td>
+                            <td>@product.Material</td>
+                            <td>
+                                <a style="background-color:green; color:white;" class="btn btn-primary" asp-controller="Admin" asp-action="detailsProduct">
+                                    <i class="fas fa-info-circle"></i> Details
+                                </a>
+                                <a class="btn btn-primary" asp-controller="Admin" asp-action="editProduct">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a> |
+                                <button class="btn btn-danger">Delete</button>
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
 

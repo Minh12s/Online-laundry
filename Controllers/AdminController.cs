@@ -16,6 +16,12 @@ namespace OnlineJwellery_Shopping.Controllers
 {
     public class AdminController : Controller
     {
+        private readonly JwelleryShoppingContext _context;
+
+        public AdminController(JwelleryShoppingContext context)
+        {
+            _context = context;
+        }
         [Authentication]
         public IActionResult Dashboard()
         {
@@ -37,10 +43,20 @@ namespace OnlineJwellery_Shopping.Controllers
             return View("CustomerManagement/OrderDetailsUser");
         }
         [Authentication]
-        public IActionResult Product()
+        // Product Management
+        public async Task<IActionResult> Product(int? CategoryId,int? BrandId ,int? GoldAgeId, string ProductName, decimal? Price_from, decimal? Price_to, string search)
         {
-            return View("ProductManagement/Product");
+            var categories = await _context.Category.ToListAsync();
+            var brands = await _context.Brand.ToListAsync();
+            var goldAges = await _context.GoldAge.ToListAsync();
+            var products = _context.Product.AsQueryable();
+            ViewBag.brands = brands;
+            ViewBag.goldAges = goldAges;
+            ViewBag.Categories = categories;
+            // Trả về view với danh sách sản phẩm đã lọc
+            return View("ProductManagement/Product", await products.ToListAsync());
         }
+
         [Authentication]
         public IActionResult editProduct()
         {
@@ -50,6 +66,19 @@ namespace OnlineJwellery_Shopping.Controllers
         public IActionResult addProduct()
         {
             return View("ProductManagement/addProduct");
+        }
+        [Authentication]
+        public async Task<IActionResult> detailsProduct(int? CategoryId, int? BrandId, int? GoldAgeId, string ProductName, decimal? Price_from, decimal? Price_to, string search)
+        {
+            var categories = await _context.Category.ToListAsync();
+            var brands = await _context.Brand.ToListAsync();
+            var goldAges = await _context.GoldAge.ToListAsync();
+            var products = _context.Product.AsQueryable();
+            ViewBag.brands = brands;
+            ViewBag.goldAges = goldAges;
+            ViewBag.Categories = categories;
+            // Trả về view với danh sách sản phẩm đã lọc
+            return View("ProductManagement/detailsProduct", await products.ToListAsync());
         }
         [Authentication]
         public IActionResult Order()

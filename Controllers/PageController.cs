@@ -242,8 +242,7 @@ namespace OnlineJwellery_Shopping.Controllers
         {
             if (HttpContext.Session.GetString("Username") == null)
             {
-                User u = db.User.FirstOrDefault(
-                    x => x.Email.Equals(user.Email));
+                User u = db.User.FirstOrDefault(x => x.Email.Equals(user.Email));
 
                 if (u != null && BCrypt.Net.BCrypt.Verify(user.Password, u.Password))
                 {
@@ -251,19 +250,22 @@ namespace OnlineJwellery_Shopping.Controllers
                     HttpContext.Session.SetString("Role", u.Role);
                     HttpContext.Session.SetString("UserId", u.UserId.ToString());
 
-                    if (u.Role == "Admin")
-                    {
-                        return RedirectToAction("Home", "Page");
-                    }
-                    else if (u.Role == "User")
+                    if (u.Role == "Admin" || u.Role == "User")
                     {
                         return RedirectToAction("Home", "Page");
                     }
                 }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Tên người dùng hoặc mật khẩu không chính xác.");
+                    return View();
+                }
             }
 
-            return View();
+            return RedirectToAction("Home", "Page");
         }
+
+
         [HttpGet]
         public IActionResult Register()
         {
