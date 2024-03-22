@@ -257,7 +257,7 @@ namespace OnlineJwellery_Shopping.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Tên người dùng hoặc mật khẩu không chính xác.");
+                    ModelState.AddModelError(string.Empty, "Email or password is incorrect");
                     return View();
                 }
             }
