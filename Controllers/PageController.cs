@@ -274,31 +274,40 @@ namespace OnlineJwellery_Shopping.Controllers
         [HttpPost]
         public IActionResult Register(User user)
         {
-            if (true)
+            // Kiểm tra xem các trường bắt buộc đã được điền đầy đủ chưa
+            if (string.IsNullOrEmpty(user.Username) || string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
             {
-                // Kiểm tra xem tên đăng nhập đã tồn tại chưa
-                if (db.User.Any(x => x.Username.Equals(user.Username)))
-                {
-                    ModelState.AddModelError("Username", "Tên đăng nhập đã tồn tại");
-                    return View(user);
-                }
-                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-                // Thiết lập vai trò mặc định là "User"
-                user.Role = "User";
-
-                // Thêm người dùng mới vào cơ sở dữ liệu
-                db.User.Add(user);
-                db.SaveChanges();
-
-                // Lưu thông tin đăng nhập vào phiên làm việc
-                HttpContext.Session.SetString("Username", user.Username);
-                HttpContext.Session.SetString("Role", user.Role);
-
-                return RedirectToAction("Home", "Page");
+                ModelState.AddModelError("", "Vui lòng điền đầy đủ thông tin.");
+                return View(user);
             }
 
-            return View(user);
+            // Kiểm tra xem địa chỉ email đã được sử dụng chưa
+            var existingUser = db.User.FirstOrDefault(x => x.Email.Equals(user.Email));
+            if (existingUser != null)
+            {
+                ModelState.AddModelError("Email", "The email address has been used");
+                return View(user);
+            }
+
+            // Hash mật khẩu trước khi lưu vào cơ sở dữ liệu
+            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+
+            // Thiết lập vai trò mặc định là "User"
+            user.Role = "User";
+
+            // Thêm người dùng mới vào cơ sở dữ liệu
+            db.User.Add(user);
+            db.SaveChanges();
+
+            // Lưu thông tin đăng nhập vào phiên làm việc
+            HttpContext.Session.SetString("Username", user.Username);
+            HttpContext.Session.SetString("Role", user.Role);
+
+            return RedirectToAction("Home", "Page");
         }
+
+
+
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();

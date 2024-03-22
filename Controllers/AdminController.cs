@@ -67,19 +67,28 @@ namespace OnlineJwellery_Shopping.Controllers
         {
             return View("ProductManagement/addProduct");
         }
-        [Authentication]
-        public async Task<IActionResult> detailsProduct(int? CategoryId, int? BrandId, int? GoldAgeId, string ProductName, decimal? Price_from, decimal? Price_to, string search)
+        public async Task<IActionResult> detailsProduct(int? ProductId)
         {
-            var categories = await _context.Category.ToListAsync();
-            var brands = await _context.Brand.ToListAsync();
-            var goldAges = await _context.GoldAge.ToListAsync();
-            var products = _context.Product.AsQueryable();
-            ViewBag.brands = brands;
-            ViewBag.goldAges = goldAges;
-            ViewBag.Categories = categories;
-            // Trả về view với danh sách sản phẩm đã lọc
-            return View("ProductManagement/detailsProduct", await products.ToListAsync());
+            if (ProductId == null)
+            {
+                return NotFound();
+            }
+
+            var product = await _context.Product
+                .Include(p => p.Category)
+                .Include(p => p.Brand)
+                .Include(p => p.GoldAge)
+                .FirstOrDefaultAsync(p => p.ProductId == ProductId);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View("ProductManagement/detailsProduct", product);
         }
+
+
         [Authentication]
         public IActionResult Order()
         {

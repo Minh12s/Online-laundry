@@ -47,15 +47,8 @@
                         <th>ProductName</th>
                         <th>Price</th>
                         <th>qty</th>
-                        <th>StoneType</th>
-                        <th>TotalWeight</th>
-                        <th>Color</th>
-                        <th>Category</th>
-                        <th>Brand</th>
-                        <th>GoldAge</th>
-                        <th>Size</th>
-                        <th>Material</th>
-                        <th></th>
+                    
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -64,28 +57,21 @@
                         <tr>
                             <td width="10"><input type="checkbox" name="check1" value="@product.ProductId"></td>
                             <td>@product.ProductId</td>
-                            <td><img src="@product.Thumbnail" alt="Thumbnail" width="50" height="50"></td>
+                            <td><img src="@product.Thumbnail" alt="Thumbnail" width="100" height="100"></td>
                             <td>@product.ProductName</td>
                             <td>@product.Price</td>
                             <td>@product.Qty</td>
 
-                            <td>@product.StoneType</td>
-                            <td>@product.TotalWeight</td>
-                            <td>@product.Color</td>
-                            <td>@product.Category.CategoryName</td>
-                            <td>@product.Brand.BrandName</td>
-                            <td>@product.GoldAge.Age</td>
-                            <td>@product.Size</td>
-                            <td>@product.Material</td>
-                            <td>
-                                <a style="background-color:green; color:white;" class="btn btn-primary" asp-controller="Admin" asp-action="detailsProduct">
-                                    <i class="fas fa-info-circle"></i> Details
-                                </a>
-                                <a class="btn btn-primary" asp-controller="Admin" asp-action="editProduct">
-                                    <i class="fas fa-edit"></i> Edit
-                                </a> |
-                                <button class="btn btn-danger">Delete</button>
-                            </td>
+                          
+                        <td>
+                            <a style="background-color:green; color:white;" class="btn btn-primary" asp-controller="Admin" asp-action="detailsProduct" asp-route-ProductId="@product.ProductId">
+                                <i class="fas fa-info-circle"></i> Details
+                            </a> |
+                            <a class="btn btn-primary" asp-controller="Admin" asp-action="editProduct">
+                                <i class="fas fa-edit"></i> Edit
+                            </a> |
+                            <button class="btn btn-danger">Delete</button>
+                        </td>
                         </tr>
                     }
                 </tbody>

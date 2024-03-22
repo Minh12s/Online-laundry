@@ -8,33 +8,31 @@
         <div class="row order_d_inner">
             <div class="col-lg-4">
                 <div class="details_item">
-                    <h3>Order Info</h3>
+                    <h3>Gem information</h3>
                     <ul class="list">
-                        <li><a href="#"><span>Order id</span>: 123456</a></li>
-                        <li><a href="#"><span>Date</span>: 2024-03-20</a></li>
-                        <li><a href="#"><span>Total</span>: $100.00</a></li>
-                        <li><a href="#"><span>Payment Method</span>: Credit Card</a></li>
-                        <li><a href="#"><span>IsPaid</span>: Yes</a></li>
-                        <li><a href="#"><span>Status</span>: Delivered</a></li>
+                        <li><span>Stone Type</span>: @Model.StoneType</li>
+                        <li><span>Total Weight</span>: @Model.TotalWeight</li>
+                        <li><span>Color</span>: @Model.Color</li>
+                        <li><span>Size</span>: @Model.Size</li>
+                       
                     </ul>
                 </div>
             </div>
             <div class="col-lg-4">
                 <div class="details_item">
-                    <h3>Customer Information</h3>
+                    <h3>Brand Information</h3>
                     <ul class="list">
-                        <li><a href="#"><span>Full Name</span>: John Doe</a></li>
-                        <li><a href="#"><span>Telephone</span>: 123-456-7890</a></li>
-                        <li><a href="#"><span>Email</span>: johndoe@example.com</a></li>
+                        <li><span>Brand</span>: @Model.Brand.BrandName</li>
+                        <li><span>Category</span>: @Model.Category.CategoryName</li>
                     </ul>
                 </div>
             </div>
             <div class="col-lg-4">
                 <div class="details_item">
-                    <h3>Shipping</h3>
+                    <h3>jewelry information</h3>
                     <ul class="list">
-                        <li><a href="#"><span>Shipping method</span>: Express Shipping</a></li>
-                        <li><a href="#"><span>Address</span>: 123 Main St, City, Country</a></li>
+                        <li><span>Gold Age</span>: @Model.GoldAge.Age</li>
+                        <li><span>Material</span>: @Model.Material</li>
                     </ul>
                 </div>
             </div>
@@ -49,26 +47,19 @@
                                 <th style="width:300px;" scope="col">Name</th>
                                 <th style="width:200px;" scope="col">Price</th>
                                 <th style="width:200px;" scope="col">Quantity</th>
-                                <th style="width:200px;" scope="col">Total</th>
+                               
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>1</td>
-                                <td><img src="thumbnail_url" width="120" /></td>
-                                <td>Product Name 1</td>
-                                <td>$50.00</td>
-                                <td>2</td>
-                                <td>$100.00</td>
+                                <td>@Model.ProductId</td>
+                                <td><img src="@Model.Thumbnail" alt="Thumbnail" width="100" height="100"></td>
+                                <td>@Model.ProductName</td>
+                                <td>@Model.Price</td>
+                                <td>@Model.Qty</td>
+
                             </tr>
-                            <tr>
-                                <td>2</td>
-                                <td><img src="thumbnail_url" width="120" /></td>
-                                <td>Product Name 2</td>
-                                <td>$25.00</td>
-                                <td>1</td>
-                                <td>$25.00</td>
-                            </tr>
+                       
                         </tbody>
                     </table>
                 </div>

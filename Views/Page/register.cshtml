@@ -1,28 +1,42 @@
 ﻿@{
-    ViewData["Title"] = " Page";
+    ViewData["Title"] = "Page";
     Layout = "~/Views/Shared/User_Layout.cshtml";
 }
-
+@model User
 <div class="login-container">
     <div class="login-box">
         <h2>Sign up</h2>
+
         <form asp-action="Register" method="post">
+
             <div class="input-group">
                 <label for="username">Username:</label>
                 <i class="fas fa-user input-icon"></i>
-                <input type="text" id="username" name="username" required>
+                <input type="text" id="username" name="username">
+
+            </div>
+            <div style="margin-left:-167px;">
+                @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
             </div>
             <div class="input-group">
                 <label for="email">Email:</label>
                 <i class="fas fa-envelope input-icon"></i>
-                <input type="text" id="email" name="email" required>
+                <input type="text" id="email" name="email">
+
+            </div>
+            <div style="margin-left:-200px;">
+                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
             </div>
             <div class="input-group">
                 <label for="password">Password:</label>
                 <i class="fas fa-lock input-icon"></i>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" name="password">
+
             </div>
-            <div class="remember-password">
+              <div style="margin-left:-167px;">
+            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                  </div>
+            <div style="margin-top:20px;" class="remember-password">
                 <label for=""><input type="checkbox">Remember Me</label>
                 <a href="#">Forget Password</a>
             </div>
@@ -31,8 +45,9 @@
                 <p>Create A New Account? <a style="color:#FFA45C;" href="/Page/Login" class="register-link">Sign in</a></p>
             </div>
         </form>
-    </div>
 </div>
+</div>
+
 <style>
     body {
         font-family: Arial, sans-serif;
