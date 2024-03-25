@@ -1,83 +1,8 @@
-﻿@{
+﻿@model OnlineJwellery_Shopping.Models.Order
+@{
     ViewData["Title"] = "Order";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
-<section class="section main-section">
-
-    <div class="container">
-        <div class="row order_d_inner">
-            <div class="col-lg-4">
-                <div class="details_item">
-                    <h3>Order Info</h3>
-                    <ul class="list">
-                        <li><a href="#"><span>Order id</span>: 123456</a></li>
-                        <li><a href="#"><span>Date</span>: 2024-03-20</a></li>
-                        <li><a href="#"><span>Total</span>: $100.00</a></li>
-                        <li><a href="#"><span>Payment Method</span>: Credit Card</a></li>
-                        <li><a href="#"><span>IsPaid</span>: Yes</a></li>
-                        <li><a href="#"><span>Status</span>: Delivered</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="details_item">
-                    <h3>Customer Information</h3>
-                    <ul class="list">
-                        <li><a href="#"><span>Full Name</span>: John Doe</a></li>
-                        <li><a href="#"><span>Telephone</span>: 123-456-7890</a></li>
-                        <li><a href="#"><span>Email</span>: johndoe@example.com</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="details_item">
-                    <h3>Shipping</h3>
-                    <ul class="list">
-                        <li><a href="#"><span>Shipping method</span>: Express Shipping</a></li>
-                        <li><a href="#"><span>Address</span>: 123 Main St, City, Country</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="order_details_table">
-                <h2>Order Details</h2>
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th style="width:100px;" scope="col">ID</th>
-                                <th style="width:200px;" scope="col">Thumbnail</th>
-                                <th style="width:300px;" scope="col">Name</th>
-                                <th style="width:200px;" scope="col">Price</th>
-                                <th style="width:200px;" scope="col">Quantity</th>
-                                <th style="width:200px;" scope="col">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td><img src="thumbnail_url" width="120" /></td>
-                                <td>Product Name 1</td>
-                                <td>$50.00</td>
-                                <td>2</td>
-                                <td>$100.00</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td><img src="thumbnail_url" width="120" /></td>
-                                <td>Product Name 2</td>
-                                <td>$25.00</td>
-                                <td>1</td>
-                                <td>$25.00</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</section>
-
 <style>
     .row {
         display: -webkit-box;
@@ -95,3 +20,152 @@
         flex: 0 0 33.3333333333%;
         max-width: 33.3333333333%;
 </style>
+<section class="section main-section">
+
+    <div class="container">
+        <div class="row order_d_inner">
+            @if (Model != null)
+            {
+                <div class="col-lg-4">
+                    <div class="details_item">
+                        <h4>Order Info</h4>
+                        <ul class="list">
+                            <li><a href="#"><span>Order id</span>: @Model.OrderId</a></li>
+                            <li><a href="#"><span>Date</span>: @Model.OrderDate.ToShortDateString()</a></li>
+                            <li><a href="#"><span>Total</span>: $@Model.TotalAmount</a></li>
+                            <li><a href="#"><span>Payment Method</span>: @Model.PaymentMethod</a></li>
+                            <li><a href="#"><span>IsPaid</span>: @Model.IsPaid</a></li>
+                            <li><a href="#"><span>Status</span>: @Model.Status</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="details_item">
+                        <h3>Customer Information</h3>
+                        <ul class="list">
+                            <li><a href="#"><span>Full Name</span>: @Model.FullName</a></li>
+                            <li><a href="#"><span>Telephone</span>: @Model.Telephone</a></li>
+                            <li><a href="#"><span>Email</span>: @Model.User.Email</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="details_item">
+                        <h3>Shipping</h3>
+                        <ul class="list">
+                            <li><a href="#"><span>Shipping method</span>: @Model.ShippingMethod</a></li>
+                            <li><a href="#"><span>Address</span>: @Model.GetFullAddress()</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="order_details_table">
+                    <h2>Order Details</h2>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th style="width:100px;" scope="col">ID</th>
+                                    <th style="width:200px;" scope="col">Thumbnail </th>
+                                    <th style="width:300px;" scope="col">Name</th>
+                                    <th style="width:200px;" scope="col">Price</th>
+                                    <th style="width:200px;" scope="col">Quantity</th>
+                                    <th style="width:200px;" scope="col">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var orderProduct in Model.OrderProducts)
+                                {
+                                    <tr>
+                                        <td>@orderProduct.Product.ProductId</td>
+                                        <td><img src="@orderProduct.Product.Thumbnail" width="120" /></td>
+                                        <td>@orderProduct.Product.ProductName</td>
+                                        <td>@orderProduct.Product.Price</td>
+                                        <td>@orderProduct.Qty</td>
+                                        <td>$@(orderProduct.Product.Price * orderProduct.Qty)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <p>No order information available.</p>
+
+            }
+        </div>
+    </div>
+
+</section>
+<div>
+    <!-- Thêm input hidden để chứa giá trị returnUrl -->
+    <input type="hidden" id="returnUrl" name="returnUrl" value="@Url.Action("order", "Admin")" />
+
+    <div style="float:right; margin-top: 10px; display: flex; gap: 10px;">
+        @if (Model.Status == "cancel" || Model.Status == "complete" || Model.Status == "shipped")
+        {
+            <div>
+                <a style="padding: 5px 10px; border-radius: 5px; margin-right: 10px; background-color: red; color: white; " href="@Url.Action("order", "Admin")" class="btn btn-warning">back</a>
+            </div>
+        }
+        else if (Model.Status == "shipping")
+        {
+            <div>
+                <!-- Cập nhật form để bao gồm tham số returnUrl -->
+                <form method="post" action="@Url.Action("UpdateStatus", "Admin", new { id = Model.OrderId, status = "shipped", returnUrl = Url.Action("order", "Admin") })">
+                    @Html.AntiForgeryToken()
+                    <button onclick="return confirm('You definitely want to update the status to: Shipped')" type="submit" class="btn btn-warning" style="padding:5px 10px; border-radius:5px; margin-right:10px; background-color: orange; color: black;">
+                        Đã giao hàng
+                    </button>
+                </form>
+            </div>
+        }
+        else if (Model.Status == "confirmed")
+        {
+            <!-- Cập nhật form để bao gồm tham số returnUrl -->
+            <div>
+                <form method="post" action="@Url.Action("UpdateStatus", "Admin", new { id = Model.OrderId, status = "cancel", returnUrl = Url.Action("order", "Admin") })">
+                    @Html.AntiForgeryToken()
+                    <button onclick="return confirm('Surely you want to cancel your order')" type="submit" class="btn btn-danger" style="padding:5px 10px; border-radius:5px; margin-right:15px; background-color: red; color: white;">
+                        Huỷ
+                    </button>
+                </form>
+            </div>
+
+            <!-- Cập nhật form để bao gồm tham số returnUrl -->
+            <div>
+                <form method="post" action="@Url.Action("UpdateStatus", "Admin", new { id = Model.OrderId, status = "shipping", returnUrl = Url.Action("order", "Admin") })">
+                    @Html.AntiForgeryToken()
+                    <button onclick="return confirm('You definitely want to update the status to: Shipping')" type="submit" class="btn btn-warning" style="padding: 5px 10px; border-radius: 5px; margin-right: 15px; background-color: black; color: white;">
+                        Shipping
+                    </button>
+                </form>
+            </div>
+        }
+        else if (Model.Status == "pending")
+        {
+            <!-- Cập nhật form để bao gồm tham số returnUrl -->
+            <div>
+                <form method="post" action="@Url.Action("UpdateStatus", "Admin", new { id = Model.OrderId, status = "cancel", returnUrl = Url.Action("order", "Admin") })">
+                    @Html.AntiForgeryToken()
+                    <button onclick="return confirm('Surely you want to cancel your order')" type="submit" class="btn btn-danger" style="padding: 5px 10px; border-radius: 5px; margin-right: 10px; background-color: red; color: white;">
+                        cancel
+                    </button>
+                </form>
+            </div>
+
+            <!-- Cập nhật form để bao gồm tham số returnUrl -->
+            <div>
+                <form method="post" action="@Url.Action("UpdateStatus", "Admin", new { id = Model.OrderId, status = "confirmed", returnUrl = Url.Action("order", "Admin") })">
+                    @Html.AntiForgeryToken()
+                    <button onclick="return confirm('Surely you want to update the status to: Confirmed')" type="submit" class="btn btn-warning" style="padding: 5px 10px; border-radius: 5px; margin-right: 10px; background-color:green; color: white;">
+                        Confirmed
+                    </button>
+                </form>
+            </div>
+        }
+    </div>
+</div>
+
+

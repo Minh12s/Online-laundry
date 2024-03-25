@@ -1,11 +1,12 @@
-﻿@{
+﻿@model IEnumerable<OnlineJwellery_Shopping.Models.Order>
+@{
     ViewData["Title"] = "Order";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 <section class="is-title-bar">
     <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
         <ul>
-            <li>Admin</li>
+            <li style="margin-left:-50px;">Admin</li>
             <li>Order</li>
         </ul>
 
@@ -18,52 +19,166 @@
         </h1>
     </div>
 </section>
+<form style="display: flex; align-items: center; border-radius: 5px; margin-top: 10px; flex-wrap: wrap;" asp-action="Order" asp-controller="Admin" method="get">
+    <div class="input-group input-group-sm" style=" margin-right: 5px; margin-bottom: 10px;">
+        <input value="" class="form-control" type="text" name="ShippingMethod" placeholder="ShippingMethod" style="height: 45px; font-size: 0.765625rem; padding: 4px 8px; background-color: #F1F1F1; border-radius: 5px; width: 120px; margin-left: 28px;" />
+    </div>
+    <div class="input-group input-group-sm" style=" margin-right: 5px; margin-bottom: 10px;">
+        <input value="" class="form-control" type="text" name="TotalAmount" placeholder="Total Amount" style="height: 45px; font-size: 0.765625rem; padding: 4px 8px; background-color: #F1F1F1; border-radius: 5px; width: 120px; margin-right: -10px;" />
+    </div>
+    <div class="input-group input-group-sm" style=" margin-right: 5px; margin-bottom: 10px;">
+        <input value="" class="form-control" type="text" name="PaymentMethod" placeholder="Payment Method" style="height: 45px; font-size: 0.765625rem; padding: 4px 8px; background-color: #F1F1F1; border-radius: 5px; width: 120px; margin-left: 10px;" />
+    </div>
+    <div class="input-group input-group-sm" style=" margin-right: 5px; margin-bottom: 10px;">
+        <select value="" style="height: 45px; font-size: 0.765625rem; padding: 4px 8px; background-color: #F1F1F1; border-radius: 5px; width: 150px; margin-right: -10px;" name="IsPaid" class="form-control">
+            <option value="">Select paid</option>
+            <option value="1">paid</option>
+            <option value="0">unpaid</option>
+        </select>
+    </div>
+    <div class="input-group input-group-sm" style="margin-left:10px; margin-right: 5px; margin-bottom: 10px;">
+        <select value="" style="height: 45px; font-size: 0.765625rem; padding: 4px 8px; background-color: #F1F1F1; border-radius: 5px; width: 150px; margin-right: -10px;" name="Status" class="form-control">
+            <option value="">select status</option>
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="shipping">Shipping</option>
+            <option value="shipped">Shipped</option>
+            <option value="complete">Complete</option>
+            <option value="cancel">Cancel</option>
+        </select>
+    </div>
+    <div class="input-group input-group-sm" style="margin-left: 5px; margin-bottom: 10px;">
+        <input value="" type="text" name="search" class="form-control" placeholder="Search" style="height: 45px; font-size: 0.765625rem; padding: 4px 8px; background-color: #F1F1F1; border-radius: 5px; width: 130px; margin-left:7px;" />
+    </div>
+    <div class="input-group input-group-sm" style="margin-bottom: 10px; margin-left: -5px;">
+        <button style=" margin-left:10px; height: 45px; background-color: #F1F1F1; border: none; border-radius: 5px;" type="submit" class="btn btn-default">
+            <i class="mdi mdi-magnify" style="padding: 10px;"></i>
+        </button>
+    </div>
+</form>
+
 <section class="section main-section">
 
     <div class="card has-table">
+        <header class="card-header">
+            <p class="card-header-title">
+                @*<span class="icon"><i class="mdi mdi-shopping"></i></span>*@
 
+            </p>
+
+            <a href="#" class="card-header-icon">
+                <span class="icon"><i class="mdi mdi-reload"></i></span>
+            </a>
+        </header>
         <div class="card-content">
             <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0" id="sampleTable">
                 <thead>
                     <tr>
-                        <th>Order ID</th>
-                        <th>Order Date</th>
-                        <th>Total Amount</th>
-                        <th>Full Name</th>
-                        <th>Shipping Method</th>
-                        <th>Payment Method</th>
-                        <th>Status</th>
-                        <th>IsPaid</th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.OrderId)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.OrderDate)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.TotalAmount)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.FullName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ShippingMethod)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.PaymentMethod)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Status)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.IsPaid)
+                        </th>
+
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>2024-03-18</td>
-                        <td>$100.00</td>
-                        <td>John Doe</td>
-                        <td>Express</td>
-                        <td>COD</td>
-                        <td><span class="badge bg-primary">Confirmed</span></td>
-                        <td>unpaid</td>
-                        <td>
-                            <a asp-action="detailOrder" class="btn btn-primary" style="background-color:green; color:white;">Details</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>2024-03-19</td>
-                        <td>$80.00</td>
-                        <td>Jane Smith</td>
-                        <td>Standard</td>
-                        <td>PayPal</td>
-                        <td><span class="badge bg-info">Shipping</span></td>
-                        <td>paid</td>
-                        <td>
-                            <a asp-action="detailOrder" class="btn btn-primary" style="background-color:green; color:white;">Details</a>
-                        </td>
-                    </tr>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.OrderId)
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(modelItem => item.OrderDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.TotalAmount)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.FullName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ShippingMethod)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.PaymentMethod)
+                            </td>
+                            <td>
+                                @if (item.Status == "pending")
+                                {
+                                    <span class="badge bg-warning text-pending">
+                                        <!-- Sử dụng lớp 'text-pending' -->
+                                        @Html.DisplayFor(modelItem => item.Status)
+                                    </span>
+                                }
+                                else if (item.Status == "confirmed")
+                                {
+                                    <span class="badge bg-primary text-confirmed">
+                                        <!-- Sử dụng lớp 'text-confirmed' -->
+                                        @Html.DisplayFor(modelItem => item.Status)
+                                    </span>
+                                }
+                                else if (item.Status == "shipping")
+                                {
+                                    <span class="badge bg-info text-shipping">
+                                        <!-- Sử dụng lớp 'text-shipping' -->
+                                        @Html.DisplayFor(modelItem => item.Status)
+                                    </span>
+                                }
+                                else if (item.Status == "shipped")
+                                {
+                                    <span class="badge bg-success text-shipped">
+                                        <!-- Sử dụng lớp 'text-shipped' -->
+                                        @Html.DisplayFor(modelItem => item.Status)
+                                    </span>
+                                }
+                                else if (item.Status == "complete")
+                                {
+                                    <span class="badge bg-secondary text-complete">
+                                        <!-- Sử dụng lớp 'text-complete' -->
+                                        @Html.DisplayFor(modelItem => item.Status)
+                                    </span>
+                                }
+                                else if (item.Status == "cancel")
+                                {
+                                    <span class="badge bg-danger text-cancel">
+                                        <!-- Sử dụng lớp 'text-cancel' -->
+                                        @Html.DisplayFor(modelItem => item.Status)
+                                    </span>
+                                }
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.IsPaid)
+                            </td>
+                            <td>
+
+                                <a asp-action="detailOrder" class="btn btn-primary" style="background-color:green; color:white;" asp-route-id="@item.OrderId">Details</a>
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
 
@@ -72,18 +187,44 @@
             <div class="table-pagination">
                 <div class="flex items-center justify-between">
                     <div class="buttons">
-                        <button type="button" class="button active">1</button>
-                        <button type="button" class="button">2</button>
-                        <button type="button" class="button">3</button>
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            <button type="button" class="button @(i == ViewBag.CurrentPage ? "active" : "")" onclick="location.href='@Url.Action("Order", new { page = i })'">@i</button>
+                        }
                     </div>
-                    <small>Page 1 of 3</small>
+                    <small>Page @ViewBag.CurrentPage of @ViewBag.TotalPages</small>
                 </div>
             </div>
+
         </div>
     </div>
 
 </section>
 <style>
+    .text-pending {
+        color: orange; /* Màu chữ cho trạng thái "pending" */
+    }
+
+    .text-confirmed {
+        color: blue; /* Màu chữ cho trạng thái "confirmed" */
+    }
+
+    .text-shipping {
+        color: green; /* Màu chữ cho trạng thái "shipping" */
+    }
+
+    .text-shipped {
+        color: purple; /* Màu chữ cho trạng thái "shipped" */
+    }
+
+    .text-complete {
+        color: gray; /* Màu chữ cho trạng thái "complete" */
+    }
+
+    .text-cancel {
+        color: red; /* Màu chữ cho trạng thái "cancel" */
+    }
+
     .btn-primary {
         color: rgb(245 157 57);
         background-color: rgb(251 226 197);

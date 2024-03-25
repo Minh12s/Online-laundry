@@ -339,15 +339,116 @@ namespace OnlineJwellery_Shopping.Controllers
         }
 
         [Authentication]
-        public IActionResult Order()
+        public async Task<IActionResult> Order(int page = 1, int pageSize = 10, string TotalAmount = null, string ShippingMethod = null, string PaymentMethod = null, string IsPaid = null, string Status = null, string search = null)
         {
-            return View("OrderManagement/Order");
+            // Lấy danh sách đơn hàng từ cơ sở dữ liệu
+            var orders = _context.Order.AsQueryable();
+
+            // Áp dụng các tiêu chí lọc nếu chúng được cung cấp
+            if (!string.IsNullOrEmpty(TotalAmount))
+            {
+                decimal totalAmountValue;
+                if (decimal.TryParse(TotalAmount, out totalAmountValue))
+                {
+                    // Lọc theo TotalAmount
+                    orders = orders.Where(o => o.TotalAmount == totalAmountValue);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(ShippingMethod))
+            {
+                // Lọc theo ShippingMethod
+                orders = orders.Where(o => o.ShippingMethod == ShippingMethod);
+            }
+
+            if (!string.IsNullOrEmpty(PaymentMethod))
+            {
+                // Lọc theo PaymentMethod
+                orders = orders.Where(o => o.PaymentMethod == PaymentMethod);
+            }
+
+            if (!string.IsNullOrEmpty(IsPaid))
+            {
+                // Lọc theo trạng thái đã thanh toán (Paid/Unpaid)
+                bool isPaid = IsPaid == "1";
+                orders = orders.Where(o => o.IsPaid == (isPaid ? "paid" : "unpaid"));
+            }
+
+            if (!string.IsNullOrEmpty(Status))
+            {
+                // Lọc theo Status
+                orders = orders.Where(o => o.Status == Status);
+            }
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                // Lọc theo từ khóa tìm kiếm trong tên người đặt hàng, email hoặc các trường khác
+                orders = orders.Where(o => o.FullName.Contains(search)
+                                        || o.Email.Contains(search)
+                                        || o.TotalAmount.ToString().Contains(search)
+                                        || o.ShippingMethod.Contains(search)
+                                        || o.PaymentMethod.Contains(search)
+                                        || o.IsPaid.Contains(search)
+                                        || o.Status.Contains(search));
+            }
+
+            // Tính toán số lượng đơn hàng và số trang
+            int totalOrders = await orders.CountAsync();
+            int totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
+
+            // Phân trang
+            orders = orders.Skip((page - 1) * pageSize).Take(pageSize);
+
+            // Truyền thông tin phân trang vào ViewBag hoặc ViewModel
+            ViewBag.TotalOrders = totalOrders;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = page;
+
+            // Trả về view với danh sách đơn hàng đã lọc và phân trang
+            return View("OrderManagement/Order", await orders.ToListAsync());
+        }
+
+        [Authentication]
+        public async Task<IActionResult> detailOrder(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var order = _context.Order
+                .Include(o => o.User)
+                .Include(o => o.OrderProducts)
+                    .ThenInclude(op => op.Product)
+                .FirstOrDefault(o => o.OrderId == id);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            return View("OrderManagement/detailOrder", order);
         }
         [Authentication]
-        public IActionResult detailOrder()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateStatus(int id, string status, string returnUrl)
         {
-            return View("OrderManagement/detailOrder");
+            var order = await _context.Order.FindAsync(id);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            // Cập nhật trạng thái cho đơn hàng
+            order.Status = status;
+            _context.Update(order);
+            await _context.SaveChangesAsync();
+
+            // Chuyển hướng đến returnUrl
+            return Redirect(returnUrl);
         }
+
         [Authentication]
         public IActionResult Blog()
         {
