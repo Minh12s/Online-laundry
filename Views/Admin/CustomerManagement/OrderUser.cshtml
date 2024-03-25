@@ -1,11 +1,12 @@
-﻿@{
+﻿@model OnlineJwellery_Shopping.Models.User
+@{
     ViewData["Title"] = "Customer";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 <section class="is-title-bar">
     <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
         <ul>
-           List of orders
+            List of orders
         </ul>
 
     </div>
@@ -33,42 +34,34 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td width="10"><input type="checkbox" name="check1" value="1"></td>
-                        <td>1</td>
-                        <td>John Doe</td>
-                        <td>$100.00</td>
-                        <td><span class="badge bg-success">Delivered</span></td>
-                        <td><span>Yes</span></td>
-                        <td>2024-03-20</td>
-                        <td>
-                            <a class="btn btn-primary" style="background-color:green; color:white;" asp-action="OrderDetailsUser">OrderDetails</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td width="10"><input type="checkbox" name="check2" value="2"></td>
-                        <td>2</td>
-                        <td>Jane Smith</td>
-                        <td>$75.50</td>
-                        <td><span class="badge bg-warning">Processing</span></td>
-                        <td><span>No</span></td>
-                        <td>2024-03-21</td>
-                        <td>
-                            <a class="btn btn-primary" style="background-color:green; color:white;" asp-action="OrderDetailsUser">OrderDetails</a>
-                        </td>
-                    </tr>
+                    @foreach (var order in Model.Orders)
+                    {
+                        <tr>
+                            <td width="10"><input type="checkbox" name="check1" value="1"></td>
+                            <td>@order.OrderId</td>
+                            <td>@Model.Username</td>
+                            <td>@order.TotalAmount $</td>
+                            <td><span class="badge bg-success">@order.Status</span></td>
+                            <td><span>@order.IsPaid</span></td>
+                            <td>@order.OrderDate</td>
+                            <td>
+                                <a class="btn btn-primary" style="background-color:green; color:white;" asp-action="OrderDetailsUser" asp-route-id="@order.OrderId">OrderDetails</a>
+                            </td>
+                        </tr>
+
+                    }
                 </tbody>
             </table>
 
         </div>
     </div>
-  
+
 
 </section>
-  <div class="edit-back-links">
+<div class="edit-back-links">
 
-        <a class="btn btn-secondary" asp-action="customer" style="background-color:black; color:white;">Back to List</a>
-    </div>
+    <a class="btn btn-secondary" asp-action="customer" style="background-color:black; color:white;">Back to List</a>
+</div>
 <style>
     .btn-primary {
         color: rgb(245 157 57);
@@ -83,7 +76,6 @@
     }
 
     .btn-secondary {
-       
         border-color: none;
         /* border-top-left-radius: 10px !important; */
         /* border-bottom-right-radius: 10px !important; */
@@ -91,10 +83,7 @@
         border: none;
         font-weight: 600;
         padding: 10px 20px; /* Điều chỉnh kích thước theo ý muốn */
-        margin-left:20px;
+        margin-left: 20px;
     }
-
-   
-  
 
 </style>

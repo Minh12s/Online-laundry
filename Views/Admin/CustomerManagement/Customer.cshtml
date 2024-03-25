@@ -1,4 +1,8 @@
-﻿@{
+﻿@model IEnumerable<OnlineJwellery_Shopping.Models.User>
+
+
+
+@{
     ViewData["Title"] = "Customer";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
@@ -8,7 +12,7 @@
             <li>Admin</li>
             <li>Customer</li>
         </ul>
-       
+
     </div>
 </section>
 <section class="is-hero-bar">
@@ -19,48 +23,70 @@
     </div>
 </section>
 <section class="section main-section">
-   
+
     <div class="card has-table">
-       
+
         <div class="card-content">
             <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0" id="sampleTable">
                 <thead>
                     <tr>
                         <th width="10"><input type="checkbox" id="all"></th>
-                        <th>UserId</th>
+                        <th>
+                            UserId
+                        </th>
                         <th>Username</th>
+                        <th>Thumbnail</th>
                         <th>Email</th>
+                        <th>Address</th>
+                        <th>PhoneNumber</th>
+
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td width="10"><input type="checkbox" name="check1" value="1"></td>
-                        <td>1</td>
-                        <td>JohnDoe</td>
-                        <td>johndoe@example.com</td>
-                        <td>
-                            <a href="/Admin/OrderUser" class="btn btn-primary" style="background-color:green; color:white;">Order</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td width="10"><input type="checkbox" name="check1" value="1"></td>
-                        <td>2</td>
-                        <td>JaneSmith</td>
-                        <td>janesmith@example.com</td>
-                        <td>
-                            <a href="/Admin/OrderUser" class="btn btn-primary" style="background-color:green; color:white;">Order</a>
-                        </td>
-                    </tr>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td width="10"><input type="checkbox" name="check1" value="1"></td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UserId)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Username)
+                            </td>
+                            <td>
+
+                                <img src="@item.Thumbnail" width="100" height="100" />
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Email)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Address)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.PhoneNumber)
+                            </td>
+                            <td>
+                                <a asp-action="OrderUser" asp-route-id="@item.UserId" class="btn btn-primary" style="background-color:green; color:white;">Order</a>
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
 
             <div class="table-pagination">
                 <div class="flex items-center justify-between">
-                    <div class="buttons">
-                        <button type="button" class="button active">1</button>
-                        <button type="button" class="button">2</button>
-                        <button type="button" class="button">3</button>
+                    <div class="buttons ">
+
+                        @if (ViewBag.TotalUsers > 0)
+                        {
+                            for (int i = 1; i <= (int)ViewBag.TotalPages; i++)
+                            {
+                                <a href="@Url.Action("Customer", new { page = i })" class="page-link">@i</a>
+                            }
+                        }
+
                     </div>
                     <small>Page 1 of 3</small>
                 </div>
@@ -81,4 +107,18 @@
         font-weight: 600;
         padding: 5px 20px; /* Điều chỉnh kích thước theo ý muốn */
     }
+
+    .page-link {
+        padding: 5px 10px; /* Có thể điều chỉnh kích thước của nút */
+        border: 1px solid #ccc; /* Thêm đường viền */
+        border-radius: 3px; /* Bo tròn góc */
+        margin-right: 5px; /* Khoảng cách giữa các nút */
+        text-decoration: none; /* Loại bỏ gạch chân mặc định */
+        color: #333; /* Màu chữ */
+    }
+
+        .page-link:hover {
+            background-color: #f0f0f0; /* Màu nền khi hover */
+        }
+
 </style>

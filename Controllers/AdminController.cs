@@ -30,19 +30,73 @@ namespace OnlineJwellery_Shopping.Controllers
             return View("DashboardAdmin/Dashboard");
         }
         [Authentication]
-        public IActionResult Customer()
+        // Customer Management
+        public async Task<IActionResult> Customer(int? page)
         {
-            return View("CustomerManagement/Customer");
+            int pageSize = 1; // Số lượng người dùng mỗi trang
+            int pageNumber = page ?? 1; // Trang hiện tại, mặc định là trang 1 nếu không có page được cung cấp
+
+            if (_context.User != null)
+            {
+                // Lấy tổng số người dùng từ cơ sở dữ liệu
+                int totalUsers = await _context.User.CountAsync();
+
+                // Phân trang danh sách người dùng
+                var userList = await _context.User.Skip((pageNumber - 1) * pageSize)
+                                                  .Take(pageSize)
+                                                  .ToListAsync();
+
+                // Chuyển thông tin phân trang vào ViewBag
+                ViewBag.CurrentPage = pageNumber;
+                ViewBag.TotalPages = (int)Math.Ceiling((double)totalUsers / pageSize);
+                ViewBag.TotalUsers = totalUsers;
+                return View("CustomerManagement/Customer", userList);
+            }
+            else
+            {
+                return Problem("Entity set 'OgainShopContext.User' is null.");
+            }
+        }
+
+        [Authentication]
+        public IActionResult OrderUser(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound(); // Trả về lỗi 404 nếu không có ID người dùng
+            }
+
+            // Lấy thông tin người dùng từ cơ sở dữ liệu dựa trên id
+            var user = _context.User.Include(u => u.Orders).FirstOrDefault(u => u.UserId == id);
+
+            if (user == null)
+            {
+                return NotFound(); // Trả về lỗi 404 nếu không tìm thấy người dùng
+            }
+
+            return View("CustomerManagement/OrderUser", user);
         }
         [Authentication]
-        public IActionResult OrderUser()
+        public IActionResult OrderDetailsUser(int? id)
         {
-            return View("CustomerManagement/OrderUser");
-        }
-        [Authentication]
-        public IActionResult OrderDetailsUser()
-        {
-            return View("CustomerManagement/OrderDetailsUser");
+            if (id == null)
+            {
+                return NotFound(); // Trả về lỗi 404 nếu không có ID đơn hàng
+            }
+
+            // Lấy thông tin đơn hàng từ cơ sở dữ liệu dựa trên id và nạp thông tin User và OrderProducts
+            var order = _context.Order
+                .Include(o => o.User)
+                .Include(o => o.OrderProducts)
+                    .ThenInclude(op => op.Product) // Nạp thông tin sản phẩm cho từng OrderProduct
+                .FirstOrDefault(o => o.OrderId == id);
+
+            if (order == null)
+            {
+                return NotFound(); // Trả về lỗi 404 nếu không tìm thấy đơn hàng
+            }
+
+            return View("CustomerManagement/OrderDetailsUser", order);
         }
         [Authentication]
         // Product Management
