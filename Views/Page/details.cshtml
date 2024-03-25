@@ -2,6 +2,10 @@
     Layout = "~/Views/Shared/User_Layout.cshtml";
     ViewData["Title"] = "Details";
 }
+@{
+    var isFavorite = false; // Biến này sẽ đại diện cho trạng thái yêu thích của sản phẩm
+    var favoriteIcon = User.Identity.IsAuthenticated ? "fa-solid fa-heart" : "fa-regular fa-heart"; // Xác định biểu tượng yêu thích ban đầu dựa trên việc người dùng đã đăng nhập hay chưa
+}
 <style>
     .alert {
         text-align: center;
@@ -119,6 +123,61 @@
                     </li>
 
                 </ul>
+                <form method="post" class="favoriteForm" asp-action="AddToFavorite" asp-controller="Favorite">
+                    <span style="margin-top: 15px; margin-left: 5px;">Favorite</span>
+
+                    <input type="hidden" name="productId" value="@ViewBag.ProductId" />
+
+                    <button type="button" style="border:1px solid white;" class="heart-icon">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <i class="heartIcon fa-solid fa-heart fa-xl" style="color: red; float: left; margin-right: 10px; margin-top: 15px"></i>
+                        }
+                        else
+                        {
+                            <i class="heartIcon fa-regular fa-heart fa-xl" style="color: red; float: left; margin-right: 10px; margin-top: 15px"></i>
+                        }
+                    </button>
+                </form>
+
+                <script>
+                    document.querySelectorAll('.favoriteForm').forEach(form => {
+                        var heartButton = form.querySelector('.heart-icon');
+                        var heartIcon = heartButton.querySelector('.heartIcon');
+
+                        // Kiểm tra xem trạng thái của trái tim đã được lưu trong sessionStorage chưa
+                        var productId = form.querySelector('input[name="productId"]').value;
+                        var savedHeartIcon = sessionStorage.getItem('heartIcon_' + productId);
+                        if (savedHeartIcon === 'fa-solid') {
+                            heartIcon.classList.add('fa-solid');
+                            heartIcon.classList.remove('fa-regular');
+                        }
+
+                        // Xử lý sự kiện khi người dùng nhấp vào nút trái tim
+                        heartButton.addEventListener('click', function () {
+                            if (heartIcon.classList.contains('fa-regular')) {
+                                // Thêm lớp fa-solid nếu người dùng chưa thêm vào mục yêu thích
+                                heartIcon.classList.remove('fa-regular');
+                                heartIcon.classList.add('fa-solid');
+                                // Lưu trạng thái vào sessionStorage
+                                sessionStorage.setItem('heartIcon_' + productId, 'fa-solid');
+                            } else {
+                                // Xóa lớp fa-solid nếu người dùng đã thêm vào mục yêu thích
+                                heartIcon.classList.remove('fa-solid');
+                                heartIcon.classList.add('fa-regular');
+                                // Xóa trạng thái khỏi sessionStorage
+                                sessionStorage.removeItem('heartIcon_' + productId);
+                            }
+                            // Sau đó, gửi biểu mẫu
+                            form.submit();
+                        });
+                    });
+                </script>
+
+
+
+
+
                 <div class="row mt-4">
                     <div class="w-100"></div>
                     @if (ViewBag.ProductAvailability > 0)
@@ -161,14 +220,18 @@
                                     </button>
                                 </span>
                             </div>
+
+                          
                             <div class="w-100"></div>
                             <div class="col-md-12">
                                 <p style="color: #000;">The product is out of stock</p>
                             </div>
+
                             <input type="submit" class="btn btn-primary py-3 px-5" value="ADD TO CART">
                         </form>
                     }
                 </div>
+
 
 
             </div>
@@ -260,4 +323,11 @@
         });
 
     });</script>
+<style>
+    .IYjGwk {
+        border: none; /* Xóa viền của nút */
+    }
+</style>
+
+
 

@@ -2,6 +2,9 @@
     Layout = "~/Views/Shared/User_Layout.cshtml";
     ViewData["Title"] = "Favorite";
 }
+
+@model List<OnlineJwellery_Shopping.Models.Favorite>
+
 <div class="hero-wrap hero-bread" style="background-image: url('/images/anhbg1.jpg');">
     <div class="container">
         <div class="row no-gutters slider-text align-items-center justify-content-center">
@@ -17,6 +20,8 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12 ftco-animate">
+                @if (Model != null && Model.Any())
+                {
                 <div class="cart-list">
                     <table class="table">
                         <thead class="thead-primary">
@@ -29,40 +34,56 @@
                             </tr>
                         </thead>
                         <tbody>
+                             @foreach (var favorite in Model)
+                             {
                             <tr class="text-center">
-                                <td class="product-remove"><a href="#"><span class="ion-ios-close"></span></a></td>
+                           
+                                <td class="product-remove">
+                                      <form method="post" asp-controller="Favorite" asp-action="RemoveFromFavorites" asp-route-favoriteId="@favorite.FavoriteId">
+                                                <button style="width: 30px; height: 30px; background-color: white; border: 1px solid #ccc; border-radius: 0;" type="submit" class="btn btn-danger">
+                                                    <span class="ion-ios-close"></span>
+                                                </button>
+                                       </form>
+                                 </td>
 
-                                <td class="image-prod"><div class="img" style="background-image: url(/images/product-31.jpg);"></div></td>
-
-                                <td class="product-name">
-                                    <h3>Young Woman Wearing Dress</h3>
-                                    <p>Far far away, behind the word mountains, far from the countries</p>
+                                <td class="image-prod">
+                                <img src="@favorite.Thumbnail" alt="" style="width:150px; height:150px;">
                                 </td>
 
-                                <td class="price">$4.90</td>
+                                <td class="product-name">
+                                   <h3><a style="color:black;" href="@Url.Action("Details", "Page", new { id = favorite.ProductId })">@favorite.ProductName</a></h3>
+                                   
+                                </td>
+
+                                        <td class="price">
+                                            $@favorite.Price
+                                        </td>
 
                              
                             </tr><!-- END TR-->
-
-                            <tr class="text-center">
-                                <td class="product-remove"><a href="#"><span class="ion-ios-close"></span></a></td>
-
-                                <td class="image-prod"><div class="img" style="background-image: url(/images/product-42.jpg);"></div></td>
-
-                                <td class="product-name">
-                                    <h3>Young Woman Wearing Dress</h3>
-                                    <p>Far far away, behind the word mountains, far from the countries</p>
-                                </td>
-
-                                <td class="price">$15.70</td>
-
-                             
-                            </tr><!-- END TR-->
+                                }
                         </tbody>
                     </table>
                 </div>
+                 }
+                    else
+                    {
+                        <!-- Hiển thị thông báo khi không có sản phẩm yêu thích -->
+                        <p>Không có sản phẩm yêu thích.</p>
+                    }
             </div>
         </div>
-      
+        <div class="shoping__cart__btns d-flex justify-content-between">
+            <p class="mb-0">
+                <button style="border: 1px solid white; background-color:white; width:200px;" type="submit" class="primary-btn cart-btn" href="#">CONTINUE SHOPPING</button>
+            </p>
+            <form method="post" asp-controller="Favorite" asp-action="ClearFavorites">
+                <button style="border: 1px solid white; background-color:white; width:200px;" type="submit" class="primary-btn cart-btn">
+                    <span class="icon_loading"></span>
+                    CLEAR Favorites
+                </button>
+            </form>
+        </div>
+
     </div>
 </section>
