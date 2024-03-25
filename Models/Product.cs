@@ -21,7 +21,7 @@ namespace OnlineJwellery_Shopping.Models
         public string Size { get; set; }
         public string Material { get; set; }
         public string CertificationCode { get; set; }
-       
+
 
         // Navigation properties
         public Category Category { get; set; }
