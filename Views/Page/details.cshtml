@@ -129,14 +129,7 @@
                     <input type="hidden" name="productId" value="@ViewBag.ProductId" />
 
                     <button type="button" style="border:1px solid white;" class="heart-icon">
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <i class="heartIcon fa-solid fa-heart fa-xl" style="color: red; float: left; margin-right: 10px; margin-top: 15px"></i>
-                        }
-                        else
-                        {
-                            <i class="heartIcon fa-regular fa-heart fa-xl" style="color: red; float: left; margin-right: 10px; margin-top: 15px"></i>
-                        }
+                        <i class="heartIcon fa fa-heart fa-xl" style="color: red; float: left; margin-right: 10px; margin-top: 15px"></i>
                     </button>
                 </form>
 
@@ -148,23 +141,20 @@
                         // Kiểm tra xem trạng thái của trái tim đã được lưu trong sessionStorage chưa
                         var productId = form.querySelector('input[name="productId"]').value;
                         var savedHeartIcon = sessionStorage.getItem('heartIcon_' + productId);
-                        if (savedHeartIcon === 'fa-solid') {
-                            heartIcon.classList.add('fa-solid');
-                            heartIcon.classList.remove('fa-regular');
+                        if (savedHeartIcon === 'filled') {
+                            heartIcon.classList.add('fas');
                         }
 
                         // Xử lý sự kiện khi người dùng nhấp vào nút trái tim
                         heartButton.addEventListener('click', function () {
-                            if (heartIcon.classList.contains('fa-regular')) {
-                                // Thêm lớp fa-solid nếu người dùng chưa thêm vào mục yêu thích
-                                heartIcon.classList.remove('fa-regular');
-                                heartIcon.classList.add('fa-solid');
+                            if (!heartIcon.classList.contains('fas')) {
+                                // Thêm lớp fas nếu người dùng chưa thêm vào mục yêu thích
+                                heartIcon.classList.add('fas');
                                 // Lưu trạng thái vào sessionStorage
-                                sessionStorage.setItem('heartIcon_' + productId, 'fa-solid');
+                                sessionStorage.setItem('heartIcon_' + productId, 'filled');
                             } else {
-                                // Xóa lớp fa-solid nếu người dùng đã thêm vào mục yêu thích
-                                heartIcon.classList.remove('fa-solid');
-                                heartIcon.classList.add('fa-regular');
+                                // Xóa lớp fas nếu người dùng đã thêm vào mục yêu thích
+                                heartIcon.classList.remove('fas');
                                 // Xóa trạng thái khỏi sessionStorage
                                 sessionStorage.removeItem('heartIcon_' + productId);
                             }
