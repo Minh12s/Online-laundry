@@ -2,6 +2,13 @@
     Layout = "~/Views/Shared/User_Layout.cshtml";
     ViewData["Title"] = "Contact";
 }
+<style>
+    .alert {
+        text-align: center;
+        margin: 20px auto;
+        width: 100%; /* Điều chỉnh độ rộng của thông báo tùy theo nhu cầu */
+    }
+</style>
 <div class="hero-wrap hero-bread" style="background-image: url('/images/anhbg1.jpg');">
     <div class="container">
         <div class="row no-gutters slider-text align-items-center justify-content-center">
@@ -12,7 +19,12 @@
         </div>
     </div>
 </div>
-
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["Message"]
+    </div>
+}
 <section class="ftco-section contact-section bg-light">
     <div class="container">
         <div class="row d-flex mb-5 contact-info">
@@ -40,21 +52,20 @@
         </div>
         <div class="row block-9">
             <div class="col-md-6 order-md-last d-flex">
-                <form action="#" class="bg-white p-5 contact-form">
+                <form asp-controller="Page" asp-action="Contact" method="post" class="bg-white p-5 contact-form">
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Your Name">
+                        <input type="text" name="name" class="form-control" placeholder="Your Name">
                     </div>
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Your Email">
+                        <input type="text" name="email" class="form-control" placeholder="Your Email">
                     </div>
+                
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Subject">
-                    </div>
-                    <div class="form-group">
-                        <textarea name="" id="" cols="30" rows="7" class="form-control" placeholder="Message"></textarea>
+                        <textarea name="message" id="" cols="30" rows="7" class="form-control" placeholder="Message"></textarea>
                     </div>
                     <div class="form-group">
                         <input type="submit" value="Send Message" class="btn btn-primary py-3 px-5">
+                           
                     </div>
                 </form>
 

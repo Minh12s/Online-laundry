@@ -446,7 +446,8 @@ namespace OnlineJwellery_Shopping.Controllers
                                         || o.IsPaid.Contains(search)
                                         || o.Status.Contains(search));
             }
-
+            // Sắp xếp theo OrderDate mới nhất
+            orders = orders.OrderByDescending(o => o.OrderDate);
             // Tính toán số lượng đơn hàng và số trang
             int totalOrders = await orders.CountAsync();
             int totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
@@ -462,6 +463,7 @@ namespace OnlineJwellery_Shopping.Controllers
             // Trả về view với danh sách đơn hàng đã lọc và phân trang
             return View("OrderManagement/Order", await orders.ToListAsync());
         }
+
 
         [Authentication]
         public async Task<IActionResult> detailOrder(int? id)

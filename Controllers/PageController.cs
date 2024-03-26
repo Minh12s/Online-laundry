@@ -57,6 +57,7 @@ namespace OnlineJwellery_Shopping.Controllers
                 return NotFound();
             }
 
+            // Lấy các sản phẩm liên quan
             var relatedProducts = await db.Product
                 .Where(p => p.CategoryId == product.CategoryId && p.ProductId != product.ProductId)
                 .Take(4) // Số lượng sản phẩm liên quan bạn muốn hiển thị
@@ -90,6 +91,7 @@ namespace OnlineJwellery_Shopping.Controllers
 
             return View(product);
         }
+
 
 
         public async Task<IActionResult> Category(int page = 1, int pageSize = 9, decimal? minPrice = null, decimal? maxPrice = null)
@@ -197,6 +199,48 @@ namespace OnlineJwellery_Shopping.Controllers
         {
             // kế thừa các logic chung từ BaseController
             await SetCommonViewData();
+            return View();
+        }
+        [Authentication]
+        [HttpPost]
+        public async Task<IActionResult> Contact(string name, string email, string message)
+        {
+
+            string smtpServer = _configuration["EmailSettings:SmtpServer"];
+            int port = _configuration.GetValue<int>("EmailSettings:Port");
+            string username = _configuration["EmailSettings:Username"];
+            string password = _configuration["EmailSettings:Password"];
+
+            var smtpClient = new SmtpClient(smtpServer)
+            {
+                Port = port,
+                Credentials = new NetworkCredential(username, password),
+                EnableSsl = true
+            };
+
+            var mailMessage = new MailMessage
+            {
+                From = new MailAddress(email),
+                Subject = "New Message from Your Website",
+                Body = $"Name: {name}\nEmail: {email}\nMessage: {message}"
+            };
+
+            mailMessage.To.Add("dungprohn1409@gmail.com"); // Thay đổi địa chỉ email của người nhận
+
+            try
+            {
+                await smtpClient.SendMailAsync(mailMessage);
+
+                // Thông báo gửi email thành công
+                TempData["Message"] = "Information has been sent successfully!!";
+            }
+            catch (Exception ex)
+            {
+                // Xử lý lỗi nếu gửi email thất bại
+                ViewBag.ErrorMessage = $"Failed to send message: {ex.Message}";
+            }
+
+            // Chuyển hướng về trang Contact
             return View();
         }
         [Authentication]

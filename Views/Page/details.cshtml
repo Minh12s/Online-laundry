@@ -12,18 +12,21 @@
         margin: 20px auto;
         width: 100%; /* Điều chỉnh độ rộng của thông báo tùy theo nhu cầu */
     }
+
         .alert.error {
             background-color: red;
-            color:white;
+            color: white;
         }
+
         .alert.success {
             background-color: green;
-            color:white;
+            color: white;
         }
-        .details-list {
-            list-style-type: none;
-            padding: 0;
-        }
+
+    .details-list {
+        list-style-type: none;
+        padding: 0;
+    }
 
         .details-list li {
             display: flex;
@@ -133,8 +136,7 @@
                     </button>
                 </form>
 
-                <script>
-                    document.querySelectorAll('.favoriteForm').forEach(form => {
+                <script>document.querySelectorAll('.favoriteForm').forEach(form => {
                         var heartButton = form.querySelector('.heart-icon');
                         var heartIcon = heartButton.querySelector('.heartIcon');
 
@@ -161,8 +163,7 @@
                             // Sau đó, gửi biểu mẫu
                             form.submit();
                         });
-                    });
-                </script>
+                    });</script>
 
 
 
@@ -211,7 +212,7 @@
                                 </span>
                             </div>
 
-                          
+
                             <div class="w-100"></div>
                             <div class="col-md-12">
                                 <p style="color: #000;">The product is out of stock</p>
@@ -249,7 +250,7 @@
                             <div class="overlay"></div>
                         </a>
                         <div class="text py-3 px-3">
-                            <h3><a href="@Url.Action("Details", "Page", new { id = relatedProduct.ProductId })">@relatedProduct.ProductName</a></h3>
+                            <h3><a href="@Url.Action("Details", "Page", new { slug = relatedProduct.Slug })">@relatedProduct.ProductName</a></h3>
                             <div class="d-flex">
                                 <div class="pricing">
                                     <p class="price">$@relatedProduct.Price</p>
@@ -260,6 +261,7 @@
                 </div>
             }
         </div>
+
     </div>
 </section>
 
@@ -318,6 +320,5 @@
         border: none; /* Xóa viền của nút */
     }
 </style>
-
 
 
