@@ -13,6 +13,7 @@ using System.Net;
 using System.Net.Mail;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using static NuGet.Packaging.PackagingConstants;
+using System.IO;
 
 namespace OnlineJwellery_Shopping.Controllers
 {
@@ -502,11 +503,153 @@ namespace OnlineJwellery_Shopping.Controllers
             // Chuyển hướng đến returnUrl
             return Redirect(returnUrl);
         }
+        public async Task<IActionResult> Blog(int? page)
+        {
+            int pageSize = 10; // Số lượng bài đăng mỗi trang
+            int pageNumber = page ?? 1; // Trang hiện tại, mặc định là trang 1 nếu không có page được cung cấp
+
+            // Lấy tổng số bài đăng từ cơ sở dữ liệu
+            int totalBlogs = await _context.Blog.CountAsync();
+
+            // Phân trang danh sách bài đăng
+            var blogs = await _context.Blog.Skip((pageNumber - 1) * pageSize)
+                                           .Take(pageSize)
+                                           .ToListAsync();
+
+            // Chuyển thông tin phân trang vào ViewBag
+            ViewBag.CurrentPage = pageNumber;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalBlogs / pageSize);
+            ViewBag.TotalBlogs = totalBlogs;
+
+            return View("BlogManagement/Blog", blogs);
+        }
+    
+
+
+    [Authentication]
+        [HttpGet]
+        public async Task<IActionResult> editBlog(int id)
+        {
+            var blog = await _context.Blog.FindAsync(id);
+
+            if (blog == null)
+            {
+                return NotFound();
+            }
+
+            return View("BlogManagement/editBlog", blog);
+        }
 
         [Authentication]
-        public IActionResult Blog()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> editBlog(Blog model, IFormFile thumbnail)
         {
-            return View("BlogManagement/Blog");
+            if (true)
+            {
+                if (thumbnail != null && thumbnail.Length > 0)
+                {
+                    // Nếu có ảnh đại diện mới được cung cấp, hãy cập nhật nó
+                    var uploadsFolder = Path.Combine("wwwroot", "images", "Blogs");
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+
+                    var imagePath = Path.Combine(uploadsFolder, Guid.NewGuid().ToString() + "_" + thumbnail.FileName);
+                    using (var stream = new FileStream(imagePath, FileMode.Create))
+                    {
+                        await thumbnail.CopyToAsync(stream);
+                    }
+
+                    model.Thumbnail = "/images/Blogs/" + Path.GetFileName(imagePath);
+                }
+                else
+                {
+                    // Nếu không có ảnh đại diện mới được cung cấp, giữ giá trị hiện tại
+                    var existingBlog = await _context.Blog.AsNoTracking().FirstOrDefaultAsync(b => b.Id == model.Id);
+                    if (existingBlog != null)
+                    {
+                        model.Thumbnail = existingBlog.Thumbnail;
+                    }
+                }
+
+                model.BlogDate = DateTime.Now;
+
+                _context.Update(model);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Blog));
+            }
+
+            return View(model);
         }
+
+        public IActionResult addBlog()
+        {
+            return View("BlogManagement/addBlog");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> addBlog(Blog model, IFormFile thumbnail)
+        {
+            if (true)
+            {
+                if (thumbnail != null && thumbnail.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine("wwwroot", "images","Blogs");
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+
+                    var imagePath = Path.Combine(uploadsFolder, Guid.NewGuid().ToString() + "_" + thumbnail.FileName);
+                    using (var stream = new FileStream(imagePath, FileMode.Create))
+                    {
+                        await thumbnail.CopyToAsync(stream);
+                    }
+
+                    model.Thumbnail = "/images/Blogs/" + Path.GetFileName(imagePath);
+
+                }
+
+                model.BlogDate = DateTime.Now;
+               
+
+                _context.Add(model);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Blog));
+            }
+
+            return View(model);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> deleteBlog(int id)
+        {
+            var blog = await _context.Blog.FindAsync(id);
+
+            if (blog == null)
+            {
+                return NotFound();
+            }
+
+            // Xóa ảnh đại diện của blog khỏi thư mục
+            if (!string.IsNullOrEmpty(blog.Thumbnail))
+            {
+                var imagePath = Path.Combine("wwwroot", blog.Thumbnail.TrimStart('/'));
+                if (System.IO.File.Exists(imagePath))
+                {
+                    System.IO.File.Delete(imagePath);
+                }
+            }
+
+            _context.Blog.Remove(blog);
+            await _context.SaveChangesAsync();
+
+            // Chuyển hướng về trang BlogManagement/Blog
+            return RedirectToAction("Blog", "Admin");
+        }
+
     }
 }

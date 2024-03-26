@@ -61,7 +61,7 @@
                                     {
                                         for (int i = 1; i <= ViewBag.TotalPages; i++)
                                         {
-                                            <a href="@Url.Action("Shop", new { page = i })">@i</a>
+                                            <a href="@Url.Action("Shop", new { slug = ViewBag.CategorySlug, page = i })">@i</a>
                                         }
                                     }
                                 </li>
@@ -69,6 +69,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
 
             <div class="col-md-4 col-lg-2 sidebar">
@@ -77,10 +78,11 @@
                     <ul>
                         @foreach (var category in ViewBag.Categories)
                         {
-                            <li><a asp-controller="Page" asp-action="Shop" asp-route-id="@category.CategoryId">@category.CategoryName</a></li>
+                            <li><a asp-controller="Page" asp-action="Shop" asp-route-slug="@category.Slug">@category.CategoryName</a></li>
                         }
                     </ul>
                 </div>
+
                 <div class="sidebar-box-2">
                     <h2 class="heading mb-4"><a href="#">Jeans</a></h2>
                     <ul>

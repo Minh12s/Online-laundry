@@ -1,4 +1,5 @@
-﻿@{
+﻿@model List<OnlineJwellery_Shopping.Models.Blog>
+@{
     Layout = "~/Views/Shared/User_Layout.cshtml";
     ViewData["Title"] = "Blog";
 }
@@ -18,103 +19,48 @@
         <div class="row">
             <div class="col-lg-8 ftco-animate">
                 <div class="row">
-                    <div class="col-md-12 d-flex ftco-animate">
-                        <div class="blog-entry align-self-stretch d-md-flex">
-                            <a href="blog-single.html" class="block-20" style="background-image: url('/images/product-22.jpg');">
-                            </a>
-                            <div class="text d-block pl-md-4">
-                                <div class="meta mb-3">
-                                    <div><a href="#">April 9, 2019</a></div>
-                                    <div><a href="#">Admin</a></div>
-                                    <div><a href="#" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
+                    @if (Model != null)
+                    {
+                        @foreach (var blog in Model)
+                        {
+                            <div class="col-md-12 d-flex ftco-animate">
+                                <div class="blog-entry align-self-stretch d-md-flex">
+                                    <a href="blog-single.html" class="block-20" style="background-image: url('@blog.Thumbnail');">
+                                    </a>
+                                    <div class="text d-block pl-md-4">
+                                        <div class="meta mb-3">
+                                            <div><a href="#">@blog.BlogDate.ToString("MMMM d, yyyy")</a></div>
+                                            <div><a href="#">Admin</a></div>
+                                            <div><a href="#" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
+                                        </div>
+                                        <h3 class="heading"><a href="#">@blog.Title</a></h3>
+                                        <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
+                                        <p><a href="/Page/BlogDetails/@blog.Id" class="btn btn-primary py-2 px-3">Read more</a></p>
+                                    </div>
+
                                 </div>
-                                <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about the blind texts</a></h3>
-                                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-                                <p><a href="/Page/BlogDetails" class="btn btn-primary py-2 px-3">Read more</a></p>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-md-12 d-flex ftco-animate">
-                        <div class="blog-entry align-self-stretch d-md-flex">
-                            <a href="blog-single.html" class="block-20" style="background-image: url('/images/product-23.jpg');">
-                            </a>
-                            <div class="text d-block pl-md-4">
-                                <div class="meta mb-3">
-                                    <div><a href="#">April 9, 2019</a></div>
-                                    <div><a href="#">Admin</a></div>
-                                    <div><a href="#" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
-                                </div>
-                                <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about the blind texts</a></h3>
-                                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-                                <p><a href="blog-single.html" class="btn btn-primary py-2 px-3">Read more</a></p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-12 d-flex ftco-animate">
-                        <div class="blog-entry align-self-stretch d-md-flex">
-                            <a href="blog-single.html" class="block-20" style="background-image: url('/images/product-25.jpg');">
-                            </a>
-                            <div class="text d-block pl-md-4">
-                                <div class="meta mb-3">
-                                    <div><a href="#">April 9, 2019</a></div>
-                                    <div><a href="#">Admin</a></div>
-                                    <div><a href="#" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
-                                </div>
-                                <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about the blind texts</a></h3>
-                                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-                                <p><a href="blog-single.html" class="btn btn-primary py-2 px-3">Read more</a></p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-12 d-flex ftco-animate">
-                        <div class="blog-entry align-self-stretch d-md-flex">
-                            <a href="blog-single.html" class="block-20" style="background-image: url('/images/product-29.jpg');">
-                            </a>
-                            <div class="text d-block pl-md-4">
-                                <div class="meta mb-3">
-                                    <div><a href="#">April 9, 2019</a></div>
-                                    <div><a href="#">Admin</a></div>
-                                    <div><a href="#" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
-                                </div>
-                                <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about the blind texts</a></h3>
-                                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-                                <p><a href="blog-single.html" class="btn btn-primary py-2 px-3">Read more</a></p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-12 d-flex ftco-animate">
-                        <div class="blog-entry align-self-stretch d-md-flex">
-                            <a href="blog-single.html" class="block-20" style="background-image: url('/images/product-33.jpg');">
-                            </a>
-                            <div class="text d-block pl-md-4">
-                                <div class="meta mb-3">
-                                    <div><a href="#">April 9, 2019</a></div>
-                                    <div><a href="#">Admin</a></div>
-                                    <div><a href="#" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
-                                </div>
-                                <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about the blind texts</a></h3>
-                                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-                                <p><a href="blog-single.html" class="btn btn-primary py-2 px-3">Read more</a></p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-12 d-flex ftco-animate">
-                        <div class="blog-entry align-self-stretch d-md-flex">
-                            <a href="blog-single.html" class="block-20" style="background-image: url('/images/product-37.jpg');">
-                            </a>
-                            <div class="text d-block pl-md-4">
-                                <div class="meta mb-3">
-                                    <div><a href="#">April 9, 2019</a></div>
-                                    <div><a href="#">Admin</a></div>
-                                    <div><a href="#" class="meta-chat"><span class="icon-chat"></span> 3</a></div>
-                                </div>
-                                <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control about the blind texts</a></h3>
-                                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-                                <p><a href="blog-single.html" class="btn btn-primary py-2 px-3">Read more</a></p>
-                            </div>
+                        }
+                    }
+                </div>
+                <div class="row mt-5">
+                    <div class="col text-center">
+                        <div class="block-27">
+                            <ul>
+                                <li>
+                                    @if (ViewBag.TotalPages > 0)
+                                    {
+                                        for (int i = 1; i <= ViewBag.TotalPages; i++)
+                                        {
+                                            <a href="@Url.Action("Blog", new { page = i })">@i</a>
+                                        }
+                                    }
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
+
             </div> <!-- .col-md-8 -->
             <div class="col-lg-4 sidebar ftco-animate">
                 <div class="sidebar-box">

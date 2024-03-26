@@ -39,24 +39,26 @@ namespace OnlineJwellery_Shopping.Controllers
             return View();
         }
         [Authentication]
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(string slug)
         {
-            // kế thừa các logic chung từ BaseController
+            // Kế thừa các logic chung từ BaseController
             await SetCommonViewData();
-            // Lấy chi tiết sản phẩm từ cơ sở dữ liệu dựa trên ID được cung cấp
-            var product = await db.Product.Include(p => p.Category)
-                                           .Include(p => p.Brand)
-                                           .Include(p => p.GoldAge)
-                                           .FirstOrDefaultAsync(p => p.ProductId == id);
+
+            // Lấy chi tiết sản phẩm từ cơ sở dữ liệu dựa trên Slug được cung cấp
+            var product = await db.Product
+                .Include(p => p.Category)
+                .Include(p => p.Brand)
+                .Include(p => p.GoldAge)
+                .FirstOrDefaultAsync(p => p.Slug == slug);
 
             if (product == null)
             {
-                // Xử lý trường hợp không tìm thấy sản phẩm với ID cụ thể
+                // Xử lý trường hợp không tìm thấy sản phẩm với Slug cụ thể
                 return NotFound();
             }
 
             var relatedProducts = await db.Product
-                .Where(p => p.CategoryId == product.CategoryId && p.ProductId != id)
+                .Where(p => p.CategoryId == product.CategoryId && p.ProductId != product.ProductId)
                 .Take(4) // Số lượng sản phẩm liên quan bạn muốn hiển thị
                 .ToListAsync();
 
@@ -89,19 +91,18 @@ namespace OnlineJwellery_Shopping.Controllers
             return View(product);
         }
 
-        [Authentication]
+
         public async Task<IActionResult> Category(int page = 1, int pageSize = 9, decimal? minPrice = null, decimal? maxPrice = null)
         {
             // kế thừa các logic chung từ BaseController
             await SetCommonViewData();
 
-
             // Lấy danh sách sản phẩm với phân trang
             var query = db.Product
-    .Include(p => p.Category) // Include the Category information
-    .OrderBy(p => p.ProductId)
-    .Skip((page - 1) * pageSize)
-    .Take(pageSize);
+                .Include(p => p.Category) // Include the Category information
+                .OrderBy(p => p.ProductId)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize);
 
             // Lọc theo giá
             if (minPrice != null)
@@ -123,18 +124,19 @@ namespace OnlineJwellery_Shopping.Controllers
 
             return View(productList);
         }
-        [Authentication]
-        public async Task<IActionResult> Shop(int? id, string searchString, int? minPrice, int? maxPrice, int page = 1, int pageSize = 9)
-        {
 
+        [Authentication]
+        public async Task<IActionResult> Shop(string slug, string searchString, int? minPrice, int? maxPrice, int page = 1, int pageSize = 9)
+        {
             // kế thừa các logic chung từ BaseController
             await SetCommonViewData();
-            if (id == null)
+
+            if (slug == null)
             {
                 return NotFound();
             }
 
-            var category = db.Category.Find(id);
+            var category = db.Category.FirstOrDefault(c => c.Slug == slug);
 
             if (category == null)
             {
@@ -145,7 +147,7 @@ namespace OnlineJwellery_Shopping.Controllers
 
             var productsInCategory = db.Product
                 .Include(p => p.Category)
-                .Where(p => p.CategoryId == id);
+                .Where(p => p.CategoryId == category.CategoryId);
 
             if (!string.IsNullOrEmpty(searchString))
             {
@@ -164,7 +166,7 @@ namespace OnlineJwellery_Shopping.Controllers
             }
 
             // Tính toán và chuyển thông tin phân trang vào ViewBag hoặc ViewModel
-            ViewBag.CategoryId = id;
+            ViewBag.CategorySlug = slug;
             ViewBag.TotalProductCount = productsInCategory.Count(); // Đếm số lượng sản phẩm sau khi áp dụng tìm kiếm
             ViewBag.TotalPages = (int)Math.Ceiling((double)ViewBag.TotalProductCount / pageSize);
             ViewBag.CurrentPage = page;
@@ -181,6 +183,8 @@ namespace OnlineJwellery_Shopping.Controllers
 
             return View(paginatedProducts);
         }
+
+
         [Authentication]
         public async Task<IActionResult> Checkout()
         {
@@ -196,19 +200,55 @@ namespace OnlineJwellery_Shopping.Controllers
             return View();
         }
         [Authentication]
-        public async Task<IActionResult> Blog()
+        public async Task<IActionResult> Blog(int page = 1, int pageSize = 5)
         {
-            // kế thừa các logic chung từ BaseController
+            // Kế thừa các logic chung từ BaseController
             await SetCommonViewData();
-            return View();
+
+            // Truy vấn danh sách bài viết từ cơ sở dữ liệu theo trang
+            var query = _context.Blog
+                                .OrderByDescending(b => b.BlogDate) // Sắp xếp theo ngày giảm dần
+                                .Skip((page - 1) * pageSize)
+                                .Take(pageSize);
+
+            // Lấy danh sách bài viết blog
+            var blogPosts = await query.ToListAsync();
+
+            // Tổng số bài viết
+            int totalPosts = await _context.Blog.CountAsync();
+
+            // Số lượng trang
+            int totalPages = (int)Math.Ceiling((double)totalPosts / pageSize);
+
+            // Truyền danh sách bài viết và thông tin phân trang vào ViewBag hoặc ViewModel
+            ViewBag.BlogPosts = blogPosts;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = page;
+
+            // Trả về View và truyền dữ liệu từ ViewBag
+            return View(blogPosts);
         }
         [Authentication]
-        public async Task<IActionResult> BlogDetails()
+        public async Task<IActionResult> BlogDetails(int id)
         {
-            // kế thừa các logic chung từ BaseController
+            // Lấy thông tin chi tiết của bài viết từ cơ sở dữ liệu dựa trên ID
+            var blogPost = await _context.Blog.FirstOrDefaultAsync(b => b.Id == id);
+
+            if (blogPost == null)
+            {
+                // Nếu không tìm thấy bài viết, có thể xử lý thông báo lỗi ở đây hoặc chuyển hướng đến trang lỗi
+                return NotFound(); // Trả về trang 404 Not Found
+            }
+
+            // Kế thừa các logic chung từ BaseController
             await SetCommonViewData();
+
+            // Truyền thông tin chi tiết của bài viết vào View để hiển thị
+            ViewBag.BlogPost = blogPost;
+
             return View();
         }
+
         [Authentication]
         public async Task<IActionResult> About()
         {

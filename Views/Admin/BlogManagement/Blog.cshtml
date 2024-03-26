@@ -1,89 +1,167 @@
 ﻿@{
-    ViewData["Title"] = "Blog";
-    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
-}
-<section class="is-title-bar">
-    <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
-        <ul>
-            <li>Admin</li>
-            <li>Blog</li>
-        </ul>
+        ViewData["Title"] = "Blog";
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+ }
+    <section class="is-title-bar">
+        <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+            <ul>
+                <li style="margin-left:-50px;">Admin</li>
+                <li>Blog</li>
+            </ul>
 
-    </div>
-</section>
-<section class="is-hero-bar">
-    <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
-        <h1 class="title">
-            List of blogs
-        </h1>
-    </div>
-</section>
-<section class="section main-section">
+        </div>
 
-    <div class="card has-table">
+    </section>
+    <section class="is-hero-bar">
+        <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
 
-        <div class="card-content">
-            <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0" id="sampleTable">
-                <thead>
-                    <tr>
-                        <th width="10"><input type="checkbox" id="all"></th>
-                        <th>Id</th>
-                        <th>Title</th>
-                        <th>Content</th>
-                        <th>BlogDate</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td width="10"><input type="checkbox" name="check1" value="1"></td>
-                        <td>1</td>
-                        <td>Sample Title 1</td>
-                        <td>Sample Content 1</td>
-                        <td>2024-03-20</td>
+        </div>
+        <div class="col-sm-2">
 
-                        <td>
-                            <a href="#" class="btn btn-primary" style="background-color:green; color:white;">Details</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td width="10"><input type="checkbox" name="check1" value="1"></td>
-                        <td>2</td>
-                        <td>Sample Title 2</td>
-                        <td>Sample Content 2</td>
-                        <td>2024-03-21</td>
+            <a class="btn btn-add " asp-controller="Admin" asp-action="addBlog" title="Thêm">
+                <i class="fas fa-plus"></i>
+                Add Blog
+            </a>
+        </div>
 
-                        <td>
-                            <a href="#" class="btn btn-primary" style="background-color:green; color:white;">Details</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+    </section>
+   
+    <section class="section main-section">
+        <div class="card has-table">
+            <header class="card-header">
+                <p class="card-header-title">
+                    @*<span class="icon"><i class="mdi mdi-shopping"></i></span>*@
+                    Blog
+                </p>
 
-            <div class="table-pagination">
-                <div class="flex items-center justify-between">
-                    <div class="buttons">
-                        <button type="button" class="button active">1</button>
-                        <button type="button" class="button">2</button>
-                        <button type="button" class="button">3</button>
+                <a href="#" class="card-header-icon">
+                    <span class="icon"><i class="mdi mdi-reload"></i></span>
+                </a>
+            </header>
+
+            <div class="card-content">
+                <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0" id="sampleTable">
+                    <thead>
+                        <tr>
+                            <th width="10"><input type="checkbox" id="all"></th>
+                            <th>Id</th>
+                            <th>Title</th>
+                            <th>Thumbnail</th>
+                            <th>Content</th>
+                            <th>Blog date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var blog in Model)
+                        {
+                            <tr>
+
+                                <td width="10"><input type="checkbox" name="check1" value="1"></td>
+                                <td>@blog.Id</td>
+                                <td>@blog.Title</td>
+                                <td><img src="@blog.Thumbnail" alt="Thumbnail" width="100" height="100"></td>
+                                <td>@Html.Raw(blog.Content)</td>
+                                <td>@blog.BlogDate.ToString("yyyy-MM-dd")</td>
+
+                                <td>
+                                    <div class="button-group">
+
+                                        <a class="btn btn-primary" asp-controller="Admin" asp-action="editBlog" asp-route-id="@blog.Id">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        <form asp-controller="Admin" asp-action="deleteBlog" asp-route-id="@blog.Id" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa sản phẩm này không?')">
+                                            <button class="btn btn-danger">Delete</button>
+                                        </form>
+                                    </div>
+
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                <div class="table-pagination">
+                    <div class="flex items-center justify-between">
+                        <div class="buttons">
+                            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                            {
+                                <button type="button" class="button @(ViewBag.CurrentPage == i ? "active" : "")" onclick="location.href='@Url.Action("Blog", "Admin", new { page = i })'">@i</button>
+                            }
+                        </div>
+                        <small>Page @ViewBag.CurrentPage of @ViewBag.TotalPages</small>
+
                     </div>
-                    <small>Page 1 of 3</small>
                 </div>
+
             </div>
         </div>
-    </div>
 
-</section>
-<style>
-    .btn-primary {
-        color: rgb(245 157 57);
-        background-color: rgb(251 226 197);
-        border-color: none;
-        /* border-top-left-radius: 10px !important; */
-        /* border-bottom-right-radius: 10px !important; */
-        border-radius: .357rem;
-        border: none;
-        font-weight: 600;
-        padding: 5px 20px; /* Điều chỉnh kích thước theo ý muốn */
-    }
-</style>
+    </section>
+    <style>
+
+        .btn-primary {
+            color: rgb(245 157 57);
+            background-color: rgb(251 226 197);
+            border-color: none;
+            /* border-top-left-radius: 10px !important; */
+            /* border-bottom-right-radius: 10px !important; */
+            border-radius: .357rem;
+            border: none;
+            font-weight: 600;
+            padding: 5px 20px; /* Điều chỉnh kích thước theo ý muốn */
+        }
+        .edit-button {
+            margin-top: 10px; /* Điều chỉnh giá trị margin-top theo ý muốn */
+        }
+
+        .btn-add {
+            color: white;
+            background-color: black;
+            border-color: none;
+            /* border-top-left-radius: 10px !important; */
+            /* border-bottom-right-radius: 10px !important; */
+            border-radius: .357rem;
+            border: none;
+            font-weight: 600;
+            padding: 10px 20px; /* Điều chỉnh kích thước theo ý muốn */
+        }
+
+        .btn-danger {
+            color: #FFF;
+            background-color: #dc3545;
+            border-color: #dc3545;
+            border-color: none;
+            /* border-top-left-radius: 10px !important; */
+            /* border-bottom-right-radius: 10px !important; */
+            border-radius: .357rem;
+            border: none;
+            font-weight: 600;
+            padding: 5px 20px;
+        }
+
+            .btn-danger:hover {
+                color: #FFF;
+                background-color: #c82333;
+                border-color: #bd2130;
+            }
+
+            .btn-danger:focus, .btn-danger.focus {
+                -webkit-box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.5);
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.5);
+            }
+
+            .btn-danger.disabled, .btn-danger:disabled {
+                color: #FFF;
+                background-color: #dc3545;
+                border-color: #dc3545;
+            }
+
+        .button-group {
+            display: flex;
+        }
+
+            .button-group > * {
+                margin-right: 10px; /* Khoảng cách giữa các nút */
+            }
+    </style>
