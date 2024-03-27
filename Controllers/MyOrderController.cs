@@ -87,6 +87,52 @@ namespace OnlineJwellery_Shopping.Controllers
 
             return View(order);
         }
+
+
+        [Authentication]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateStatus(int id, string status, string returnUrl)
+        {
+            var order = await _context.Order
+                .Include(o => o.OrderProducts)
+                    .ThenInclude(op => op.Product)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            if (status.ToLower() == "cancel" && order.Status.ToLower() == "pending")
+            {
+                // Cập nhật trạng thái cho đơn hàng
+                order.Status = status;
+
+                // Trả lại số lượng sản phẩm đã mua
+                foreach (var orderProduct in order.OrderProducts)
+                {
+                    // Kiểm tra xem số lượng trả lại có vượt quá số lượng đã mua không
+                    int quantityToReturn = Math.Min(orderProduct.Qty, orderProduct.Product.Qty);
+
+                    // Cập nhật số lượng trong kho
+                    orderProduct.Product.Qty += quantityToReturn;
+
+                }
+
+                _context.Update(order);
+                await _context.SaveChangesAsync();
+            }
+            // Cập nhật trạng thái cho đơn hàng
+            order.Status = status;
+            _context.Update(order);
+            await _context.SaveChangesAsync();
+
+
+            // Chuyển hướng đến returnUrl
+            return Redirect(returnUrl);
+        }
+
         [Authentication]
         public async Task<IActionResult> ChangePassword()
         {
