@@ -255,7 +255,7 @@ namespace OnlineJwellery_Shopping.Controllers
             ViewBag.TotalAmount = order.TotalAmount;
             ViewBag.IsExpressShipping = isExpressShipping;
             ViewBag.FullAddress = fullAddress;
-            ViewBag.OrderId = orderId
+            ViewBag.OrderId = orderId;
 
             return View();
         }
