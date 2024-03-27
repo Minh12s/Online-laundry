@@ -42,73 +42,72 @@ namespace OnlineJwellery_Shopping.Controllers
                 }
             }
 
-            public IActionResult AddToCart(int id, int quantity = 1)
+        public IActionResult AddToCart(string slug, int quantity = 1)
+        {
+            List<CartItem> myCart;
+
+            // Lấy giỏ hàng từ session nếu tồn tại
+            if (HttpContext.Session.TryGetValue("cart", out byte[] cartBytes))
             {
-                List<CartItem> myCart;
-
-                // Lấy giỏ hàng từ session nếu tồn tại
-                if (HttpContext.Session.TryGetValue("cart", out byte[] cartBytes))
-                {
-                    myCart = JsonConvert.DeserializeObject<List<CartItem>>(Encoding.UTF8.GetString(cartBytes));
-                }
-                else
-                {
-                    myCart = new List<CartItem>();
-                }
-
-                var existingItem = myCart.FirstOrDefault(p => p.ProductId == id);
-
-                if (existingItem != null)
-                {
-                    // Tính tổng số lượng bao gồm số lượng đang thêm vào
-                    int totalQuantity = existingItem.Qty + quantity;
-
-                    // Kiểm tra nếu tổng số lượng vượt quá số lượng có sẵn trong kho
-                    var product = _context.Product.FirstOrDefault(p => p.ProductId == id);
-                    if (product != null && totalQuantity > product.Qty)
-                    {
-                        // Số lượng vượt quá số lượng có sẵn, đặt TempData và chuyển hướng
-                        TempData["Message"] = "Requested quantity exceeds available quantity!";
-                    TempData["MessageType"] = "error";
-                    return RedirectToAction("Details", "Page", new { id = id });
-                    }
-
-                    // Cập nhật số lượng của mặt hàng hiện có
-                    existingItem.Qty = totalQuantity;
-                }
-                else
-                {
-                    // Mặt hàng không tồn tại trong giỏ hàng, thêm mặt hàng mới
-                    var product = _context.Product.FirstOrDefault(p => p.ProductId == id);
-                    if (product != null)
-                    {
-                        myCart.Add(new CartItem
-                        {
-                            ProductId = id,
-                            ProductName = product.ProductName,
-                            Qty = quantity,
-                            Thumbnail = product.Thumbnail,
-                            Price = product.Price
-                        });
-
-                        // Thêm thông báo vào TempData
-                        TempData["Message"] = "Your product has been added to the cart!!";
-                    TempData["MessageType"] = "success";
-                }
-                }
-
-                // Lưu giỏ hàng mới vào session
-                HttpContext.Session.Set("cart", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(myCart)));
-
-                // Chuyển hướng về trang chi tiết sản phẩm
-                return RedirectToAction("Details", "Page", new { id = id });
+                myCart = JsonConvert.DeserializeObject<List<CartItem>>(Encoding.UTF8.GetString(cartBytes));
+            }
+            else
+            {
+                myCart = new List<CartItem>();
             }
 
+            var existingItem = myCart.FirstOrDefault(p => p.Slug == slug);
+
+            if (existingItem != null)
+            {
+                // Tính tổng số lượng bao gồm số lượng đang thêm vào
+                int totalQuantity = existingItem.Qty + quantity;
+
+                // Kiểm tra nếu tổng số lượng vượt quá số lượng có sẵn trong kho
+                var product = _context.Product.FirstOrDefault(p => p.Slug == slug);
+                if (product != null && totalQuantity > product.Qty)
+                {
+                    // Số lượng vượt quá số lượng có sẵn, đặt TempData và chuyển hướng
+                    TempData["Message"] = "Số lượng yêu cầu vượt quá số lượng có sẵn!";
+                    TempData["MessageType"] = "error";
+                    return RedirectToAction("Details", "Page", new { slug = slug });
+                }
+
+                // Cập nhật số lượng của mặt hàng hiện có
+                existingItem.Qty = totalQuantity;
+            }
+            else
+            {
+                // Mặt hàng không tồn tại trong giỏ hàng, thêm mặt hàng mới
+                var product = _context.Product.FirstOrDefault(p => p.Slug == slug);
+                if (product != null)
+                {
+                    myCart.Add(new CartItem
+                    {
+                        ProductId = product.ProductId,
+                        Slug = product.Slug,
+                        ProductName = product.ProductName,
+                        Qty = quantity,
+                        Thumbnail = product.Thumbnail,
+                        Price = product.Price
+                    });
+
+                    // Thêm thông báo vào TempData
+                    TempData["Message"] = "Sản phẩm đã được thêm vào giỏ hàng!!";
+                    TempData["MessageType"] = "success";
+                }
+            }
+
+            // Lưu giỏ hàng mới vào session
+            HttpContext.Session.Set("cart", Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(myCart)));
+
+            // Chuyển hướng về trang chi tiết sản phẩm
+            return RedirectToAction("Details", "Page", new { slug = slug });
+        }
 
 
 
-
-            public IActionResult RemoveFromCart(int id)
+        public IActionResult RemoveFromCart(int id)
             {
                 List<CartItem> myCart;
 

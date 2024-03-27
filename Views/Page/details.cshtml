@@ -129,12 +129,13 @@
                 <form method="post" class="favoriteForm" asp-action="AddToFavorite" asp-controller="Favorite">
                     <span style="margin-top: 15px; margin-left: 5px;">Favorite</span>
 
-                    <input type="hidden" name="productId" value="@ViewBag.ProductId" />
+                    <input type="hidden" name="slug" value="@ViewBag.ProductSlug" />
 
-                    <button type="button" style="border:1px solid white;" class="heart-icon">
+                    <button type="submit" style="border:1px solid white;" class="heart-icon">
                         <i class="heartIcon fa fa-heart fa-xl" style="color: red; float: left; margin-right: 10px; margin-top: 15px"></i>
                     </button>
                 </form>
+
 
                 <script>document.querySelectorAll('.favoriteForm').forEach(form => {
                         var heartButton = form.querySelector('.heart-icon');
@@ -174,7 +175,7 @@
                     @if (ViewBag.ProductAvailability > 0)
                     {
                         var remainingQuantity = ViewBag.ProductAvailability;
-                        <form method="post" asp-controller="Cart" asp-action="AddToCart" asp-route-id="@ViewBag.ProductId">
+                        <form method="post" asp-controller="Cart" asp-action="AddToCart" asp-route-slug="@ViewBag.ProductSlug">
                             <div class="input-group col-md-6 d-flex mb-3">
                                 <span class="input-group-btn mr-2">
                                     <button type="button" class="quantity-left-minus btn" data-type="minus" data-field="">
@@ -197,7 +198,8 @@
                     }
                     else
                     {
-                        <form method="post" asp-controller="Cart" asp-action="AddToCart" asp-route-id="@ViewBag.ProductId">
+                        <form method="post" asp-controller="Cart" asp-action="AddToCart" asp-route-slug="@ViewBag.Slug">
+                            >
                             <div class="input-group col-md-6 d-flex mb-3" style="pointer-events: none;">
                                 <span class="input-group-btn mr-2">
                                     <button style="margin-top:-40px; margin-left:42px;width:230px;" type="button" class="quantity-left-minus btn" data-type="minus" data-field="" disabled>

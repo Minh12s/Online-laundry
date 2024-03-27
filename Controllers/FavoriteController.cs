@@ -57,8 +57,7 @@ namespace OnlineJwellery_Shopping.Controllers
             return View(favorites);
         }
         [Authentication]
-
-        public IActionResult AddToFavorite(int productId)
+        public IActionResult AddToFavorite(string slug)
         {
             var usernameFromSession = HttpContext.Session.GetString("Username");
 
@@ -75,9 +74,18 @@ namespace OnlineJwellery_Shopping.Controllers
                 return RedirectToAction("login", "Page");
             }
 
+            // Lấy thông tin sản phẩm từ cơ sở dữ liệu dựa trên Slug
+            var product = _context.Product.FirstOrDefault(p => p.Slug == slug);
+
+            if (product == null)
+            {
+                TempData["Message"] = "Sản phẩm không tồn tại.";
+                return RedirectToAction("details", "Page", new { slug = slug });
+            }
+
             // Kiểm tra xem sản phẩm đã tồn tại trong danh sách yêu thích của người dùng chưa
             var existingFavorite = _context.Favorite
-                .Where(f => f.UserId == currentUser.UserId && f.ProductId == productId)
+                .Where(f => f.UserId == currentUser.UserId && f.ProductId == product.ProductId)
                 .FirstOrDefault();
 
             if (existingFavorite != null)
@@ -88,23 +96,14 @@ namespace OnlineJwellery_Shopping.Controllers
 
                 // Hiển thị thông báo sản phẩm đã bị xóa khỏi danh sách yêu thích
                 TempData["Message"] = "Sản phẩm đã bị xóa khỏi danh sách yêu thích.";
-                return RedirectToAction("details", "Page", new { id = productId });
-            }
-
-            // Lấy thông tin sản phẩm từ cơ sở dữ liệu
-            var product = _context.Product.SingleOrDefault(p => p.ProductId == productId);
-
-            if (product == null)
-            {
-                TempData["Message"] = "Sản phẩm không tồn tại.";
-                return RedirectToAction("details", "Page", new { id = productId });
+                return RedirectToAction("details", "Page", new { slug = slug });
             }
 
             // Nếu sản phẩm chưa tồn tại trong danh sách yêu thích, thêm mới
             var newFavorite = new Favorite
             {
                 UserId = currentUser.UserId,
-                ProductId = productId,
+                ProductId = product.ProductId,
                 ProductName = product.ProductName,
                 Price = product.Price,
                 Thumbnail = product.Thumbnail
@@ -114,8 +113,9 @@ namespace OnlineJwellery_Shopping.Controllers
             _context.SaveChanges();
 
             TempData["Message"] = "Đã thêm sản phẩm vào danh sách yêu thích.";
-            return RedirectToAction("details", "Page", new { id = productId });
+            return RedirectToAction("details", "Page", new { slug = slug });
         }
+
 
         // xoá 1 sản phẩm
 

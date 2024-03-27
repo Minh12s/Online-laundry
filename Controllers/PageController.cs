@@ -44,6 +44,7 @@ namespace OnlineJwellery_Shopping.Controllers
             // Kế thừa các logic chung từ BaseController
             await SetCommonViewData();
 
+
             // Lấy chi tiết sản phẩm từ cơ sở dữ liệu dựa trên Slug được cung cấp
             var product = await db.Product
                 .Include(p => p.Category)
@@ -71,6 +72,7 @@ namespace OnlineJwellery_Shopping.Controllers
             ViewBag.ProductName = product.ProductName; // Tên sản phẩm
             ViewBag.ProductPrice = product.Price;      // Giá sản phẩm
             ViewBag.ProductCategory = product.Category?.CategoryName;
+            ViewBag.ProductSlug = slug;
 
             // Đặt các thuộc tính ViewBag cho sự có sẵn của sản phẩm
             ViewBag.ProductAvailability = product.Qty;
@@ -185,15 +187,6 @@ namespace OnlineJwellery_Shopping.Controllers
 
             return View(paginatedProducts);
         }
-
-
-        [Authentication]
-        public async Task<IActionResult> Checkout()
-        {
-            // kế thừa các logic chung từ BaseController
-            await SetCommonViewData();
-            return View();
-        }
         [Authentication]
         public async Task<IActionResult> Contact()
         {
@@ -295,13 +288,6 @@ namespace OnlineJwellery_Shopping.Controllers
 
         [Authentication]
         public async Task<IActionResult> About()
-        {
-            // kế thừa các logic chung từ BaseController
-            await SetCommonViewData();
-            return View();
-        }
-        [Authentication]
-        public async Task<IActionResult> Thankyou()
         {
             // kế thừa các logic chung từ BaseController
             await SetCommonViewData();
