@@ -513,8 +513,9 @@ namespace OnlineJwellery_Shopping.Controllers
             // Lấy tổng số bài đăng từ cơ sở dữ liệu
             int totalBlogs = await _context.Blog.CountAsync();
 
-            // Phân trang danh sách bài đăng
-            var blogs = await _context.Blog.Skip((pageNumber - 1) * pageSize)
+            // Phân trang danh sách bài đăng và sắp xếp theo thời gian gần nhất
+            var blogs = await _context.Blog.OrderByDescending(b => b.BlogDate)
+                                           .Skip((pageNumber - 1) * pageSize)
                                            .Take(pageSize)
                                            .ToListAsync();
 
@@ -525,10 +526,11 @@ namespace OnlineJwellery_Shopping.Controllers
 
             return View("BlogManagement/Blog", blogs);
         }
-    
 
 
-    [Authentication]
+
+
+        [Authentication]
         [HttpGet]
         public async Task<IActionResult> editBlog(int id)
         {

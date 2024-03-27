@@ -11,6 +11,7 @@ using OnlineJwellery_Shopping.Heplers;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Mail;
+using System.Collections.Generic;
 
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -225,40 +226,10 @@ namespace OnlineJwellery_Shopping.Controllers
         //thankyou
 
         [Authentication]
-        public IActionResult ThankYou(int orderId)
+        public IActionResult thankyou(int orderId)
         {
-            // Lấy thông tin đơn hàng từ cơ sở dữ liệu
-            var order = _context.Order
-                .Include(o => o.OrderProducts)
-                .ThenInclude(op => op.Product)
-                .FirstOrDefault(o => o.OrderId == orderId);
-
-            if (order == null)
-            {
-                // Xử lý trường hợp không tìm thấy đơn hàng
-                return NotFound();
-            }
-
-            // Tính tổng số tiền đơn hàng
-            decimal subtotal = order.OrderProducts.Sum(op => op.Product.Price * op.Qty);
-            decimal totalAmount = order.TotalAmount;
-
-            // Kiểm tra trạng thái Shipping Method từ SQL
-            bool isExpressShipping = _context.Order.Any(o => o.OrderId == orderId && (o.ShippingMethod == "Express" || o.ShippingMethod == "FastExpress"));
-
-            // Lấy địa chỉ từ đối tượng Order
-            string fullAddress = order.GetFullAddress();
-            // Truyền thông tin đơn hàng và các thông tin cần thiết vào ViewBag
-            ViewBag.Order = order;
-            ViewBag.OrderProducts = order.OrderProducts;
-            ViewBag.Subtotal = subtotal;
-            ViewBag.TotalAmount = order.TotalAmount;
-            ViewBag.IsExpressShipping = isExpressShipping;
-            ViewBag.FullAddress = fullAddress;
-            ViewBag.OrderId = orderId;
-
+         
             return View();
         }
     }
 }
-

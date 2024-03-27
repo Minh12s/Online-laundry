@@ -55,9 +55,9 @@
         <div class="content-top-title">
             <div class="content-top-title">
                 <!-- Dropdown list để chọn số sản phẩm hiển thị mỗi trang -->
-                <form asp-controller="MyOrder" asp-action="MyOrder" method="get">
-                    MyOrder
-                    <select name="PageSize">
+                <form asp-controller="MyOrder" asp-action="MyOrder" method="get" onchange="this.submit()">
+            
+                    <select style="margin-left:-10px; padding: 5px 10px;" name="PageSize">
                         <option value="1"
                                 selected="@(ViewBag.PageSize == 1)">
                             1
@@ -70,7 +70,7 @@
 
                     <input type="hidden" name="page" value="@ViewBag.CurrentPage">
 
-                    <button type="submit">Lọc</button>
+                    @*<button style="border:1px solid white ;background-color:#FFA45C; color: white;" type="submit">filter</button>*@
 
                 </form>
             </div>
