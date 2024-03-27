@@ -126,104 +126,76 @@
                     </li>
 
                 </ul>
-                <form method="post" class="favoriteForm" asp-action="AddToFavorite" asp-controller="Favorite">
-                    <span style="margin-top: 15px; margin-left: 5px;">Favorite</span>
-
-                    <input type="hidden" name="slug" value="@ViewBag.ProductSlug" />
-
-                    <button type="submit" style="border:1px solid white;" class="heart-icon">
-                        <i class="heartIcon fa fa-heart fa-xl" style="color: red; float: left; margin-right: 10px; margin-top: 15px"></i>
-                    </button>
-                </form>
-
-
-                <script>document.querySelectorAll('.favoriteForm').forEach(form => {
-                        var heartButton = form.querySelector('.heart-icon');
-                        var heartIcon = heartButton.querySelector('.heartIcon');
-
-                        // Kiểm tra xem trạng thái của trái tim đã được lưu trong sessionStorage chưa
-                        var productId = form.querySelector('input[name="productId"]').value;
-                        var savedHeartIcon = sessionStorage.getItem('heartIcon_' + productId);
-                        if (savedHeartIcon === 'filled') {
-                            heartIcon.classList.add('fas');
-                        }
-
-                        // Xử lý sự kiện khi người dùng nhấp vào nút trái tim
-                        heartButton.addEventListener('click', function () {
-                            if (!heartIcon.classList.contains('fas')) {
-                                // Thêm lớp fas nếu người dùng chưa thêm vào mục yêu thích
-                                heartIcon.classList.add('fas');
-                                // Lưu trạng thái vào sessionStorage
-                                sessionStorage.setItem('heartIcon_' + productId, 'filled');
-                            } else {
-                                // Xóa lớp fas nếu người dùng đã thêm vào mục yêu thích
-                                heartIcon.classList.remove('fas');
-                                // Xóa trạng thái khỏi sessionStorage
-                                sessionStorage.removeItem('heartIcon_' + productId);
-                            }
-                            // Sau đó, gửi biểu mẫu
-                            form.submit();
-                        });
-                    });</script>
 
 
 
 
 
                 <div class="row mt-4">
-                    <div class="w-100"></div>
-                    @if (ViewBag.ProductAvailability > 0)
-                    {
-                        var remainingQuantity = ViewBag.ProductAvailability;
-                        <form method="post" asp-controller="Cart" asp-action="AddToCart" asp-route-slug="@ViewBag.ProductSlug">
-                            <div class="input-group col-md-6 d-flex mb-3">
-                                <span class="input-group-btn mr-2">
-                                    <button type="button" class="quantity-left-minus btn" data-type="minus" data-field="">
-                                        <i class="ion-ios-remove"></i>
-                                    </button>
-                                </span>
-                                <input style="margin-top:-40px; margin-left:42px;width:230px;" type="number" id="quantity" name="quantity" class="form-control input-number" value="1" min="1" max="@remainingQuantity">
-                                <span class="input-group-btn ml-2">
-                                    <button style="position: relative; top: -40px; margin-left: 234px; " type="button" class="quantity-right-plus btn" data-type="plus" data-field="">
-                                        <i class="ion-ios-add"></i>
-                                    </button>
-                                </span>
-                            </div>
-                            <div class="w-100"></div>
-                            <div class="col-md-12">
-                                <p style="color: #000;">@remainingQuantity products available</p>
-                            </div>
-                            <input type="submit" class="btn btn-primary py-3 px-5" value="ADD TO CART">
+                    <div class="col-md-6">
+                        @if (ViewBag.ProductAvailability > 0)
+                        {
+                            var remainingQuantity = ViewBag.ProductAvailability;
+                            <form method="post" asp-controller="Cart" asp-action="AddToCart" asp-route-slug="@ViewBag.ProductSlug">
+                                <div class="input-group d-flex mb-3">
+                                    <span class="input-group-btn mr-2">
+                                        <button type="button" class="quantity-left-minus btn" data-type="minus" data-field="">
+                                            <i class="ion-ios-remove"></i>
+                                        </button>
+                                    </span>
+                                    <input style="margin-top:-40px; margin-left:42px;width:230px;" type="number" id="quantity" name="quantity" class="form-control input-number" value="1" min="1" max="@remainingQuantity">
+                                    <span class="input-group-btn ml-2">
+                                        <button style="position: relative; top: -40px; margin-left: 234px; " type="button" class="quantity-right-plus btn" data-type="plus" data-field="">
+                                            <i class="ion-ios-add"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                                <div class="w-100"></div>
+                                <div class="col-md-12">
+                                    <p style="color: #000;">@remainingQuantity products available</p>
+                                </div>
+                                <input type="submit" class="btn btn-primary py-3 px-5" value="ADD TO CART">
+                            </form>
+                        }
+                        else
+                        {
+                            <form method="post" asp-controller="Cart" asp-action="AddToCart" asp-route-slug="@ViewBag.Slug">
+                                <div class="input-group d-flex mb-3" style="pointer-events: none;">
+                                    <span class="input-group-btn mr-2">
+                                        <button style="margin-top:-40px; margin-left:42px;width:230px;" type="button" class="quantity-left-minus btn" data-type="minus" data-field="" disabled>
+                                            <i class="ion-ios-remove"></i>
+                                        </button>
+                                    </span>
+                                    <input type="number" id="quantity" name="quantity" class="form-control input-number" value="1" min="1" disabled>
+                                    <span class="input-group-btn ml-2">
+                                        <button style="position: relative; top: -40px; margin-left: 234px; " type="button" class="quantity-right-plus btn" data-type="plus" data-field="" disabled>
+                                            <i class="ion-ios-add"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                                <div class="w-100"></div>
+                                <div class="col-md-12">
+                                    <p style="color: #000;">The product is out of stock</p>
+                                </div>
+                                <input type="submit" class="btn btn-primary py-3 px-5" value="ADD TO CART">
+                            </form>
+                        }
+                    </div>
+                    <div class="col-md-6" style="margin-top: 140px; margin-left: -60px;">
+                        <!-- Mã HTML của nút yêu thích -->
+                        <form method="post" class="favoriteForm" asp-action="AddToFavorite" asp-controller="Favorite">
+                            <input type="hidden" name="slug" value="@ViewBag.ProductSlug" />
+                            <button type="submit" style="border:1px solid white;" class="heart-icon">
+                                <svg height="32" width="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M0 0H24V24H0z" fill="none"></path>
+                                    <path class="heart-path" d="M16.5 3C19.538 3 22 5.5 22 9c0 7-7.5 11-10 12.5C9.5 20 2 16 2 9c0-3.5 2.5-6 5.5-6C9.36 3 11 4 12 5c1-1 2.64-2 4.5-2z"></path>
+                                </svg>
+                            </button>
                         </form>
-                    }
-                    else
-                    {
-                        <form method="post" asp-controller="Cart" asp-action="AddToCart" asp-route-slug="@ViewBag.Slug">
-                            >
-                            <div class="input-group col-md-6 d-flex mb-3" style="pointer-events: none;">
-                                <span class="input-group-btn mr-2">
-                                    <button style="margin-top:-40px; margin-left:42px;width:230px;" type="button" class="quantity-left-minus btn" data-type="minus" data-field="" disabled>
-                                        <i class="ion-ios-remove"></i>
-                                    </button>
-                                </span>
-                                <input type="number" id="quantity" name="quantity" class="form-control input-number" value="1" min="1" disabled>
-                                <span class="input-group-btn ml-2">
-                                    <button style="position: relative; top: -40px; margin-left: 234px; " type="button" class="quantity-right-plus btn" data-type="plus" data-field="" disabled>
-                                        <i class="ion-ios-add"></i>
-                                    </button>
-                                </span>
-                            </div>
-
-
-                            <div class="w-100"></div>
-                            <div class="col-md-12">
-                                <p style="color: #000;">The product is out of stock</p>
-                            </div>
-
-                            <input type="submit" class="btn btn-primary py-3 px-5" value="ADD TO CART">
-                        </form>
-                    }
+                    </div>
                 </div>
+
+
 
 
 
@@ -317,10 +289,73 @@
         });
 
     });</script>
+<script>
+    document.querySelectorAll('.favoriteForm').forEach(form => {
+        var heartButton = form.querySelector('.heart-icon');
+        var heartIcon = heartButton.querySelector('.heart-path'); // Thay đổi lấy class của path trong SVG
+
+        // Kiểm tra xem trạng thái của trái tim đã được lưu trong sessionStorage chưa
+        var productId = form.querySelector('input[name="productId"]').value;
+        var savedHeartIcon = sessionStorage.getItem('heartIcon_' + productId);
+        if (savedHeartIcon === 'filled') {
+            heartIcon.classList.add('filled');
+        }
+
+        // Xử lý sự kiện khi người dùng nhấp vào nút trái tim
+        heartButton.addEventListener('click', function () {
+            if (!heartIcon.classList.contains('filled')) {
+                // Thêm lớp filled nếu người dùng chưa thêm vào mục yêu thích
+                heartIcon.classList.add('filled');
+                // Lưu trạng thái vào sessionStorage
+                sessionStorage.setItem('heartIcon_' + productId, 'filled');
+            } else {
+                // Xóa lớp filled nếu người dùng đã thêm vào mục yêu thích
+                heartIcon.classList.remove('filled');
+                // Xóa trạng thái khỏi sessionStorage
+                sessionStorage.removeItem('heartIcon_' + productId);
+            }
+            // Không cần gửi biểu mẫu vì chúng ta đã ngăn chặn hành động mặc định của nút
+        });
+    });
+
+</script>
 <style>
-    .IYjGwk {
-        border: none; /* Xóa viền của nút */
+    .favoriteForm button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 30px 27px 30px 27px;
+        box-shadow: rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+        background-color: #e8e8e8;
+        border-color: #ffe2e2;
+        border-style: solid;
+        border-width: 9px;
+        border-radius: 35px;
+        transition: transform 400ms cubic-bezier(.68,-0.55,.27,2.5), border-color 400ms ease-in-out, background-color 400ms ease-in-out;
+        word-spacing: -2px;
     }
+
+
+
+        .favoriteForm button:hover {
+            background-color: #eee;
+            transform: scale(105%);
+            animation: movingBorders 3s infinite;
+        }
+
+        .favoriteForm button svg {
+            fill: rgb(255, 110, 110);
+        }
+
+
+
+        .favoriteForm button:hover svg {
+            transform: scale(105%);
+            border-color: #ffd8d8;
+            animation: beatingHeart 1.2s infinite;
+        }
+
 </style>
+
 
 

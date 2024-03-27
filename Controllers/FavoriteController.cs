@@ -96,6 +96,7 @@ namespace OnlineJwellery_Shopping.Controllers
 
                 // Hiển thị thông báo sản phẩm đã bị xóa khỏi danh sách yêu thích
                 TempData["Message"] = "Sản phẩm đã bị xóa khỏi danh sách yêu thích.";
+                TempData["MessageType"] = "error";
                 return RedirectToAction("details", "Page", new { slug = slug });
             }
 
@@ -113,6 +114,7 @@ namespace OnlineJwellery_Shopping.Controllers
             _context.SaveChanges();
 
             TempData["Message"] = "Đã thêm sản phẩm vào danh sách yêu thích.";
+            TempData["MessageType"] = "success";
             return RedirectToAction("details", "Page", new { slug = slug });
         }
 
@@ -147,8 +149,7 @@ namespace OnlineJwellery_Shopping.Controllers
                 _context.Favorite.Remove(favoriteToRemove);
                 _context.SaveChanges();
 
-                // Đặt TempData cho thông báo
-                TempData["Message"] = "Sản phẩm đã bị xóa khỏi danh sách yêu thích.";
+               
             }
 
             return RedirectToAction("Index", "Favorite");

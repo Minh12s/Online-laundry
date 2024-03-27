@@ -38,6 +38,35 @@ namespace OnlineJwellery_Shopping.Controllers
 
             return View();
         }
+        // search
+        public async Task<IActionResult> Search(string searchString)
+        {
+            // Query all products
+            var productsQuery = db.Product.Include(p => p.Category).AsQueryable();
+            var distinctCategories = await db.Category.ToListAsync();
+            // kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
+
+
+            // Filter by category, price, and product name
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                productsQuery = productsQuery.Where(p =>
+                    p.Category.CategoryName.Contains(searchString) ||
+                    p.ProductName.Contains(searchString) ||
+                    p.Price.ToString().Contains(searchString)
+                );
+            }
+
+            // Retrieve the filtered products
+            var filteredProducts = await productsQuery.ToListAsync();
+
+            // Pass the filtered products to the view
+            ViewBag.SearchResults = filteredProducts;
+
+            return View(filteredProducts);
+        }
+
         [Authentication]
         public async Task<IActionResult> Details(string slug)
         {
