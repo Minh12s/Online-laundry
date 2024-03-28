@@ -13,23 +13,24 @@
     </div>
 </div>
 
-<section class="ftco-section">
+<section class="ftco-section" style="margin-left:300px;">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-xl-8 ftco-animate">
-                <form action="#" class="billing-form">
+            <form asp-controller="CheckOut" asp-action="Checkout" method="post" enctype="multipart/form-data" class="billing-form">
+
+                <div class="col-xl-8 ftco-animate">
                     <h3 class="mb-4 billing-heading">Billing Details</h3>
                     <div class="row align-items-end">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="Fullname">Full Name</label>
-                                <input type="text" class="form-control" placeholder="">
+                                <input type="text" name="FullName" class="form-control" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="email">Email</label>
-                                <input type="text" class="form-control" placeholder="">
+                                <input type="text" name="Email" class="form-control" required>
                             </div>
                         </div>
 
@@ -37,7 +38,7 @@
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label for="streetaddress">Street Address</label>
-                                <input type="text" class="form-control" placeholder="House number and street name">
+                                <input class="form-control" placeholder="House number and street name" type="text" name="AddressDetail" required>
                             </div>
                         </div>
 
@@ -45,26 +46,26 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="towncity">City</label>
-                                <input type="text" class="form-control" placeholder="">
+                                <input type="text" name="Province" class="form-control" placeholder="" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="postcodezip">District</label>
-                                <input type="text" class="form-control" placeholder="">
+                                <input type="text" name="District" class="form-control" required>
                             </div>
                         </div>
                         <div class="w-100"></div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="emailaddress">Ward</label>
-                                <input type="text" class="form-control" placeholder="">
+                                <input class="form-control" placeholder="" type="text" name="Ward" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="phone">Phone</label>
-                                <input type="text" class="form-control" placeholder="">
+                                <input type="number" name="Telephone" class="form-control" required>
                             </div>
                         </div>
 
@@ -74,89 +75,146 @@
                             <div class="form-group mt-4">
                                 <div class="radio">
                                     <h5>Shipping method : </h5>
-                                    <label class="mr-3"><input type="radio" name="optradio"> J&T Express </label>
-                                    <label><input type="radio" name="optradio"> Ninja Van</label>
+                                    <label class="mr-3"><input type="radio" name="ShippingMethod" value="J&T Express" onchange="updateShippingFee()"> J&T Express </label>
+                                    <label><input type="radio" name="ShippingMethod" value="Ninja Van" onchange="updateShippingFee()"> Ninja Van</label>
                                 </div>
                             </div>
                         </div>
+
                     </div>
-                </form><!-- END -->
 
 
 
-                <div class="row mt-5 pt-3 d-flex">
-                    <div class="col-md-6 d-flex">
-                        <div class="cart-detail cart-total bg-light p-3 p-md-4">
-                            <h3 class="billing-heading mb-4">Cart Total</h3>
-                            <p class="d-flex">
-                                <span style="font-weight:800;">Product </span>
-                                <span style="font-weight:800;">Total</span>
-                            </p>
-                            
-                            <p class="d-flex">
-                                <span>bla</span>
-                                <span>$20.60</span>
 
-                            </p>
-                            <p class="d-flex">
-                                <span>bla</span>
-                                <span>$20.60</span>
+                    <div class="row mt-5 pt-3 d-flex">
+                        <div class="col-md-6 d-flex">
+                            <div class="cart-detail cart-total bg-light p-3 p-md-4">
+                                <h3 class="billing-heading mb-4">Cart Total</h3>
+                                <p class="d-flex">
+                                    <span style="font-weight:800;">Product </span>
+                                    <span style="font-weight:800;">Total</span>
+                                </p>
+                                @if (ViewBag.CartItems != null && ViewBag.CartItems.Count > 0)
+                                {
+                                    @foreach (var item in ViewBag.CartItems)
+                                    {
+                                        <p class="d-flex">
+                                            <span>@item.ProductName</span>
+                                            <span>$@item.Total</span>
 
-                            </p>
-                            <p class="d-flex">
-                                <span>bla</span>
-                                <span>$20.60</span>
+                                        </p>
 
-                            </p>
-                            <hr>
-                            <p class="d-flex">
-                                <span>Subtotal</span>
-                                <span>$20.60</span>
-                            </p>
-                            <p class="d-flex">
-                                <span>Tax(10%)</span>
-                                <span>$0.00</span>
-                            </p>
-                            <p class="d-flex">
-                                <span>Shipping Fee</span>
-                                <span>$3.00</span>
-                            </p>
-                            <hr>
-                            <p class="d-flex total-price">
-                                <span>Total</span>
-                                <span>$17.60</span>
-                            </p>
+                                    }
+                                }
+                                else
+                                {
+                                    <p>No items in the cart</p>
+                                }
+                                <hr>
+                                <p class="d-flex">
+                                    <span data-subtotal="@ViewBag.Total">Subtotal</span>
+                                    <span>$@ViewBag.Total</span>
+                                </p>
+                                <p class="d-flex">
+                                    <span>Tax(10%)</span>
+                                    <span data-tax>$0.00</span>
+                                </p>
+                                <p class="d-flex">
+                                    <span>Shipping Fee</span>
+                                    <span id="shippingFee">$0.00</span>
+                                </p>
+
+                                <hr>
+                                <p class="d-flex total-price">
+                                    <span>Total</span>
+                                    <span data-total>$0.00</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="cart-detail bg-light p-3 p-md-4">
+                                <h3 class="billing-heading mb-4">Payment Method</h3>
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        <div class="radio">
+                                            <label><input type="radio" name="PaymentMethod" value="COD" class="mr-2"> COD</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        <div class="radio">
+                                            <label><input type="radio" name="PaymentMethod" value="PayPal" class="mr-2"> Paypal</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        <div class="checkbox">
+                                            <label><input type="checkbox" value="" class="mr-2"> I have read and accept the terms and conditions</label>
+                                        </div>
+                                    </div>
+                                </div>
+   
+
+                                    <button type="submit" class="btn btn-primary py-3 px-4">Place an order</button>
+                                  
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="cart-detail bg-light p-3 p-md-4">
-                            <h3 class="billing-heading mb-4">Payment Method</h3>
-                            <div class="form-group">
-                                <div class="col-md-12">
-                                    <div class="radio">
-                                        <label><input type="radio" name="optradio" class="mr-2"> COD</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-md-12">
-                                    <div class="radio">
-                                        <label><input type="radio" name="optradio" class="mr-2"> Paypal</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-md-12">
-                                    <div class="checkbox">
-                                        <label><input type="checkbox" value="" class="mr-2"> I have read and accept the terms and conditions</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <p><a href="#" class="btn btn-primary py-3 px-4">Place an order</a></p>
-                        </div>
-                    </div>
-                </div>
-            </div> <!-- .col-md-8 -->
+                </div> <!-- .col-md-8 -->
+                </form>
         </div>
     </div>
 </section> <!-- .section -->
+<script>function updateShippingFee() {
+        var shippingFeeElement = document.getElementById("shippingFee");
+    var selectedOption = document.querySelector('input[name="ShippingMethod"]:checked').value;
+
+        // Tính toán phí vận chuyển dựa trên phương thức vận chuyển được chọn
+        var shippingFee;
+        switch (selectedOption) {
+            case "J&T Express":
+                shippingFee = 10.00;
+                break;
+            case "Ninja Van":
+                shippingFee = 9.00;
+                break;
+            default:
+                shippingFee = 0.00;
+                break;
+        }
+
+        // Cập nhật giá trị phí vận chuyển trong DOM
+        shippingFeeElement.innerText = "$" + shippingFee.toFixed(2);
+
+        // Gọi hàm updateTaxAndTotal() để cập nhật lại tổng số tiền khi có thay đổi về phí vận chuyển
+        updateTaxAndTotal(shippingFee);
+    }
+
+    function updateTaxAndTotal(shippingFee) {
+        var subtotalElement = document.querySelector('span[data-subtotal]').getAttribute('data-subtotal');
+        var subtotal = parseFloat(subtotalElement);
+
+        // Tính toán tổng số tiền sau thuế và phí vận chuyển
+        var taxRate = 0.10; // 10% thuế
+        var tax = subtotal * taxRate;
+
+        // Cập nhật giá trị thuế trong DOM
+        document.querySelector('span[data-tax]').innerText = "$" + tax.toFixed(2);
+
+        // Tính toán tổng số tiền bao gồm cả phí vận chuyển
+        var total = subtotal + tax + shippingFee;
+
+        // Cập nhật giá trị tổng số tiền trong DOM
+        document.querySelector('span[data-total]').innerText = "$" + total.toFixed(2);
+    }
+
+    // Gọi hàm này khi trang được tải
+    window.onload = function () {
+        // Khởi đầu, tổng số tiền sẽ được tính toán với phí vận chuyển mặc định là 0
+        updateTaxAndTotal(0);
+    };</script>
+
+
+

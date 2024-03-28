@@ -111,22 +111,22 @@
                     <h3>Cart Totals</h3>
                     @{
                         decimal subtotal = Model?.Sum(item => item.Price * item.Qty) ?? 0;
-                        decimal delivery = 5.00m; // You may change this value according to your logic
-                        decimal discount = 3.00m; // You may change this value according to your logic
-                        decimal total = subtotal + delivery - discount;
+                        //decimal delivery = 5.00m; // You may change this value according to your logic
+                        //decimal discount = 3.00m; // You may change this value according to your logic
+                        decimal total = subtotal;
                     }
                     <p class="d-flex">
                         <span>Subtotal</span>
                         <span>$@subtotal</span>
                     </p>
-                    <p class="d-flex">
+                    @*<p class="d-flex">
                         <span>Delivery</span>
                         <span>$@delivery</span>
                     </p>
                     <p class="d-flex">
                         <span>Discount</span>
                         <span>$@discount</span>
-                    </p>
+                    </p>*@
                     <hr>
                     <p class="d-flex total-price">
                         <span>Total</span>
@@ -134,7 +134,7 @@
                     </p>
                 </div>
                 <p class="text-center">
-                    <a href="#" class="btn btn-primary py-3 px-4">Continue Shopping</a>
+                    <a asp-controller="CheckOut" asp-action="Checkout" class="btn btn-primary py-3 px-4">Continue Shopping</a>
                 </p>
 
             </div>

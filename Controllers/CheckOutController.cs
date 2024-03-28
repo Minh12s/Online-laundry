@@ -69,7 +69,7 @@ namespace OnlineJwellery_Shopping.Controllers
                         UserId = userId,
                         OrderDate = DateTime.Now,
                         Status = "pending",
-                        IsPaid = "Chua thanh toan",
+                        IsPaid = "unpaid",
                         Province = model.Province,
                         District = model.District,
                         Ward = model.Ward,
@@ -84,8 +84,6 @@ namespace OnlineJwellery_Shopping.Controllers
                     List<CartItem> cartItems = HttpContext.Session.Get<List<CartItem>>("cart");
                     List<OrderProduct> orderProducts = new List<OrderProduct>();
 
-
-
                     // Kiểm tra xem giỏ hàng có dữ liệu không
                     if (cartItems != null && cartItems.Count > 0)
                     {
@@ -93,12 +91,16 @@ namespace OnlineJwellery_Shopping.Controllers
                         decimal subtotal = cartItems.Sum(cartItem => cartItem.Total);
                         decimal shippingFee = GetShippingFee(model.ShippingMethod); // Lấy phí vận chuyển từ hàm GetShippingFee
 
-                        // Gán giá trị TotalAmount cho đối tượng Order
-                        order.TotalAmount = subtotal + shippingFee;
+                        // Tính thuế với tỷ lệ 10%
+                        decimal tax = subtotal * 0.10m;
+
+                        // Cập nhật giá trị TotalAmount cho đối tượng Order bằng tổng số tiền, bao gồm cả thuế và phí vận chuyển
+                        order.TotalAmount = subtotal + tax + shippingFee;
 
                         // Lưu đơn đặt hàng vào cơ sở dữ liệu
                         _context.Order.Add(order);
                         _context.SaveChanges();
+
                         // Lưu thông tin sản phẩm trong đơn hàng vào bảng OrderProducts
                         foreach (var cartItem in cartItems)
                         {
@@ -128,12 +130,9 @@ namespace OnlineJwellery_Shopping.Controllers
 
                         SendInvoiceEmail(model.Email, order, orderProducts);
 
-
-
-
                         // Thực hiện các bước xử lý thanh toán khác (nếu cần)
 
-                        return RedirectToAction("Thankyou", "Page", new { orderId = order.OrderId, totalAmount = order.TotalAmount });
+                        return RedirectToAction("Thankyou", "CheckOut", new { orderId = order.OrderId, totalAmount = order.TotalAmount });
                     }
                 }
             }
@@ -141,15 +140,16 @@ namespace OnlineJwellery_Shopping.Controllers
             // Nếu dữ liệu không hợp lệ hoặc giỏ hàng trống, quay lại trang checkout với các lỗi
             return View("Checkout", model);
         }
+
         // Hàm lấy phí vận chuyển dựa trên phương thức vận chuyển
         private decimal GetShippingFee(string shippingMethod)
         {
             switch (shippingMethod)
             {
-                case "FastExpress":
-                    return 20.00M; // Phí vận chuyển cho FastExpress 
-                case "Express":
-                    return 10.00M; // Phí vận chuyển cho Express
+                case "J&T Express":
+                    return 10.00M; // Phí vận chuyển cho FastExpress 
+                case "Ninja Van":
+                    return 9.00M; // Phí vận chuyển cho Express
                 default:
                     return 0.00M;
             }
@@ -226,9 +226,38 @@ namespace OnlineJwellery_Shopping.Controllers
         //thankyou
 
         [Authentication]
-        public IActionResult thankyou(int orderId)
+        public async Task<IActionResult> thankyou(int orderId)
         {
-         
+            // Kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
+            // Lấy thông tin đơn hàng từ cơ sở dữ liệu
+            var order = _context.Order
+                .Include(o => o.OrderProducts)
+                .ThenInclude(op => op.Product)
+                .FirstOrDefault(o => o.OrderId == orderId);
+
+            if (order == null)
+            {
+                // Xử lý trường hợp không tìm thấy đơn hàng
+                return NotFound();
+            }
+
+            // Tính tổng số tiền đơn hàng
+            decimal subtotal = order.OrderProducts.Sum(op => op.Product.Price * op.Qty);
+            decimal totalAmount = order.TotalAmount;
+
+
+            // Lấy địa chỉ từ đối tượng Order
+            string fullAddress = order.GetFullAddress();
+            // Truyền thông tin đơn hàng và các thông tin cần thiết vào ViewBag
+            ViewBag.Order = order;
+            ViewBag.OrderProducts = order.OrderProducts;
+            ViewBag.Subtotal = subtotal;
+            ViewBag.TotalAmount = order.TotalAmount;
+            ViewBag.ShippingMethod = order.ShippingMethod;
+            ViewBag.FullAddress = fullAddress;
+            ViewBag.OrderId = orderId;
+
             return View();
         }
     }

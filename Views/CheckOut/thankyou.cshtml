@@ -2,33 +2,33 @@
     ViewData["Title"] = "Thank You Page";
     Layout = "~/Views/Shared/User_Layout.cshtml";
 }
+<style>
+    .product-list-heading {
+        text-align: left;
+    }
 
-<!DOCTYPE html>
-<html lang="en">
+    .shipping-info {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 10px;
+    }
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="description" content="Ogani Template">
-    <meta name="keywords" content="Ogani, unica, creative, html">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <base href="/">
-</head>
-
-<body>
-
+  
+</style>
     <!-- Breadcrumb Section Begin -->
     <section class="breadcrumb-section set-bg" data-setbg="img/breadcrumb.jpg">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <div class="breadcrumb__text">
+                    @*<div class="breadcrumb__text">
                         <h2>Thank You</h2>
                         <div class="breadcrumb__option">
                             <a href="./index.html">Home</a>
                             <span>Thank You</span>
                         </div>
-                    </div>
+                    </div>*@
                 </div>
             </div>
         </div>
@@ -43,12 +43,14 @@
                     <h3 class="product-list-heading">Product List:</h3>
                     <table class="table mt-3">
                         <thead>
-                        <th>ID</th>
-                        <th>Image</th>
-                        <th>Name</th>
-                        <th>Price</th>
-                        <th>Qty</th>
-                        <th>Subtotal</th>
+                            <tr>
+                                <th>ID</th>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Qty</th>
+                                <th>Subtotal</th>
+                            </tr>
                         </thead>
                         <tbody>
                             @foreach (var orderProduct in ViewBag.OrderProducts)
@@ -64,34 +66,27 @@
                             }
                         </tbody>
                     </table>
+                    <div class="shoping__cart__btns d-flex justify-content-between">
+                        <p class="mb-0">
+                            <button style="padding:5px 10px; border: 1px solid black; background-color:white; width:200px;" type="button" class="primary-btn cart-btn" onclick="window.location.href='/Page/Category'">CONTINUE SHOPPING</button>
+                        </p>
+                    </div>
+
                     <!-- Hiển thị thông tin địa chỉ và phí ship nếu là Express -->
-                    @if (ViewBag.IsExpressShipping)
-                    {
-                        <div>
-                            <h3>Shipping Information:</h3>
-                            <p>Shipping Address: @ViewBag.FullAddress</p>
-                            <p>Shipping Fee: $@(ViewBag.Order.ShippingMethod == "Express" ? 10.00 : 20.00)</p>
-                        </div>
-                    }
-                    <p class="total-amount">Total Amount: @ViewBag.TotalAmount</p>
+
+                    <div class="shipping-info">
+                        <h3>Shipping Information:</h3>
+                        <p>Shipping Address: @ViewBag.FullAddress</p>
+                        <p>Shipping Fee: @ViewBag.ShippingMethod</p>
+                        <p>Tax(10%)</p>
+                        <p style="font-weight:800" class="total-amount">Total Amount: @ViewBag.TotalAmount</p>
+                    </div>
+
                 </div>
-            </div>
+                </div>
         </div>
+       
+            
+        
     </section>
     <!-- Thank You Section End -->
-
-</body>
-<style>
-    .product-list-heading {
-        text-align: left;
-    }
-
-    .total-amount {
-        font-size: 18px;
-        font-weight: bold;
-        text-align: right;
-    }
-</style>
-
-
-</html>

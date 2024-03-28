@@ -116,7 +116,7 @@
                 <form method="post" action="@Url.Action("UpdateStatus", "Admin", new { id = Model.OrderId, status = "shipped", returnUrl = Url.Action("order", "Admin") })">
                     @Html.AntiForgeryToken()
                     <button onclick="return confirm('You definitely want to update the status to: Shipped')" type="submit" class="btn btn-warning" style="padding:5px 10px; border-radius:5px; margin-right:10px; background-color: orange; color: black;">
-                        Đã giao hàng
+                        shipped
                     </button>
                 </form>
             </div>
@@ -128,7 +128,7 @@
                 <form method="post" action="@Url.Action("UpdateStatus", "Admin", new { id = Model.OrderId, status = "cancel", returnUrl = Url.Action("order", "Admin") })">
                     @Html.AntiForgeryToken()
                     <button onclick="return confirm('Surely you want to cancel your order')" type="submit" class="btn btn-danger" style="padding:5px 10px; border-radius:5px; margin-right:15px; background-color: red; color: white;">
-                        Huỷ
+                       cancel
                     </button>
                 </form>
             </div>
