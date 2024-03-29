@@ -68,7 +68,7 @@ namespace OnlineJwellery_Shopping.Controllers
         public IActionResult OrderDetail(int? id)
         {
 
-            if (id == null)
+            if (id  == null)
             {
                 return NotFound(); // Trả về lỗi 404 nếu không có ID đơn hàng
             }
