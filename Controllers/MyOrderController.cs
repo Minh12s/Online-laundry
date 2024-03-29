@@ -134,6 +134,226 @@ namespace OnlineJwellery_Shopping.Controllers
         }
 
         [Authentication]
+        public async Task<IActionResult> OrderPending(int page = 1, int pageSize = 5)
+        {
+            // Kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
+
+            // Lấy userId từ session
+            int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+
+            // Truy vấn database để lấy thông tin người dùng có đơn hàng có trạng thái là "Pending"
+            var user = db.User
+                .Include(u => u.Orders)
+                    .ThenInclude(o => o.OrderProducts)
+                .FirstOrDefault(u => u.UserId == userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+            // Logic phân trang ở đây
+            var totalOrders = user.Orders.Count(o => o.Status == "pending");
+            var totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
+            user.Orders = user.Orders
+                  .Where(o => o.Status == "pending")
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+              .ToList();
+
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = page;
+
+
+
+            // Trả dữ liệu người dùng có đơn hàng Pending cho view
+            return View(user);
+        }
+
+        [Authentication]
+        public async Task<IActionResult> OrderConfirmed(int page = 1, int pageSize = 5)
+        {
+            // Kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
+
+            // Lấy userId từ session
+            int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+
+            // Truy vấn database để lấy thông tin người dùng có đơn hàng có trạng thái là "Pending"
+            var user = db.User
+                .Include(u => u.Orders)
+                    .ThenInclude(o => o.OrderProducts)
+                .FirstOrDefault(u => u.UserId == userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+            // Logic phân trang ở đây
+            var totalOrders = user.Orders.Count(o => o.Status == "confirmed");
+            var totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
+            user.Orders = user.Orders
+                  .Where(o => o.Status == "confirmed")
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+              .ToList();
+
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = page;
+            // Lọc chỉ những đơn hàng có trạng thái là "Pending"
+
+
+            // Trả dữ liệu người dùng có đơn hàng Pending cho view
+            return View(user);
+        }
+
+        [Authentication]
+        public async Task<IActionResult> OrderShipping(int page = 1, int pageSize = 5)
+        {
+            // Kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
+
+            // Lấy userId từ session
+            int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+
+            // Truy vấn database để lấy thông tin người dùng có đơn hàng có trạng thái là "Pending"
+            var user = db.User
+                .Include(u => u.Orders)
+                    .ThenInclude(o => o.OrderProducts)
+                .FirstOrDefault(u => u.UserId == userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+            // Logic phân trang ở đây
+            var totalOrders = user.Orders.Count(o => o.Status == "shipping");
+            var totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
+            user.Orders = user.Orders
+                  .Where(o => o.Status == "shipping")
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+              .ToList();
+
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = page;
+
+
+
+            // Trả dữ liệu người dùng có đơn hàng Pending cho view
+            return View(user);
+        }
+
+        [Authentication]
+        public async Task<IActionResult> OrderShipped(int page = 1, int pageSize = 5)
+        {
+            // Kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
+
+            // Lấy userId từ session
+            int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+
+            // Truy vấn database để lấy thông tin người dùng có đơn hàng có trạng thái là "Pending"
+            var user = db.User
+                .Include(u => u.Orders)
+                    .ThenInclude(o => o.OrderProducts)
+                .FirstOrDefault(u => u.UserId == userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+            // Logic phân trang ở đây
+            var totalOrders = user.Orders.Count(o => o.Status == "shipped");
+            var totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
+            user.Orders = user.Orders
+                  .Where(o => o.Status == "shipped")
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+              .ToList();
+
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = page;
+
+
+            // Trả dữ liệu người dùng có đơn hàng Pending cho view
+            return View(user);
+        }
+
+        [Authentication]
+        public async Task<IActionResult> OrderComplete(int page = 1, int pageSize = 5)
+        {
+            // Kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
+
+            // Lấy userId từ session
+            int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+
+            // Truy vấn database để lấy thông tin người dùng có đơn hàng có trạng thái là "Pending"
+            var user = db.User
+                .Include(u => u.Orders)
+                    .ThenInclude(o => o.OrderProducts)
+                .FirstOrDefault(u => u.UserId == userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+            // Logic phân trang ở đây
+            var totalOrders = user.Orders.Count(o => o.Status == "complete");
+            var totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
+            user.Orders = user.Orders
+                  .Where(o => o.Status == "complete")
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+              .ToList();
+
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = page;
+
+
+            // Trả dữ liệu người dùng có đơn hàng Pending cho view
+            return View(user);
+        }
+
+        [Authentication]
+        public async Task<IActionResult> OrderCancel(int page = 1, int pageSize = 5)
+        {
+            // Kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
+
+            // Lấy userId từ session
+            int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+
+            // Truy vấn database để lấy thông tin người dùng có đơn hàng có trạng thái là "Pending"
+            var user = db.User
+                .Include(u => u.Orders)
+                    .ThenInclude(o => o.OrderProducts)
+                .FirstOrDefault(u => u.UserId == userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+            // Logic phân trang ở đây
+            var totalOrders = user.Orders.Count(o => o.Status == "cancel");
+            var totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
+            user.Orders = user.Orders
+                  .Where(o => o.Status == "cancel")
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+              .ToList();
+
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = page;
+
+
+            // Trả dữ liệu người dùng có đơn hàng Pending cho view
+            return View(user);
+        }
+
+
+        [Authentication]
         public async Task<IActionResult> ChangePassword()
         {
            
