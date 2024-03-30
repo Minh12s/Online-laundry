@@ -277,17 +277,17 @@ namespace OnlineJwellery_Shopping.Models
 
                 // seed data for Blog
                 var blogTitles = new List<string> {
-                "The Fascinating World of Gemstone Jewelry",
-                 "Exploring the Beauty of Diamond Jewelry",
-                 "Emeralds: The Gemstone of Spring",
-                "Sapphire: The Gemstone of Wisdom and Royalty",
-                "Ruby: The Gemstone of Passion and Love",
-                "Pearls: Timeless Elegance in Jewelry",
-                "Amethyst: The Gemstone of Tranquility",
-               "Topaz: A Glittering November Birthstone",
-               "Aquamarine: The Gemstone of Serenity",
-               "Opals: The Enigmatic Gemstone of Mystery and Magic"
-            };
+    "The Fascinating World of Gemstone Jewelry",
+    "Exploring the Beauty of Diamond Jewelry",
+    "Emeralds: The Gemstone of Spring",
+    "Sapphire: The Gemstone of Wisdom and Royalty",
+    "Ruby: The Gemstone of Passion and Love",
+    "Pearls: Timeless Elegance in Jewelry",
+    "Amethyst: The Gemstone of Tranquility",
+    "Topaz: A Glittering November Birthstone",
+    "Aquamarine: The Gemstone of Serenity",
+    "Opals: The Enigmatic Gemstone of Mystery and Magic"
+};
 
                 var blogContents = new List<string> {
     "Gemstone jewelry has been adored for centuries for its vibrant colors and inherent beauty. From ancient civilizations to modern-day fashion, gemstones have captivated people with their allure and symbolism.",
@@ -301,6 +301,10 @@ namespace OnlineJwellery_Shopping.Models
     "Aquamarine, with its tranquil blue color reminiscent of the ocean, is a gemstone associated with serenity, clarity, and inner peace. Explore the allure of aquamarine jewelry and its calming effects.",
     "Opals are unique gemstones renowned for their iridescent play-of-color, which mesmerizes and captivates the beholder. Discover the mystique and magic of opal jewelry in this exploration of one of nature's most enigmatic gems."
 };
+
+                var blogTag = new List<string> {"hello", "new", "best" , "bla" , "bedd",
+                                 "another", "tag", "example", "tags", "here"};
+
                 var blogThumbnailPaths = Enumerable.Range(1, 10).Select(i => $"/images/product-{i}.jpg").ToList();
 
                 for (int i = 0; i < blogTitles.Count; i++)
@@ -309,6 +313,7 @@ namespace OnlineJwellery_Shopping.Models
                     {
                         Title = blogTitles[i],
                         Content = blogContents[i],
+                        Tag = blogTag[i],
                         Thumbnail = blogThumbnailPaths[i],
                         BlogDate = DateTime.Now.AddDays(-i)
                     };
@@ -316,8 +321,8 @@ namespace OnlineJwellery_Shopping.Models
                 }
                 context.SaveChanges();
             }
-        }
-    }
+         }
+     }
 }
 
 

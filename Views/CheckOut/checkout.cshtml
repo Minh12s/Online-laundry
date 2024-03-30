@@ -16,7 +16,7 @@
 <section class="ftco-section" style="margin-left:300px;">
     <div class="container">
         <div class="row justify-content-center">
-            <form asp-controller="CheckOut" asp-action="Checkout" method="post" enctype="multipart/form-data" class="billing-form">
+            <form id="checkoutForm" asp-controller="CheckOut" asp-action="Checkout" method="post" enctype="multipart/form-data" class="billing-form">
 
                 <div class="col-xl-8 ftco-animate">
                     <h3 class="mb-4 billing-heading">Billing Details</h3>
@@ -173,7 +173,6 @@
                                     window.onload = function () {
                                         togglePaypalButton();
                                     };</script>
-
                             </div>
                         </div>
                     </div>
@@ -257,8 +256,8 @@
                 alert('Transaction completed by ' + details.payer.name.given_name);
                 // Lấy orderId từ đối tượng data
                 var orderId = data.orderID;
-                // Redirect đến trang "Thank You" với thông tin orderId
-                window.location.href = "/CheckOut/Thankyou?orderId=" + orderId;
+                // Submit form để xử lý thanh toán
+                document.getElementById("checkoutForm").submit();
             });
 
         },

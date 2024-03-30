@@ -119,20 +119,19 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="sidebar-box ftco-animate">
                     <h3 CLASS="heading">Tag Cloud</h3>
                     <div class="tagcloud">
-                        <a href="#" class="tag-cloud-link">shop</a>
-                        <a href="#" class="tag-cloud-link">products</a>
-                        <a href="#" class="tag-cloud-link">shirt</a>
-                        <a href="#" class="tag-cloud-link">jeans</a>
-                        <a href="#" class="tag-cloud-link">shoes</a>
-                        <a href="#" class="tag-cloud-link">dress</a>
-                        <a href="#" class="tag-cloud-link">coats</a>
-                        <a href="#" class="tag-cloud-link">jumpsuits</a>
+                        @if (ViewBag.AllTags != null)
+                        {
+                            @foreach (var tag in ViewBag.AllTags)
+                            {
+                                <a href="@Url.Action("Blog", "Page", new { tag = tag })" class="tag-cloud-link">@tag</a>
+                            }
+                        }
                     </div>
                 </div>
+
 
                 <div class="sidebar-box ftco-animate">
                     <h3 class="heading">Paragraph</h3>

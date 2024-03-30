@@ -266,22 +266,31 @@ namespace OnlineJwellery_Shopping.Controllers
             return View();
         }
         [Authentication]
-        public async Task<IActionResult> Blog(int page = 1, int pageSize = 5)
+        public async Task<IActionResult> Blog(int page = 1, int pageSize = 5, string tag = null)
         {
             // Kế thừa các logic chung từ BaseController
             await SetCommonViewData();
 
-            // Truy vấn danh sách bài viết từ cơ sở dữ liệu theo trang
-            var query = _context.Blog
-                                .OrderByDescending(b => b.BlogDate) // Sắp xếp theo ngày giảm dần
-                                .Skip((page - 1) * pageSize)
-                                .Take(pageSize);
+            // Truy vấn danh sách các tag từ cơ sở dữ liệu
+            var allTags = await _context.Blog.Select(b => b.Tag).Distinct().ToListAsync();
 
-            // Lấy danh sách bài viết blog
-            var blogPosts = await query.ToListAsync();
+            // Gán danh sách các tag vào ViewBag
+            ViewBag.AllTags = allTags;
+
+            // Khởi tạo query với sắp xếp theo ngày giảm dần
+            var query = _context.Blog.OrderByDescending(b => b.BlogDate);
+
+            // Lọc bài viết theo tag (nếu có)
+            if (!string.IsNullOrEmpty(tag))
+            {
+                query = query.Where(b => b.Tag == tag).OrderByDescending(b => b.BlogDate);
+            }
+
+            // Lấy danh sách bài viết cho trang hiện tại và kích thước trang
+            var blogPosts = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
             // Tổng số bài viết
-            int totalPosts = await _context.Blog.CountAsync();
+            int totalPosts = await query.CountAsync();
 
             // Số lượng trang
             int totalPages = (int)Math.Ceiling((double)totalPosts / pageSize);
@@ -294,6 +303,8 @@ namespace OnlineJwellery_Shopping.Controllers
             // Trả về View và truyền dữ liệu từ ViewBag
             return View(blogPosts);
         }
+
+
         [Authentication]
         public async Task<IActionResult> BlogDetails(int id)
         {
@@ -314,6 +325,7 @@ namespace OnlineJwellery_Shopping.Controllers
 
             return View();
         }
+
 
         [Authentication]
         public async Task<IActionResult> About()

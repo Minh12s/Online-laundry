@@ -46,6 +46,7 @@
                             <th width="10"><input type="checkbox" id="all"></th>
                             <th>Id</th>
                             <th>Title</th>
+                            <th>Tag</th>
                             <th>Thumbnail</th>
                             <th>Content</th>
                             <th>Blog date</th>
@@ -60,6 +61,7 @@
                                 <td width="10"><input type="checkbox" name="check1" value="1"></td>
                                 <td>@blog.Id</td>
                                 <td>@blog.Title</td>
+                                <td>@blog.Tag</td>
                                 <td><img src="@blog.Thumbnail" alt="Thumbnail" width="100" height="100"></td>
                                 <td>@Html.Raw(blog.Content)</td>
                                 <td>@blog.BlogDate.ToString("yyyy-MM-dd")</td>

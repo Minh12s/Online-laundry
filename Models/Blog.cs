@@ -8,6 +8,7 @@ namespace OnlineJwellery_Shopping.Models
         public string Thumbnail { get; set; }
         public string Content { get; set; }
         public DateTime BlogDate { get; set; }
+        public string Tag { get; set; }
     }
 }
 
