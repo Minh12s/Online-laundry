@@ -126,11 +126,6 @@
                     </li>
 
                 </ul>
-
-
-
-
-
                 <div class="row mt-4">
                     <div class="col-md-6">
                         @if (ViewBag.ProductAvailability > 0)
@@ -159,14 +154,14 @@
                         }
                         else
                         {
-                            <form method="post" asp-controller="Cart" asp-action="AddToCart" asp-route-slug="@ViewBag.Slug">
-                                <div class="input-group d-flex mb-3" style="pointer-events: none;">
+                            <form method="post" asp-controller="Cart" asp-action="AddToCart" asp-route-slug="@ViewBag.ProductSlug">
+                                <div class="input-group d-flex mb-3">
                                     <span class="input-group-btn mr-2">
-                                        <button style="margin-top:-40px; margin-left:42px;width:230px;" type="button" class="quantity-left-minus btn" data-type="minus" data-field="" disabled>
+                                        <button type="button" class="quantity-left-minus btn" data-type="minus" data-field="" disabled>
                                             <i class="ion-ios-remove"></i>
                                         </button>
                                     </span>
-                                    <input type="number" id="quantity" name="quantity" class="form-control input-number" value="1" min="1" disabled>
+                                    <input style="margin-top:-40px; margin-left:42px;width:230px;" type="number" id="quantity" name="quantity" class="form-control input-number" value="1" min="1" disabled>
                                     <span class="input-group-btn ml-2">
                                         <button style="position: relative; top: -40px; margin-left: 234px; " type="button" class="quantity-right-plus btn" data-type="plus" data-field="" disabled>
                                             <i class="ion-ios-add"></i>
@@ -175,9 +170,9 @@
                                 </div>
                                 <div class="w-100"></div>
                                 <div class="col-md-12">
-                                    <p style="color: #000;">The product is out of stock</p>
+                                    <p style="color:red;">The product is out of stock</p>
                                 </div>
-                                <input type="submit" class="btn btn-primary py-3 px-5" value="ADD TO CART">
+                                <input type="submit" class="btn btn-primary py-3 px-5" value="ADD TO CART" disabled>
                             </form>
                         }
                     </div>
@@ -194,10 +189,6 @@
                         </form>
                     </div>
                 </div>
-
-
-
-
 
             </div>
         </div>

@@ -83,37 +83,52 @@
                         }
                     </ul>
                 </div>
+                <form action="@Url.Action("Category", "Page")" method="get">
 
-                <div class="sidebar-box-2">
-                    <h2 class="heading mb-4"><a href="#">Jeans</a></h2>
-                    <ul>
-                        <li><a href="#">Shirts &amp; Tops</a></li>
-                        <li><a href="#">Dresses</a></li>
-                        <li><a href="#">Shorts &amp; Skirts</a></li>
-                        <li><a href="#">Jackets</a></li>
-                        <li><a href="#">Coats</a></li>
-                        <li><a href="#">Jeans</a></li>
-                        <li><a href="#">Sleeveless</a></li>
-                        <li><a href="#">Trousers</a></li>
-                        <li><a href="#">Winter Coats</a></li>
-                        <li><a href="#">Jumpsuits</a></li>
-                    </ul>
-                </div>
-                <div class="sidebar-box-2">
-                    <h2 class="heading mb-2"><a href="#">Bags</a></h2>
-                    <h2 class="heading mb-2"><a href="#">Accessories</a></h2>
-                </div>
-                <div class="sidebar-box-2">
-                    <h2 class="heading mb-4"><a href="#">Shoes</a></h2>
-                    <ul>
-                        <li><a href="#">Nike</a></li>
-                        <li><a href="#">Addidas</a></li>
-                        <li><a href="#">Skechers</a></li>
-                        <li><a href="#">Jackets</a></li>
-                        <li><a href="#">Coats</a></li>
-                        <li><a href="#">Jeans</a></li>
-                    </ul>
-                </div>
+                    <div class="sidebar-box-2">
+                        <h2 class="heading mb-4"><a href="#">Price</a></h2>
+
+                        <div class="form-group">
+                            <label for="price_from">Price from:</label>
+                            <input type="text" style="width:100px;" id="price_from" name="minPrice">
+                        </div>
+                        <div class="form-group">
+                            <label for="price_to">Price to:</label>
+                            <input type="text" style="width:100px;" id="price_to" name="maxPrice">
+                        </div>
+
+                    </div>
+
+                    <div class="sidebar-box-2">
+                        <h2 class="heading mb-4"><a href="#">Gold Age</a></h2>
+                        <ul>
+                            @foreach (var goldAge in ViewBag.GoldAges as List<GoldAge>)
+                            {
+                                <li>
+                                    <input type="checkbox" id="@goldAge.GoldAgeId" name="goldAgeId" value="@goldAge.GoldAgeId">
+                                    <label style="margin-left:5px;" for="@goldAge.GoldAgeId">@goldAge.Age</label>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+
+                    <div class="sidebar-box-2">
+                        <h2 class="heading mb-4"><a href="#">Brand</a></h2>
+                        <ul>
+                            @foreach (var brand in ViewBag.Brands as List<Brand>)
+                            {
+                                <li>
+                                    <input type="checkbox" id="@brand.BrandId" name="brandId" value="@brand.BrandId">
+                                    <label style="margin-left:5px;" for="@brand.BrandId">@brand.BrandName</label>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="submit" style="padding:5px 10px; border: 1px solid white; background-color:#FFA45C; color: white;" value="Filter" class="btnfilter">
+                    </div>
+                </form>
             </div>
         </div>
     </div>

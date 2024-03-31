@@ -79,7 +79,7 @@ namespace OnlineJwellery_Shopping.Controllers
 
             if (product == null)
             {
-                TempData["Message"] = "Sản phẩm không tồn tại.";
+                TempData["Message"] = "Product does not exist";
                 return RedirectToAction("details", "Page", new { slug = slug });
             }
 
@@ -95,7 +95,7 @@ namespace OnlineJwellery_Shopping.Controllers
                 _context.SaveChanges();
 
                 // Hiển thị thông báo sản phẩm đã bị xóa khỏi danh sách yêu thích
-                TempData["Message"] = "Sản phẩm đã bị xóa khỏi danh sách yêu thích.";
+                TempData["Message"] = "The product has been removed from the favorites list";
                 TempData["MessageType"] = "error";
                 return RedirectToAction("details", "Page", new { slug = slug });
             }
@@ -113,7 +113,7 @@ namespace OnlineJwellery_Shopping.Controllers
             _context.Favorite.Add(newFavorite);
             _context.SaveChanges();
 
-            TempData["Message"] = "Đã thêm sản phẩm vào danh sách yêu thích.";
+            TempData["Message"] = "Product added to favorites list";
             TempData["MessageType"] = "success";
             return RedirectToAction("details", "Page", new { slug = slug });
         }

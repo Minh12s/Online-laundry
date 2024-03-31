@@ -80,6 +80,7 @@ namespace OnlineJwellery_Shopping.Controllers
                         PaymentMethod = model.PaymentMethod,
                         ShippingMethod = model.ShippingMethod
                     };
+
                     // Lấy giỏ hàng từ Session
                     List<CartItem> cartItems = HttpContext.Session.Get<List<CartItem>>("cart");
                     List<OrderProduct> orderProducts = new List<OrderProduct>();
@@ -98,50 +99,47 @@ namespace OnlineJwellery_Shopping.Controllers
                         order.TotalAmount = subtotal + tax + shippingFee;
 
                         // Kiểm tra phương thức thanh toán là PayPal hay không
-                        if (order.PaymentMethod == "paypal")
+                        if (order.PaymentMethod == "PayPal")
                         {
-                            // Gọi phương thức ProcessCheckout để xử lý thanh toán PayPal
-                            return ProcessCheckout(order);
+                            order.IsPaid = "paid"; // Cập nhật trạng thái thanh toán thành 'paid'
                         }
-                        else
-                        {
-                            // Lưu đơn đặt hàng vào cơ sở dữ liệu
-                            _context.Order.Add(order);
-                            _context.SaveChanges();
 
-                            // Lưu thông tin sản phẩm trong đơn hàng vào bảng OrderProducts
-                            foreach (var cartItem in cartItems)
+                        // Lưu đơn đặt hàng vào cơ sở dữ liệu
+                        _context.Order.Add(order);
+                        _context.SaveChanges();
+
+                        // Lưu thông tin sản phẩm trong đơn hàng vào bảng OrderProducts
+                        foreach (var cartItem in cartItems)
+                        {
+                            var orderProduct = new OrderProduct
                             {
-                                var orderProduct = new OrderProduct
-                                {
-                                    OrderId = order.OrderId,
-                                    ProductId = cartItem.ProductId,
-                                    Qty = cartItem.Qty,
-                                    Price = cartItem.Price
-                                };
+                                OrderId = order.OrderId,
+                                ProductId = cartItem.ProductId,
+                                Qty = cartItem.Qty,
+                                Price = cartItem.Price
+                            };
 
-                                _context.OrderProduct.Add(orderProduct);
-                                // Giảm số lượng sản phẩm trong bảng Product
-                                var product = _context.Product.Find(cartItem.ProductId);
-                                if (product != null)
-                                {
-                                    product.Qty -= cartItem.Qty;
-                                    // Kiểm tra nếu muốn xử lý các điều kiện khác khi số lượng dưới 0, thì thêm điều kiện ở đây
-                                }
-                                // Thêm thông tin sản phẩm vào danh sách để gửi qua email
-                                orderProducts.Add(orderProduct);
+                            _context.OrderProduct.Add(orderProduct);
+                            // Giảm số lượng sản phẩm trong bảng Product
+                            var product = _context.Product.Find(cartItem.ProductId);
+                            if (product != null)
+                            {
+                                product.Qty -= cartItem.Qty;
+                                // Kiểm tra nếu muốn xử lý các điều kiện khác khi số lượng dưới 0, thì thêm điều kiện ở đây
                             }
-                            _context.SaveChanges();
-
-                            // Xóa giỏ hàng sau khi đã đặt hàng thành công
-                            HttpContext.Session.Remove("cart");
-
-                            // Gửi email xác nhận đơn hàng
-                            SendInvoiceEmail(model.Email, order, orderProducts);
-
-                            // Chuyển hướng người dùng đến trang cảm ơn
-                            return RedirectToAction("Thankyou", "CheckOut", new { orderId = order.OrderId, totalAmount = order.TotalAmount });
+                            // Thêm thông tin sản phẩm vào danh sách để gửi qua email
+                            orderProducts.Add(orderProduct);
                         }
+                        _context.SaveChanges();
+
+                        // Xóa giỏ hàng sau khi đã đặt hàng thành công
+                        HttpContext.Session.Remove("cart");
+
+                        // Gửi email xác nhận đơn hàng
+                        SendInvoiceEmail(model.Email, order, orderProducts);
+
+                        // Chuyển hướng người dùng đến trang cảm ơn
+                        return RedirectToAction("Thankyou", "CheckOut", new { orderId = order.OrderId, totalAmount = order.TotalAmount });
                     }
                 }
             }
@@ -268,200 +266,6 @@ namespace OnlineJwellery_Shopping.Controllers
             ViewBag.FullAddress = fullAddress;
             ViewBag.OrderId = orderId;
 
-            return View();
-        }
-        public IActionResult ProcessCheckout(Order model)
-        {
-            try
-            {
-                // Lấy totalAmount từ đối tượng Order được truyền vào
-                decimal totalAmount = model.TotalAmount;
-
-                // Khởi tạo PayPal client với thông tin từ appsettings.json
-                var clientId = _configuration["PaypalOptions:AppId"];
-                var clientSecret = _configuration["PaypalOptions:AppSecret"];
-                var mode = _configuration["PaypalOptions:Mode"];
-                var paypalClient = new PaypalClient(clientId, clientSecret, mode);
-
-                // Tạo một đơn đặt hàng PayPal với tổng số tiền đã nhận
-                var orderResponse = paypalClient.CreateOrder(totalAmount.ToString(), "USD", "YourOrderReference").Result;
-
-                // Lấy ID của đơn hàng đã tạo từ PayPal
-                var orderId = orderResponse.id;
-
-                // Lưu order ID vào session để sử dụng sau này
-                HttpContext.Session.SetString("orderId", orderId);
-
-                // Thực hiện việc capture đơn hàng từ PayPal
-                var captureResponse = paypalClient.CaptureOrder(orderId).Result;
-
-                // Lưu thông tin đơn hàng vào CSDL và xóa giỏ hàng
-                SaveOrderAndClearCart(model);
-
-                // Tạo URL chứa orderId và totalAmount
-                var thankyouUrl = $"/Page/ThankyouPaypal?orderId={orderId}";
-
-                // Chuyển hướng người dùng đến trang hoàn thành đơn hàng
-                return Redirect(thankyouUrl);
-            }
-            catch (Exception ex)
-            {
-                // Xử lý lỗi nếu có
-                return BadRequest($"Đã xảy ra lỗi: {ex.Message}");
-            }
-        }
-
-
-        public IActionResult CreateOrder(decimal totalAmount)
-        {
-            try
-            {
-                // Khởi tạo PayPal client với thông tin từ appsettings.json
-                var clientId = _configuration["PaypalOptions:AppId"];
-                var clientSecret = _configuration["PaypalOptions:AppSecret"];
-                var mode = _configuration["PaypalOptions:Mode"];
-                var paypalClient = new PaypalClient(clientId, clientSecret, mode);
-
-                // Tạo một đơn đặt hàng PayPal với tổng số tiền đã nhận
-                var orderResponse = paypalClient.CreateOrder(totalAmount.ToString(), "USD", "YourOrderReference").Result;
-
-                // Lấy ID của đơn hàng đã tạo từ PayPal
-                var orderId = orderResponse.id;
-
-                // Lưu order ID vào session để sử dụng trong phương thức CaptureOrder
-                HttpContext.Session.SetString("orderId", orderId);
-
-                // Chuyển hướng người dùng đến trang thanh toán PayPal
-
-                return Redirect($"https://www.paypal.com/checkoutnow?token={orderId}");
-            }
-            catch (Exception ex)
-            {
-                // Xử lý lỗi nếu có
-                return BadRequest($"Đã xảy ra lỗi: {ex.Message}");
-            }
-
-        }
-
-        public IActionResult CaptureOrder(string orderId)
-        {
-            try
-            {
-                // Khởi tạo PayPal client với thông tin từ appsettings.json
-                var clientId = _configuration["PaypalOptions:AppId"];
-                var clientSecret = _configuration["PaypalOptions:AppSecret"];
-                var mode = _configuration["PaypalOptions:Mode"];
-                var paypalClient = new PaypalClient(clientId, clientSecret, mode);
-
-                // Thực hiện việc capture đơn hàng từ PayPal
-                var captureResponse = paypalClient.CaptureOrder(orderId).Result;
-
-                // Lưu thông tin đơn hàng vào CSDL và xóa giỏ hàng
-                var model = new Order(); // Thay bằng dữ liệu đơn hàng từ form hoặc từ session
-                SaveOrderAndClearCart(model);
-
-                // Tạo URL chứa orderId và totalAmount
-                var thankyouUrl = $"/Page/ThankyouPaypal?orderId={orderId}";
-
-                // Chuyển hướng người dùng đến trang hoàn thành đơn hàng
-                return Redirect(thankyouUrl);
-            }
-            catch (Exception ex)
-            {
-                // Xử lý lỗi nếu có
-                return BadRequest($"Đã xảy ra lỗi: {ex.Message}");
-            }
-        }
-
-
-        public void SaveOrderAndClearCart(Order model)
-        {
-            try
-            {
-                // Lấy UserId từ Session
-                if (HttpContext.Session.TryGetValue("UserId", out byte[] userIdBytes) &&
-                    int.TryParse(Encoding.UTF8.GetString(userIdBytes), out int userId))
-                {
-                    // Tạo một đối tượng Order từ dữ liệu trong form
-                    var order = new Order
-                    {
-                        UserId = userId,
-                        OrderDate = DateTime.Now,
-                        Status = "pending",
-                        IsPaid = "paid", // Đã thanh toán khi sử dụng PayPal
-                        Province = model.Province,
-                        District = model.District,
-                        Ward = model.Ward,
-                        AddressDetail = model.AddressDetail,
-                        FullName = model.FullName,
-                        Email = model.Email,
-                        Telephone = model.Telephone,
-                        PaymentMethod = model.PaymentMethod,
-                        ShippingMethod = model.ShippingMethod
-                    };
-
-                    // Lấy giỏ hàng từ Session
-                    List<CartItem> cartItems = HttpContext.Session.Get<List<CartItem>>("cart");
-                    List<OrderProduct> orderProducts = new List<OrderProduct>();
-
-                    // Kiểm tra xem giỏ hàng có dữ liệu không
-                    if (cartItems != null && cartItems.Count > 0)
-                    {
-                        // Tính tổng TotalAmount từ giỏ hàng và phí vận chuyển
-                        decimal subtotal = cartItems.Sum(cartItem => cartItem.Total);
-                        decimal shippingFee = GetShippingFee(model.ShippingMethod); // Lấy phí vận chuyển từ hàm GetShippingFee
-
-                        // Gán giá trị TotalAmount cho đối tượng Order
-                        order.TotalAmount = subtotal + shippingFee;
-
-                        // Lưu đơn đặt hàng vào cơ sở dữ liệu
-                        _context.Order.Add(order);
-                        _context.SaveChanges();
-
-                        // Lưu thông tin sản phẩm trong đơn hàng vào bảng OrderProducts
-                        foreach (var cartItem in cartItems)
-                        {
-                            var orderProduct = new OrderProduct
-                            {
-                                OrderId = order.OrderId,
-                                ProductId = cartItem.ProductId,
-                                Qty = cartItem.Qty,
-                                Price = cartItem.Price
-                            };
-
-                            _context.OrderProduct.Add(orderProduct);
-
-                            // Giảm số lượng sản phẩm trong bảng Product
-                            var product = _context.Product.Find(cartItem.ProductId);
-                            if (product != null)
-                            {
-                                product.Qty -= cartItem.Qty;
-                                // Kiểm tra nếu muốn xử lý các điều kiện khác khi số lượng dưới 0, thì thêm điều kiện ở đây
-                            }
-                            // Thêm thông tin sản phẩm vào danh sách để gửi qua email
-                            orderProducts.Add(orderProduct);
-                        }
-
-                        _context.SaveChanges();
-                    }
-
-                    // Xóa giỏ hàng sau khi đã đặt hàng thành công
-                    HttpContext.Session.Remove("cart");
-
-                    SendInvoiceEmail(model.Email, order, orderProducts);
-                }
-            }
-            catch (Exception ex)
-            {
-                // Xử lý lỗi nếu có
-                // Có thể ghi log, báo lỗi, hoặc thực hiện các hành động khác tùy theo yêu cầu
-            }
-        }
-
-        public ActionResult ThankyouPaypal(string orderId)
-        {
-            // Thực hiện xử lý logic cần thiết (nếu có)
-            ViewBag.OrderId = orderId;
             return View();
         }
     }

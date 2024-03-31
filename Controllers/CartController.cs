@@ -68,7 +68,7 @@ namespace OnlineJwellery_Shopping.Controllers
                 if (product != null && totalQuantity > product.Qty)
                 {
                     // Số lượng vượt quá số lượng có sẵn, đặt TempData và chuyển hướng
-                    TempData["Message"] = "Số lượng yêu cầu vượt quá số lượng có sẵn!";
+                    TempData["Message"] = "The quantity requested exceeds the quantity available!";
                     TempData["MessageType"] = "error";
                     return RedirectToAction("Details", "Page", new { slug = slug });
                 }
@@ -93,7 +93,7 @@ namespace OnlineJwellery_Shopping.Controllers
                     });
 
                     // Thêm thông báo vào TempData
-                    TempData["Message"] = "Sản phẩm đã được thêm vào giỏ hàng!!";
+                    TempData["Message"] = "The product has been added to cart!!";
                     TempData["MessageType"] = "success";
                 }
             }
