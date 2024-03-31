@@ -125,64 +125,64 @@ namespace OnlineJwellery_Shopping.Controllers
 
 
         public async Task<IActionResult> Category(
-    int page = 1, 
-    int pageSize = 9, 
-    decimal? minPrice = null, 
-    decimal? maxPrice = null, 
-    int? brandId = null, 
+    int page = 1,
+    int pageSize = 9,
+    decimal? minPrice = null,
+    decimal? maxPrice = null,
+    int? brandId = null,
     int? goldAgeId = null)
-{
-    // Kế thừa các logic chung từ BaseController
-    await SetCommonViewData();
+        {
+            // Kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
 
-    // Truy xuất dữ liệu Brand và Gold Age từ cơ sở dữ liệu
-    var brands = await _context.Brand.ToListAsync();
-    var goldAges = await _context.GoldAge.ToListAsync();
+            // Truy xuất dữ liệu Brand và Gold Age từ cơ sở dữ liệu
+            var brands = await _context.Brand.ToListAsync();
+            var goldAges = await _context.GoldAge.ToListAsync();
 
-    // Truyền dữ liệu vào view
-    ViewBag.Brands = brands;
-    ViewBag.GoldAges = goldAges;
+            // Truyền dữ liệu vào view
+            ViewBag.Brands = brands;
+            ViewBag.GoldAges = goldAges;
 
-    // Lấy danh sách sản phẩm với phân trang
-    var query = _context.Product
-        .Include(p => p.Category) // Include the Category information
-        .OrderBy(p => p.ProductId)
-        .Skip((page - 1) * pageSize)
-        .Take(pageSize);
+            // Lấy danh sách sản phẩm với phân trang
+            var query = _context.Product
+                .Include(p => p.Category) // Include the Category information
+                .OrderBy(p => p.ProductId)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize);
 
-    // Lọc theo giá
-    if (minPrice != null)
-    {
-        query = query.Where(p => p.Price >= minPrice);
-    }
+            // Lọc theo giá
+            if (minPrice != null)
+            {
+                query = query.Where(p => p.Price >= minPrice);
+            }
 
-    if (maxPrice != null)
-    {
-        query = query.Where(p => p.Price <= maxPrice);
-    }
+            if (maxPrice != null)
+            {
+                query = query.Where(p => p.Price <= maxPrice);
+            }
 
-    // Lọc theo BrandId
-    if (brandId != null)
-    {
-        query = query.Where(p => p.BrandId == brandId);
-    }
+            // Lọc theo BrandId
+            if (brandId != null)
+            {
+                query = query.Where(p => p.BrandId == brandId);
+            }
 
-    // Lọc theo GoldAgeId
-    if (goldAgeId != null)
-    {
-        query = query.Where(p => p.GoldAgeId == goldAgeId);
-    }
+            // Lọc theo GoldAgeId
+            if (goldAgeId != null)
+            {
+                query = query.Where(p => p.GoldAgeId == goldAgeId);
+            }
 
-    var productList = await query.ToListAsync();
+            var productList = await query.ToListAsync();
 
-    // Tính toán và chuyển thông tin phân trang vào ViewBag hoặc ViewModel
-    ViewBag.TotalProductCount = await _context.Product.CountAsync(); // Tổng số sản phẩm
-    ViewBag.TotalPages = (int)Math.Ceiling((double)ViewBag.TotalProductCount / pageSize);
-    ViewBag.CurrentPage = page;
-    ViewBag.Categories = await _context.Category.ToListAsync();
+            // Tính toán và chuyển thông tin phân trang vào ViewBag hoặc ViewModel
+            ViewBag.TotalProductCount = await _context.Product.CountAsync(); // Tổng số sản phẩm
+            ViewBag.TotalPages = (int)Math.Ceiling((double)ViewBag.TotalProductCount / pageSize);
+            ViewBag.CurrentPage = page;
+            ViewBag.Categories = await _context.Category.ToListAsync();
 
-    return View(productList);
-}
+            return View(productList);
+        }
 
 
         [Authentication]
@@ -482,4 +482,3 @@ namespace OnlineJwellery_Shopping.Controllers
         }
     }
 }
-

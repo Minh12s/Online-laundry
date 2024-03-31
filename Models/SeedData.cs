@@ -74,7 +74,7 @@ namespace OnlineJwellery_Shopping.Models
 
                 foreach (var categoryName in categoryNames)
                 {
-                    var slug = SlugHelper.GenerateSlug(categoryName); // Hàm GenerateSlug để tạo slug từ CategoryName
+                    var slug = SlugHelper.GenerateSlug(categoryName, categoryNames.IndexOf(categoryName) + 1); // Truyền thêm biến index của category
                     var category = new Category
                     {
                         CategoryName = categoryName,
@@ -151,7 +151,7 @@ namespace OnlineJwellery_Shopping.Models
                     var color = colors[random.Next(colors.Count)];
                     var size = sizes[random.Next(sizes.Count)];
                     var material = materials[random.Next(materials.Count)];
-                    var slug = SlugHelper.GenerateSlug(productName);
+                    var slug = SlugHelper.GenerateSlug(productName, i);
 
 
                     var product = new Product

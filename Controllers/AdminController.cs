@@ -279,7 +279,7 @@ namespace OnlineJwellery_Shopping.Controllers
                     }
                 }
                 // Tạo slug từ tên sản phẩm và gán cho thuộc tính Slug của model
-                model.Slug = SlugHelper.GenerateSlug(model.ProductName);
+                model.Slug = SlugHelper.GenerateSlug(model.ProductName, model.ProductId);
 
                 _context.Update(model);
                 await _context.SaveChangesAsync();
@@ -334,7 +334,8 @@ namespace OnlineJwellery_Shopping.Controllers
                     model.Thumbnail = "/images/" + Path.GetFileName(imagePath);
                 }
                 // Tạo slug từ tên sản phẩm và gán cho thuộc tính Slug của model
-                model.Slug = SlugHelper.GenerateSlug(model.ProductName);
+                model.Slug = SlugHelper.GenerateSlug(model.ProductName, model.ProductId);
+
 
                 _context.Add(model);
                 await _context.SaveChangesAsync();
