@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Mail;
 
+
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace OnlineJwellery_Shopping.Controllers
@@ -125,12 +126,12 @@ namespace OnlineJwellery_Shopping.Controllers
 
 
         public async Task<IActionResult> Category(
-    int page = 1,
-    int pageSize = 9,
-    decimal? minPrice = null,
-    decimal? maxPrice = null,
-    int? brandId = null,
-    int? goldAgeId = null)
+      int page = 1,
+      int pageSize = 9,
+      decimal? minPrice = null,
+      decimal? maxPrice = null,
+      int? brandId = null,
+      int? goldAgeId = null)
         {
             // Kế thừa các logic chung từ BaseController
             await SetCommonViewData();
@@ -143,14 +144,10 @@ namespace OnlineJwellery_Shopping.Controllers
             ViewBag.Brands = brands;
             ViewBag.GoldAges = goldAges;
 
-            // Lấy danh sách sản phẩm với phân trang
-            var query = _context.Product
-                .Include(p => p.Category) // Include the Category information
-                .OrderBy(p => p.ProductId)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize);
+            // Bắt đầu với một query không có điều kiện lọc
+            var query = _context.Product.Include(p => p.Category).AsQueryable();
 
-            // Lọc theo giá
+            // Áp dụng các bộ lọc nếu có
             if (minPrice != null)
             {
                 query = query.Where(p => p.Price >= minPrice);
@@ -161,29 +158,32 @@ namespace OnlineJwellery_Shopping.Controllers
                 query = query.Where(p => p.Price <= maxPrice);
             }
 
-            // Lọc theo BrandId
             if (brandId != null)
             {
                 query = query.Where(p => p.BrandId == brandId);
             }
 
-            // Lọc theo GoldAgeId
             if (goldAgeId != null)
             {
                 query = query.Where(p => p.GoldAgeId == goldAgeId);
             }
 
-            var productList = await query.ToListAsync();
+            // Sắp xếp và phân trang dữ liệu
+            var orderedQuery = query.OrderBy(p => p.ProductId);
+            var productList = await orderedQuery
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
             // Tính toán và chuyển thông tin phân trang vào ViewBag hoặc ViewModel
-            ViewBag.TotalProductCount = await _context.Product.CountAsync(); // Tổng số sản phẩm
-            ViewBag.TotalPages = (int)Math.Ceiling((double)ViewBag.TotalProductCount / pageSize);
+            var totalProductCount = await query.CountAsync();
+            ViewBag.TotalProductCount = totalProductCount;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalProductCount / pageSize);
             ViewBag.CurrentPage = page;
             ViewBag.Categories = await _context.Category.ToListAsync();
 
             return View(productList);
         }
-
 
         [Authentication]
         public async Task<IActionResult> Shop(
