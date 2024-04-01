@@ -2,6 +2,7 @@
     Layout = "~/Views/Shared/User_Layout.cshtml";
     ViewData["Title"] = "Category";
 }
+
 <div class="hero-wrap hero-bread" style="background-image: url('/images/anhbg1.jpg');">
     <div class="container">
         <div class="row no-gutters slider-text align-items-center justify-content-center">
@@ -92,7 +93,7 @@
                     </ul>
                 </div>
 
-                <form action="@Url.Action("Shop", "Page", new { slug = ViewBag.CategorySlug })" method="get">
+                <form id="filterForm" action="@Url.Action("Shop", "Page", new { slug = ViewBag.CategorySlug })" method="get">
                     <div class="sidebar-box-2">
                         <h2 class="heading mb-4"><a href="#">Price</a></h2>
                         <div class="form-group">
@@ -131,15 +132,53 @@
                         </ul>
                     </div>
 
-                    <div class="form-group">
-                        <input type="submit" style="padding:5px 10px; border: 1px solid white; background-color:#FFA45C; color: white;" value="Filter" class="btnfilter">
-                        <input type="hidden" name="slug" value="@ViewBag.CategorySlug">
-                    </div>
+          
                 </form>
-
-
 
             </div>
         </div>
     </div>
 </section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var filterForm = document.getElementById("filterForm");
+        var inputs = filterForm.querySelectorAll("input[type='text'], input[type='checkbox']");
+
+        // Lấy các tham số từ URL và điền lại vào các trường lọc
+        var urlParams = new URLSearchParams(window.location.search);
+        inputs.forEach(function (input) {
+            var paramName = input.getAttribute("name");
+            if (urlParams.has(paramName)) {
+                if (input.type === "checkbox") {
+                    var paramValue = urlParams.getAll(paramName);
+                    if (paramValue.includes(input.value)) {
+                        input.checked = true;
+                    }
+                } else {
+                    input.value = urlParams.get(paramName);
+                }
+            }
+        });
+
+       
+       // Gửi biểu mẫu khi có thay đổi trong các trường lọc
+inputs.forEach(function (input) {
+    input.addEventListener("change", function () {
+        var queryString = new URLSearchParams(window.location.search);
+        inputs.forEach(function (input) {
+            var paramName = input.getAttribute("name");
+            var paramValue = input.value;
+            if (input.type === "checkbox" && input.checked) {
+                queryString.append(paramName, paramValue);
+            } else if (input.type !== "checkbox" && paramValue !== "") {
+                queryString.set(paramName, paramValue);
+            }
+        });
+        window.location.href = "@Url.Action("Shop", "Page")" + "?" + queryString.toString();
+    });
+});
+
+    });
+
+</script>
