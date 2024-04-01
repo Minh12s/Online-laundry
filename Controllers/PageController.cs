@@ -143,6 +143,10 @@ namespace OnlineJwellery_Shopping.Controllers
             // Truyền dữ liệu vào view
             ViewBag.Brands = brands;
             ViewBag.GoldAges = goldAges;
+            ViewBag.MinPrice = minPrice;
+            ViewBag.MaxPrice = maxPrice;
+            ViewBag.BrandId = brandId;
+            ViewBag.GoldAgeId = goldAgeId;
 
             // Bắt đầu với một query không có điều kiện lọc
             var query = _context.Product.Include(p => p.Category).AsQueryable();

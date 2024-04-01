@@ -71,7 +71,7 @@
                                     {
                                         for (int i = 1; i <= ViewBag.TotalPages; i++)
                                         {
-                                            <a href="@Url.Action("Category", new { slug = ViewBag.CategorySlug, page = i })">@i</a>
+                                            <a  href="@Url.Action("Category", new { slug = ViewBag.CategorySlug, page = i, minPrice = ViewBag.MinPrice, maxPrice = ViewBag.MaxPrice, brandId = ViewBag.BrandId, goldAgeId = ViewBag.GoldAgeId })">@i</a>
                                         }
                                     }
                                 </li>
@@ -92,11 +92,9 @@
                         }
                     </ul>
                 </div>
-                <form action="@Url.Action("Category", "Page")" method="get">
-
+                <form id="filterForm" action="@Url.Action("Category", "Page")" method="get">
                     <div class="sidebar-box-2">
                         <h2 class="heading mb-4"><a href="#">Price</a></h2>
-
                         <div class="form-group">
                             <label for="price_from">Price from:</label>
                             <input type="text" style="width:100px;" id="price_from" name="minPrice">
@@ -105,7 +103,6 @@
                             <label for="price_to">Price to:</label>
                             <input type="text" style="width:100px;" id="price_to" name="maxPrice">
                         </div>
-
                     </div>
 
                     <div class="sidebar-box-2">
@@ -133,12 +130,40 @@
                             }
                         </ul>
                     </div>
-
-                    <div class="form-group">
-                        <input type="submit" style="padding:5px 10px; border: 1px solid white; background-color:#FFA45C; color: white;" value="Filter" class="btnfilter">
-                    </div>
                 </form>
+
             </div>
         </div>
     </div>
 </section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var filterForm = document.getElementById("filterForm");
+        var inputs = filterForm.querySelectorAll("input[type='text'], input[type='checkbox']");
+
+        // Lấy các tham số từ URL và điền lại vào các trường lọc
+        var urlParams = new URLSearchParams(window.location.search);
+        inputs.forEach(function (input) {
+            var paramName = input.getAttribute("name");
+            if (urlParams.has(paramName)) {
+                if (input.type === "checkbox") {
+                    var paramValue = urlParams.getAll(paramName);
+                    if (paramValue.includes(input.value)) {
+                        input.checked = true;
+                    }
+                } else {
+                    input.value = urlParams.get(paramName);
+                }
+            }
+        });
+
+        // Gửi biểu mẫu khi có thay đổi trong các trường lọc
+        inputs.forEach(function (input) {
+            input.addEventListener("change", function () {
+                filterForm.submit();
+            });
+        });
+    });
+
+ </script>
