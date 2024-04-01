@@ -425,30 +425,36 @@ namespace OnlineJwellery_Shopping.Controllers
                 return NotFound();
             }
 
-            return View(user);
+            return View("EditProfile", user);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditProfile(User user, IFormFile thumbnail)
+        public async Task<IActionResult> EditProfile(User model, IFormFile thumbnail)
         {
-            if (user == null || user.UserId <= 0)
+            if (true)
             {
-                return NotFound(); // Kiểm tra xem dữ liệu người dùng hợp lệ không
-            }
+                // Lấy userId từ session
+                int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
 
-            var existingUser = await _context.User.FirstOrDefaultAsync(u => u.UserId == user.UserId);
-            if (existingUser == null)
-            {
-                return NotFound(); // Kiểm tra xem người dùng tồn tại trong cơ sở dữ liệu không
-            }
+                // Truy vấn database để lấy thông tin người dùng
+                var user = await _context.User.FirstOrDefaultAsync(u => u.UserId == userId);
 
-            try
-            {
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                // Cập nhật các thông tin mới
+                user.Username = model.Username;
+                user.Email = model.Email;
+                user.PhoneNumber = model.PhoneNumber;
+                user.Address = model.Address;
+
                 // Xử lý tệp tin ảnh và lưu đường dẫn
                 if (thumbnail != null && thumbnail.Length > 0)
                 {
-                    var uploadsFolder = Path.Combine("wwwroot", "images");
+                    var uploadsFolder = Path.Combine("wwwroot","images", "avatars");
                     if (!Directory.Exists(uploadsFolder))
                     {
                         Directory.CreateDirectory(uploadsFolder);
@@ -460,23 +466,26 @@ namespace OnlineJwellery_Shopping.Controllers
                         await thumbnail.CopyToAsync(stream);
                     }
 
-                    // Lưu đường dẫn vào trường Avatar của mô hình User
-                    user.Thumbnail = "/images/" + Path.GetFileName(imagePath);
+                    // Lưu đường dẫn vào trường Thumbnail của mô hình
+                    user.Thumbnail = "/images/avatars/" + Path.GetFileName(imagePath);
                 }
                 else
                 {
-                    // Nếu không có ảnh mới được tải lên, giữ nguyên đường dẫn ảnh của người dùng
-                    user.Thumbnail = existingUser.Thumbnail;
+                    var existingUser = await _context.User.AsNoTracking().FirstOrDefaultAsync(p => p.UserId == model.UserId);
+                    if (existingUser != null)
+                    {
+                        user.Thumbnail = existingUser.Thumbnail;
+                    }
                 }
 
+                // Cập nhật thông tin người dùng
                 _context.Update(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Profile));
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                return NotFound(); // Xử lý khi có lỗi xảy ra
-            }
+
+            // Trả về View nếu dữ liệu không hợp lệ
+            return View("EditProfile", model);
         }
     }
 }
