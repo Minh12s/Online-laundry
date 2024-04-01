@@ -1,11 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using OnlineJwellery_Shopping.Models;
 using OnlineJwellery_Shopping.Data;
+using Microsoft.AspNetCore.Http;
 using OnlineJwellery_Shopping.Models.Authentication;
+using Microsoft.EntityFrameworkCore;
+using BCrypt.Net;
+using System;
+using System.Text;
+using OnlineJwellery_Shopping.Heplers;
+using System.Threading.Tasks;
+using System.Net;
+using System.Net.Mail;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,8 +26,7 @@ namespace OnlineJwellery_Shopping.Controllers
             db = context;
             _configuration = configuration;
         }
-        // GET: /<controller>/
-        // GET: /<controller>/
+     
         [Authentication]
         public async Task<IActionResult> MyOrder(int page = 1, int pageSize = 10)
         {
@@ -68,7 +72,7 @@ namespace OnlineJwellery_Shopping.Controllers
         public IActionResult OrderDetail(int? id)
         {
 
-            if (id  == null)
+            if (id == null)
             {
                 return NotFound(); // Trả về lỗi 404 nếu không có ID đơn hàng
             }
@@ -356,7 +360,7 @@ namespace OnlineJwellery_Shopping.Controllers
         [Authentication]
         public async Task<IActionResult> ChangePassword()
         {
-           
+
             return View();
         }
         [HttpPost]
@@ -392,16 +396,87 @@ namespace OnlineJwellery_Shopping.Controllers
             TempData["MessageColor"] = "alert-success"; // Màu xanh lá cây
             return RedirectToAction("ChangePassword", "MyOrder");
         }
-
         [Authentication]
         public IActionResult Profile()
         {
-            return View();
+            // Lấy userId từ session
+            int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+
+            // Truy vấn database để lấy thông tin người dùng
+            var user = db.User.FirstOrDefault(u => u.UserId == userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user); // Truyền thông tin người dùng vào view
         }
+
+        [HttpGet]
         [Authentication]
-        public IActionResult EditProfile()
+        public IActionResult EditProfile(int id)
         {
-            return View();
+            // Truy vấn database để lấy thông tin người dùng
+            var user = db.User.FirstOrDefault(u => u.UserId == id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProfile(User user, IFormFile thumbnail)
+        {
+            if (user == null || user.UserId <= 0)
+            {
+                return NotFound(); // Kiểm tra xem dữ liệu người dùng hợp lệ không
+            }
+
+            var existingUser = await _context.User.FirstOrDefaultAsync(u => u.UserId == user.UserId);
+            if (existingUser == null)
+            {
+                return NotFound(); // Kiểm tra xem người dùng tồn tại trong cơ sở dữ liệu không
+            }
+
+            try
+            {
+                // Xử lý tệp tin ảnh và lưu đường dẫn
+                if (thumbnail != null && thumbnail.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine("wwwroot", "images");
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+
+                    var imagePath = Path.Combine(uploadsFolder, Guid.NewGuid().ToString() + "_" + thumbnail.FileName);
+                    using (var stream = new FileStream(imagePath, FileMode.Create))
+                    {
+                        await thumbnail.CopyToAsync(stream);
+                    }
+
+                    // Lưu đường dẫn vào trường Avatar của mô hình User
+                    user.Thumbnail = "/images/" + Path.GetFileName(imagePath);
+                }
+                else
+                {
+                    // Nếu không có ảnh mới được tải lên, giữ nguyên đường dẫn ảnh của người dùng
+                    user.Thumbnail = existingUser.Thumbnail;
+                }
+
+                _context.Update(user);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Profile));
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return NotFound(); // Xử lý khi có lỗi xảy ra
+            }
         }
     }
 }
