@@ -21,6 +21,7 @@ namespace OnlineJwellery_Shopping.Data
         public DbSet<Favorite> Favorite { get; set; }
         public DbSet<Review> Review { get; set; }
         public DbSet<Blog> Blog { get; set; }
+      
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -35,9 +36,6 @@ namespace OnlineJwellery_Shopping.Data
                 .HasMany(p => p.OrderProducts)
                 .WithOne(op => op.Product)
                 .HasForeignKey(op => op.ProductId);
-
-
         }
     }
 }
-

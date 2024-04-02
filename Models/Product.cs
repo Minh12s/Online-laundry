@@ -11,6 +11,10 @@ namespace OnlineJwellery_Shopping.Models
         public string Slug { get; set; }
         public decimal Price { get; set; }
         public string Thumbnail { get; set; }
+        public string SmallThumbnail1 { get; set; }
+        public string SmallThumbnail2 { get; set; }
+        public string SmallThumbnail3 { get; set; }
+        public string SmallThumbnail4 { get; set; }
         public int Qty { get; set; }
         public int CategoryId { get; set; }
         public int BrandId { get; set; }
@@ -28,6 +32,7 @@ namespace OnlineJwellery_Shopping.Models
         public Brand Brand { get; set; }
         public GoldAge GoldAge { get; set; }
         public ICollection<OrderProduct> OrderProducts { get; set; }
+      
         public ICollection<Favorite> Favorites { get; set; }
         public ICollection<Review> Reviews { get; set; }
     }

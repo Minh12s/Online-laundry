@@ -98,7 +98,12 @@ namespace OnlineJwellery_Shopping.Controllers
 
             // Đặt các thuộc tính ViewBag cho chi tiết sản phẩm
             ViewBag.ProductId = product.ProductId;
-            ViewBag.ProductThumbnail = product.Thumbnail;  // Đường dẫn ảnh sản phẩm
+            ViewBag.ProductThumbnail = product.Thumbnail;
+            ViewBag.SmallThumbnail1 = product.SmallThumbnail1;
+            ViewBag.SmallThumbnail2 = product.SmallThumbnail2;
+            ViewBag.SmallThumbnail3 = product.SmallThumbnail3;
+            ViewBag.SmallThumbnail4 = product.SmallThumbnail4;
+
             ViewBag.ProductName = product.ProductName; // Tên sản phẩm
             ViewBag.ProductPrice = product.Price;      // Giá sản phẩm
             ViewBag.ProductCategory = product.Category?.CategoryName;

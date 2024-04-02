@@ -44,16 +44,24 @@
                             <tr>
                                 <th style="width:100px;" scope="col">ID</th>
                                 <th style="width:200px;" scope="col">Thumbnail</th>
+                                <th style="width:200px;" scope="col">Thumbnail 1</th>
+                                <th style="width:200px;" scope="col">Thumbnail 2</th>
+                                <th style="width:200px;" scope="col">Thumbnail 3</th>
+                                <th style="width:200px;" scope="col">Thumbnail 4</th>
                                 <th style="width:300px;" scope="col">Name</th>
                                 <th style="width:200px;" scope="col">Price</th>
                                 <th style="width:200px;" scope="col">Quantity</th>
-                               
+
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>@Model.ProductId</td>
                                 <td><img src="@Model.Thumbnail" alt="Thumbnail" width="100" height="100"></td>
+                                <td><img src="@Model.SmallThumbnail1" alt="Thumbnail" width="100" height="100"></td>
+                                <td><img src="@Model.SmallThumbnail2" alt="Thumbnail" width="100" height="100"></td>
+                                <td><img src="@Model.SmallThumbnail3" alt="Thumbnail" width="100" height="100"></td>
+                                <td><img src="@Model.SmallThumbnail4" alt="Thumbnail" width="100" height="100"></td>
                                 <td>@Model.ProductName</td>
                                 <td>@Model.Price</td>
                                 <td>@Model.Qty</td>

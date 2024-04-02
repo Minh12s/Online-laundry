@@ -23,6 +23,41 @@
             color: white;
         }
 
+    .favoriteForm button {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 30px 27px 30px 27px;
+        box-shadow: rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+        background-color: #e8e8e8;
+        border-color: #ffe2e2;
+        border-style: solid;
+        border-width: 9px;
+        border-radius: 35px;
+        transition: transform 400ms cubic-bezier(.68,-0.55,.27,2.5), border-color 400ms ease-in-out, background-color 400ms ease-in-out;
+        word-spacing: -2px;
+    }
+
+
+
+        .favoriteForm button:hover {
+            background-color: #eee;
+            transform: scale(105%);
+            animation: movingBorders 3s infinite;
+        }
+
+        .favoriteForm button svg {
+            fill: rgb(255, 110, 110);
+        }
+
+
+
+        .favoriteForm button:hover svg {
+            transform: scale(105%);
+            border-color: #ffd8d8;
+            animation: beatingHeart 1.2s infinite;
+        }
+
     .details-list {
         list-style-type: none;
         padding: 0;
@@ -43,6 +78,61 @@
             text-align: left;
             margin-right: 20px;
         }
+
+    .img-wrapper {
+        border: 2px solid #ccc; /* Thêm viền xung quanh ảnh */
+        padding: 10px; /* Thêm padding nếu cần */
+        overflow: hidden;
+        position: relative;
+        width: 100%;
+        height: 90%;
+    }
+
+        .img-wrapper img {
+            transition: transform 0.3s ease;
+        }
+
+        .img-wrapper:hover .overlay {
+            opacity: 1;
+        }
+
+    .small-images-container {
+        width: 530px; /* Điều chỉnh kích thước container theo nhu cầu */
+        overflow: hidden; /* Ẩn các sản phẩm nằm ngoài phạm vi container */
+    }
+
+    .small-images {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 10px;
+        transition: transform 0.5s ease; /* Áp dụng hiệu ứng chuyển động */
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .small-image {
+        width: 120px;
+        height: 120px;
+        cursor: pointer;
+        border: 2px solid #ccc;
+        box-sizing: border-box;
+        margin: 5px;
+        cursor: pointer;
+    }
+
+        .small-image:hover {
+            transform: scale(1.1); /* Phóng to khi rê chuột vào */
+        }
+
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
 </style>
 <div class="hero-wrap hero-bread" style="background-image: url('/images/anhbg1.jpg');">
     <div class="container">
@@ -70,7 +160,23 @@
                 <div class="img-wrapper" onmousemove="zoom(event)" onmouseleave="resetZoom()">
                     <img id="image" src="@ViewBag.ProductThumbnail" class="img-fluid" alt="Colorlib Template">
                 </div>
+                <div class="small-images-container">
+                    <div class="small-images">
+                        <img src="@ViewBag.SmallThumbnail1" class="small-image" alt="Small Image 1" onclick="showLargeImage(this)">
+                        <img src="@ViewBag.SmallThumbnail2" class="small-image" alt="Small Image 2" onclick="showLargeImage(this)">
+                        <img src="@ViewBag.SmallThumbnail3" class="small-image" alt="Small Image 3" onclick="showLargeImage(this)">
+                        <img src="@ViewBag.SmallThumbnail4" class="small-image" alt="Small Image 4" onclick="showLargeImage(this)">
+                    </div>
+                </div>
             </div>
+
+
+            <script>function showLargeImage(img) {
+                    var largeImage = document.getElementById('large-image');
+                    largeImage.src = img.src;
+                }</script>
+
+
             <div class="col-lg-6 product-details pl-md-5 ftco-animate">
                 <h3>@ViewBag.ProductName</h3>
                 <div class="rating d-flex">
@@ -248,6 +354,9 @@
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
 <script src="~/js/google-map.js"></script>
 <script src="~/js/main.js"></script>
+
+
+
 <script>$(document).ready(function () {
 
         var quantitiy = 0;
@@ -282,8 +391,7 @@
         });
 
     });</script>
-<script>
-    document.querySelectorAll('.favoriteForm').forEach(form => {
+<script>document.querySelectorAll('.favoriteForm').forEach(form => {
         var heartButton = form.querySelector('.heart-icon');
         var heartIcon = heartButton.querySelector('.heart-path'); // Thay đổi lấy class của path trong SVG
 
@@ -309,48 +417,8 @@
             }
             // Không cần gửi biểu mẫu vì chúng ta đã ngăn chặn hành động mặc định của nút
         });
-    });
-
-</script>
-<style>
-    .favoriteForm button {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 30px 27px 30px 27px;
-        box-shadow: rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
-        background-color: #e8e8e8;
-        border-color: #ffe2e2;
-        border-style: solid;
-        border-width: 9px;
-        border-radius: 35px;
-        transition: transform 400ms cubic-bezier(.68,-0.55,.27,2.5), border-color 400ms ease-in-out, background-color 400ms ease-in-out;
-        word-spacing: -2px;
-    }
-
-
-
-        .favoriteForm button:hover {
-            background-color: #eee;
-            transform: scale(105%);
-            animation: movingBorders 3s infinite;
-        }
-
-        .favoriteForm button svg {
-            fill: rgb(255, 110, 110);
-        }
-
-
-
-        .favoriteForm button:hover svg {
-            transform: scale(105%);
-            border-color: #ffd8d8;
-            animation: beatingHeart 1.2s infinite;
-        }
-
-</style>
-<script>
-    function zoom(event) {
+    });</script>
+<script>function zoom(event) {
         const img = document.getElementById("image");
         const boundingRect = event.currentTarget.getBoundingClientRect();
         const offsetX = event.clientX - boundingRect.left;
@@ -364,37 +432,37 @@
     function resetZoom() {
         const img = document.getElementById("image");
         img.style.transform = "scale(1)";
+    }</script>
+
+<script>function showLargeImage(img) {
+        var largeImage = document.getElementById('image');
+        largeImage.src = img.src;
+        largeImage.style.transform = "scale(1)"; // Reset hiệu ứng zoom khi chuyển đổi ảnh lớn
+    }</script>
+
+<script>// Lưu trữ thời gian giữa các lần chuyển đổi (ở đây là 3 giây)
+    const slideInterval = 3000;
+
+    // Hàm để di chuyển các sản phẩm từ phải qua trái như một vòng tròn
+    function slideImages() {
+        const container = document.querySelector('.small-images');
+        const images = container.querySelectorAll('.small-image');
+
+        // Lấy kích thước của một sản phẩm
+        const itemWidth = images[0].offsetWidth;
+
+        // Di chuyển container từ phải qua trái
+        container.style.transition = 'transform 1s ease-in-out'; // Áp dụng hiệu ứng chuyển động
+        container.style.transform = `translateX(-${itemWidth}px)`;
+
+        // Sau một khoảng thời gian nhất định, di chuyển sản phẩm cuối cùng lên đầu danh sách
+        setTimeout(function () {
+            container.appendChild(container.firstElementChild);
+            container.style.transition = 'none'; // Tắt hiệu ứng chuyển động tạm thời
+            container.style.transform = 'translateX(0)';
+        }, slideInterval);
     }
 
-
-</script>
-
-<style>
-    .img-wrapper {
-        overflow: hidden;
-        position: relative;
-        width: 100%;
-        height: 100%;
-    }
-
-        .img-wrapper img {
-            transition: transform 0.3s ease;
-        }
-
-    .overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .img-wrapper:hover .overlay {
-        opacity: 1;
-    }
-</style>
-
+    // Gọi hàm slideImages để bắt đầu chuyển động tự động
+    setInterval(slideImages, slideInterval); // Gọi hàm sau mỗi khoảng thời gian giữa các lần chuyển đổi</script>
 

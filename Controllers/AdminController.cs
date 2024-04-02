@@ -247,51 +247,70 @@ namespace OnlineJwellery_Shopping.Controllers
         [Authentication]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> editProduct(Product model, IFormFile thumbnail)
+        public async Task<IActionResult> editProduct(Product model, IFormFile thumbnail,
+           IFormFile smallThumbnail1, IFormFile smallThumbnail2,
+           IFormFile smallThumbnail3, IFormFile smallThumbnail4)
         {
             if (true)
             {
-                // Xử lý tệp tin ảnh và lưu đường dẫn
-                if (thumbnail != null && thumbnail.Length > 0)
+                try
                 {
-                    var uploadsFolder = Path.Combine("wwwroot", "images");
-                    if (!Directory.Exists(uploadsFolder))
+                    // Xử lý tệp tin ảnh chính (thumbnail) và lưu đường dẫn
+                    if (thumbnail != null && thumbnail.Length > 0)
                     {
-                        Directory.CreateDirectory(uploadsFolder);
+                        model.Thumbnail = await SaveImage(thumbnail);
+                    }
+                    else
+                    {
+                        // Giữ hình ảnh hiện tại nếu không có hình mới được cung cấp
+                        var existingProduct = _context.Product.AsNoTracking().FirstOrDefault(p => p.ProductId == model.ProductId);
+                        if (existingProduct != null)
+                        {
+                            model.Thumbnail = existingProduct.Thumbnail;
+                        }
                     }
 
-                    var imagePath = Path.Combine(uploadsFolder, Guid.NewGuid().ToString() + "_" + thumbnail.FileName);
-                    using (var stream = new FileStream(imagePath, FileMode.Create))
+                    // Xử lý các tệp tin ảnh smallThumbnail và lưu đường dẫn tương ứng
+                    if (smallThumbnail1 != null && smallThumbnail1.Length > 0)
                     {
-                        await thumbnail.CopyToAsync(stream);
+                        model.SmallThumbnail1 = await SaveImage(smallThumbnail1);
                     }
 
-                    // Lưu đường dẫn vào trường Thumbnail của mô hình
-                    model.Thumbnail = "/images/" + Path.GetFileName(imagePath);
+                    if (smallThumbnail2 != null && smallThumbnail2.Length > 0)
+                    {
+                        model.SmallThumbnail2 = await SaveImage(smallThumbnail2);
+                    }
+
+                    if (smallThumbnail3 != null && smallThumbnail3.Length > 0)
+                    {
+                        model.SmallThumbnail3 = await SaveImage(smallThumbnail3);
+                    }
+
+                    if (smallThumbnail4 != null && smallThumbnail4.Length > 0)
+                    {
+                        model.SmallThumbnail4 = await SaveImage(smallThumbnail4);
+                    }
+
+                    // Tạo slug từ tên sản phẩm và gán cho thuộc tính Slug của model
+                    model.Slug = SlugHelper.GenerateSlug(model.ProductName, model.ProductId);
+
+                    _context.Update(model);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Product));
                 }
-
-                else
+                catch (DbUpdateConcurrencyException)
                 {
-                    var existingProduct = _context.Product.AsNoTracking().FirstOrDefault(p => p.ProductId == model.ProductId);
-                    if (existingProduct != null)
-                    {
-                        model.Thumbnail = existingProduct.Thumbnail;
-                    }
+                    // Xử lý ngoại lệ xảy ra trong quá trình cập nhật dữ liệu
+                    ModelState.AddModelError("", "Error occurred while saving data.");
                 }
-                // Tạo slug từ tên sản phẩm và gán cho thuộc tính Slug của model
-                model.Slug = SlugHelper.GenerateSlug(model.ProductName, model.ProductId);
-
-                _context.Update(model);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Product));
             }
 
-            // Trả về View nếu dữ liệu không hợp lệ
+            // Nếu dữ liệu không hợp lệ, trả về view với model và thông tin danh mục
             var categories = _context.Category.OrderBy(c => c.CategoryName).ToList();
             ViewBag.Categories = new SelectList(categories, "CategoryId", "CategoryName");
-
             return View("ProductManagement/editProduct", model);
         }
+
 
 
         [Authentication]
@@ -306,45 +325,72 @@ namespace OnlineJwellery_Shopping.Controllers
 
             return View("ProductManagement/addProduct");
         }
-
-        [Authentication]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> addProduct(Product model, IFormFile thumbnail)
+        public async Task<IActionResult> addProduct(Product model,
+            IFormFile thumbnail, IFormFile smallThumbnail1,
+            IFormFile smallThumbnail2, IFormFile smallThumbnail3,
+            IFormFile smallThumbnail4)
         {
             if (true)
             {
-                // Xử lý khi dữ liệu hợp lệ
-
-                // Xử lý tệp tin ảnh và lưu đường dẫn
                 if (thumbnail != null && thumbnail.Length > 0)
                 {
-                    var uploadsFolder = Path.Combine("wwwroot", "images");
-                    if (!Directory.Exists(uploadsFolder))
-                    {
-                        Directory.CreateDirectory(uploadsFolder);
-                    }
-
-                    var imagePath = Path.Combine(uploadsFolder, Guid.NewGuid().ToString() + "_" + thumbnail.FileName);
-                    using (var stream = new FileStream(imagePath, FileMode.Create))
-                    {
-                        await thumbnail.CopyToAsync(stream);
-                    }
-                    // Lưu đường dẫn vào trường Thumbnail của mô hình
-                    model.Thumbnail = "/images/" + Path.GetFileName(imagePath);
+                    var thumbnailPath = await SaveImage(thumbnail);
+                    model.Thumbnail = thumbnailPath;
                 }
-                // Tạo slug từ tên sản phẩm và gán cho thuộc tính Slug của model
-                model.Slug = SlugHelper.GenerateSlug(model.ProductName, model.ProductId);
 
+                if (smallThumbnail1 != null && smallThumbnail1.Length > 0)
+                {
+                    var smallThumbnail1Path = await SaveImage(smallThumbnail1);
+                    model.SmallThumbnail1 = smallThumbnail1Path;
+                }
+
+                if (smallThumbnail2 != null && smallThumbnail2.Length > 0)
+                {
+                    var smallThumbnail2Path = await SaveImage(smallThumbnail2);
+                    model.SmallThumbnail2 = smallThumbnail2Path;
+                }
+
+                if (smallThumbnail3 != null && smallThumbnail3.Length > 0)
+                {
+                    var smallThumbnail3Path = await SaveImage(smallThumbnail3);
+                    model.SmallThumbnail3 = smallThumbnail3Path;
+                }
+
+                if (smallThumbnail4 != null && smallThumbnail4.Length > 0)
+                {
+                    var smallThumbnail4Path = await SaveImage(smallThumbnail4);
+                    model.SmallThumbnail4 = smallThumbnail4Path;
+                }
+
+                model.Slug = SlugHelper.GenerateSlug(model.ProductName, model.ProductId);
 
                 _context.Add(model);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Product));
             }
             ModelState.AddModelError(string.Empty, "Some required fields are missing.");
-            // Trả về View nếu dữ liệu không hợp lệ
             return View(model);
         }
+
+        private async Task<string> SaveImage(IFormFile imageFile)
+        {
+            var uploadsFolder = Path.Combine("wwwroot", "images");
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            var imagePath = Path.Combine(uploadsFolder, Guid.NewGuid().ToString() + "_" + imageFile.FileName);
+            using (var stream = new FileStream(imagePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(stream);
+            }
+
+            return "/images/" + Path.GetFileName(imagePath);
+        }
+
 
         public async Task<IActionResult> detailsProduct(int? ProductId)
         {
