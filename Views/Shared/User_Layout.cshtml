@@ -26,6 +26,7 @@
     <link rel="stylesheet" href="~/css/flaticon.css">
     <link rel="stylesheet" href="~/css/icomoon.css">
     <link rel="stylesheet" href="~/css/style.css">
+    <link rel="stylesheet" href="~/css/icon.css">
 
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -37,9 +38,9 @@
             min-width: 210px;
             box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
             z-index: 1;
-            transition: opacity 0.5s ease; 
-            opacity: 0; 
-            pointer-events: none; 
+            transition: opacity 0.5s ease;
+            opacity: 0;
+            pointer-events: none;
             margin-left: -25px;
             border-radius: 20px;
         }
@@ -49,7 +50,7 @@
                 padding: 22px 16px;
                 text-decoration: none;
                 display: block;
-                font-family:'Open Sans','Arial','sans-serif';
+                font-family: 'Open Sans','Arial','sans-serif';
                 font-size: 14px;
                 border-radius: 20px;
                 padding-left: 10px;
@@ -66,8 +67,8 @@
 
             .cart-dropdown-content.show {
                 display: block;
-                opacity: 1; 
-                pointer-events: auto; 
+                opacity: 1;
+                pointer-events: auto;
             }
 
     </style>
@@ -153,12 +154,39 @@
                 </ul>
             </div>
         </div>
+
     </nav>
+
     <!-- END nav -->
     <div>
         @RenderBody()
     </div>
+    <div class="arcontactus-widget">
+        <div class="hotline-phone-ring-wrap1">
+            <div class="hotline-phone-ring">
+                <div class="hotline-phone-ring-circle1"></div>
+                <div class="hotline-phone-ring-circle-fill1"></div>
+                <div class="hotline-phone-ring-img-circle1">
+                    <a href="tel:0903177877" class="pps-btn-img">
+                        <img src="~/images/icons8-zalo-48.png" alt="Gọi điện thoại" width="30px;">
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="hotline-phone-ring-wrap2">
+            <div class="hotline-phone-ring">
+                <div class="hotline-phone-ring-circle2"></div>
+                <div class="hotline-phone-ring-circle-fill2"></div>
+                <div class="hotline-phone-ring-img-circle2">
+                    <a href="tel:0903177877" class="pps-btn-img">
+                        <img src="~/images/messenger.png" alt="Gọi điện thoại" width="30px;">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
     <footer class="ftco-footer bg-light ftco-section">
+
         <div class="container">
             <div class="row">
                 <div class="mouse">
@@ -267,7 +295,7 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
     <script src="~/js/google-map.js"></script>
     <script src="~/js/main.js"></script>
-  
+
 </body>
 </html>
 

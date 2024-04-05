@@ -194,6 +194,7 @@ namespace OnlineJwellery_Shopping.Controllers
             return View(productList);
         }
 
+
         [Authentication]
         public async Task<IActionResult> Shop(
             string slug,
