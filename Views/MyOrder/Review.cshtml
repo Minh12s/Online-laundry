@@ -1,0 +1,84 @@
+﻿@{
+    ViewData["Title"] = "Review";
+    Layout = "~/Views/Shared/User_Layout.cshtml";
+}
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["Message"]
+    </div>
+}
+<section id="comments-section" class="ftco-section ftco-degree-bg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 ftco-animate">
+                <div class="pt-5 mt-5">
+                    <ul class="comment-list">
+                        <div class="comment-form-wrap pt-5">
+                            <h3 class="mb-5">Leave a review</h3>
+                            <form asp-controller="MyOrder" asp-action="Review" method="post">
+                                <input type="hidden" name="productId" value="@ViewBag.ProductId" />
+                                <div class="form-group">
+                                    <label for="RatingValue">Rating *</label>
+                                    <div class="rating">
+                                        <span class="star" data-value="1">&#9733;</span>
+                                        <span class="star" data-value="2">&#9733;</span>
+                                        <span class="star" data-value="3">&#9733;</span>
+                                        <span class="star" data-value="4">&#9733;</span>
+                                        <span class="star" data-value="5">&#9733;</span>
+                                    </div>
+                                    <input type="hidden" name="ratingValue" id="RatingValue">
+                                </div>
+                                <div class="form-group">
+                                    <label for="Comment">Your Review *</label>
+                                    <textarea name="comment" id="Comment" cols="30" rows="3" class="form-control"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <input type="submit" value="Post Review" class="btn py-3 px-4 btn-primary">
+                                </div>
+                            </form>
+                        </div>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const stars = document.querySelectorAll(".star");
+
+        stars.forEach(star => {
+            star.addEventListener("click", function () {
+                const value = this.getAttribute("data-value");
+                document.getElementById("RatingValue").value = value;
+
+                // Highlight selected stars
+                stars.forEach(s => {
+                    if (s.getAttribute("data-value") <= value) {
+                        s.classList.add("selected");
+                    } else {
+                        s.classList.remove("selected");
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+<style>
+    .star {
+        cursor: pointer;
+    }
+
+    .selected {
+        color: gold;
+    }
+    /* Định dạng kích thước cho hình ảnh ngôi sao */
+    .star {
+        font-size: 24px; /* Đặt kích thước mong muốn cho ngôi sao */
+        line-height: 1; /* Đảm bảo ngôi sao không bị méo */
+    }
+
+</style>
+

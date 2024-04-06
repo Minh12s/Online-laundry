@@ -80,12 +80,18 @@
                             <td>@orderProduct.Product.Price</td>
                             <td>@orderProduct.Qty</td>
                             <td>$@(orderProduct.Product.Price * orderProduct.Qty)</td>
+                        @if (Model.Status == "complete")
+                        {
+                        <td>
+                            <div class="col-sm-2">
+                                <a class="btn btn-dark" href="@Url.Action("Review", "MyOrder", new { slug = orderProduct.Product.Slug })">Review</a>
+                            </div>
+                        </td>
+                        }
                         </tr>
                         }
                 </tbody>
             </table>
-      
-
     <div>
 
        

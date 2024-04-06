@@ -1,0 +1,93 @@
+﻿@model IEnumerable<OnlineJwellery_Shopping.Models.User>
+
+
+
+@{
+    ViewData["Title"] = "Review";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<section class="is-title-bar">
+    <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+        <ul>
+            <li>Admin</li>
+            <li>Review</li>
+        </ul>
+
+    </div>
+</section>
+<section class="is-hero-bar">
+    <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+        <h1 class="title">
+            List of reviews
+        </h1>
+    </div>
+</section>
+<section class="section main-section">
+
+    <div class="card has-table">
+
+        <div class="card-content">
+            <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0" id="sampleTable">
+                <thead>
+                    <tr>
+                        <th width="10"><input type="checkbox" id="all"></th>
+                        <th>Id</th>
+                        <th>ProductName</th>
+                        <th>Thumbnail</th>
+                        <th>Email</th>
+                        <th>Comment</th>
+                        <th>RatingValue</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>1</td>
+                        <td>Product A</td>
+                        <td><img src="thumbnail_url_here" alt="Thumbnail"></td>
+                        <td>example@example.com</td>
+                        <td>This is a comment</td>
+                        <td>5</td>
+                        <td>pending</td>
+                        <td>
+
+                            <a asp-action="detailReview" class="btn btn-primary" style="background-color:green; color:white;">Details</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+        </div>
+    </div>
+
+</section>
+<style>
+    .btn-primary {
+        color: rgb(245 157 57);
+        background-color: rgb(251 226 197);
+        border-color: none;
+        /* border-top-left-radius: 10px !important; */
+        /* border-bottom-right-radius: 10px !important; */
+        border-radius: .357rem;
+        border: none;
+        font-weight: 600;
+        padding: 5px 20px; /* Điều chỉnh kích thước theo ý muốn */
+    }
+
+    .page-link {
+        padding: 5px 10px; /* Có thể điều chỉnh kích thước của nút */
+        border: 1px solid #ccc; /* Thêm đường viền */
+        border-radius: 3px; /* Bo tròn góc */
+        margin-right: 5px; /* Khoảng cách giữa các nút */
+        text-decoration: none; /* Loại bỏ gạch chân mặc định */
+        color: #333; /* Màu chữ */
+    }
+
+        .page-link:hover {
+            background-color: #f0f0f0; /* Màu nền khi hover */
+        }
+
+</style>

@@ -701,6 +701,18 @@ namespace OnlineJwellery_Shopping.Controllers
             // Chuyển hướng về trang BlogManagement/Blog
             return RedirectToAction("Blog", "Admin");
         }
+        [Authentication]
+        public IActionResult Review()
+        {
+            return View("ReviewManagement/Review");
+        }
+
+        [Authentication]
+        public IActionResult detailReview()
+        {
+            return View("ReviewManagement/detailReview");
+        }
+
 
     }
 }

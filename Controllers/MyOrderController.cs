@@ -527,6 +527,31 @@ namespace OnlineJwellery_Shopping.Controllers
             // Trả về View nếu dữ liệu không hợp lệ
             return View("EditProfile", model);
         }
+        public IActionResult Review(int productId)
+        {
+            ViewBag.ProductId = productId;
+            return View();
+        }
+        [HttpPost]
+
+        public async Task<IActionResult> Review(int productId, int ratingValue, string comment)
+        {
+            // Lưu đánh giá vào trạng thái "pending"
+            var review = new Review
+            {
+                ProductId = productId,
+                RatingValue = ratingValue,
+                Comment = comment,
+                Status = "pending" // Thiết lập trạng thái "pending"
+            };
+
+            // Thêm đánh giá vào cơ sở dữ liệu
+            _context.Review.Add(review);
+            await _context.SaveChangesAsync();
+
+            TempData["Message"] = "Cảm ơn bạn đã đánh giá sản phẩm. Đánh giá của bạn đang chờ duyệt.";
+            return RedirectToAction("Review", "MyOrder", new { productId });
+        }
     }
 }
 
