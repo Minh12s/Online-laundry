@@ -96,6 +96,13 @@ namespace OnlineJwellery_Shopping.Controllers
 
             ViewBag.RelatedProducts = relatedProducts;
 
+            // Lấy số lượng sản phẩm đã bán của sản phẩm hiện tại
+            var soldQuantity = await db.OrderProduct
+                .Where(op => op.Order.Status == "complete" && op.ProductId == product.ProductId)
+                .SumAsync(op => op.Qty);
+
+            ViewBag.SoldQuantity = soldQuantity;
+
             // Đặt các thuộc tính ViewBag cho chi tiết sản phẩm
             ViewBag.ProductId = product.ProductId;
             ViewBag.ProductThumbnail = product.Thumbnail;
@@ -131,18 +138,20 @@ namespace OnlineJwellery_Shopping.Controllers
 
 
         public async Task<IActionResult> Category(
-      int page = 1,
-      int pageSize = 9,
-      decimal? minPrice = null,
-      decimal? maxPrice = null,
-      int? brandId = null,
-      int? goldAgeId = null)
+        string sortOrder,
+        int page = 1,
+        int pageSize = 9,
+        decimal? minPrice = null,
+        decimal? maxPrice = null,
+        int? brandId = null,
+        int? goldAgeId = null)
         {
             // Kế thừa các logic chung từ BaseController
             await SetCommonViewData();
 
             // Truy xuất dữ liệu Brand và Gold Age từ cơ sở dữ liệu
             var brands = await _context.Brand.ToListAsync();
+      
             var goldAges = await _context.GoldAge.ToListAsync();
 
             // Truyền dữ liệu vào view
@@ -177,9 +186,33 @@ namespace OnlineJwellery_Shopping.Controllers
                 query = query.Where(p => p.GoldAgeId == goldAgeId);
             }
 
-            // Sắp xếp và phân trang dữ liệu
-            var orderedQuery = query.OrderBy(p => p.ProductId);
-            var productList = await orderedQuery
+            // Sắp xếp dữ liệu
+            switch (sortOrder)
+            {
+                case "price_asc":
+                    query = query.OrderBy(p => (double)p.Price);
+                    break;
+                case "price_desc":
+                    query = query.OrderByDescending(p => (double)p.Price);
+                    break;
+                case "newest":
+                    query = query.OrderByDescending(p => p.ProductId);
+                    break;
+                case "BestSelling":
+                    // Sắp xếp theo số lượng sản phẩm đã bán
+                    query = query.OrderByDescending(p =>
+                        _context.OrderProduct
+                            .Where(op => op.Order.Status == "complete" && op.ProductId == p.ProductId)
+                            .Sum(op => op.Qty)
+                    );
+                    break;
+
+                default:
+                    break;
+            }
+
+            // Phân trang dữ liệu
+            var productList = await query
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -193,6 +226,8 @@ namespace OnlineJwellery_Shopping.Controllers
 
             return View(productList);
         }
+
+
 
 
         [Authentication]
