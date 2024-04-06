@@ -107,6 +107,46 @@ namespace OnlineJwellery_Shopping.Controllers
             {
                 return NotFound();
             }
+            if (status.ToLower() == "complete" && order.Status.ToLower() != "complete")
+            {
+                // Cập nhật trạng thái cho đơn hàng
+                order.Status = status;
+                _context.Update(order);
+                await _context.SaveChangesAsync();
+
+                // Gửi email thông báo cho khách hàng
+                try
+                {
+                    var user = order.User;
+                    var body = @"Hey there!<br><br>Thanks for shopping with us. We hope the product will meet your expectations and you will purchase from Online Jewellery shop again!<br><br>While you wait for your package, check out other products that may be a great addition to your collection.<br><br>See you around!<br><br>Admin<br>Owner of Online Jewellery shop";
+
+                    var message = new MailMessage();
+                    message.To.Add(new MailAddress("minhtnth2209037@fpt.edu.vn")); // Địa chỉ email của khách hàng
+                    message.From = new MailAddress(_configuration["EmailSettings:Username"]); // Địa chỉ email của bạn từ cấu hình
+                    message.Subject = "Order has been received";
+                    message.Body = body;
+                    message.IsBodyHtml = true;
+
+                    using (var smtp = new SmtpClient(_configuration["EmailSettings:SmtpServer"],
+                                                      int.Parse(_configuration["EmailSettings:Port"])))
+                    {
+                        var credentials = new NetworkCredential
+                        {
+                            UserName = _configuration["EmailSettings:Username"], // Tài khoản email của bạn từ cấu hình
+                            Password = _configuration["EmailSettings:Password"] // Mật khẩu email của bạn từ cấu hình
+                        };
+                        smtp.Credentials = credentials;
+                        smtp.EnableSsl = true; // Sử dụng SSL (Secure Socket Layer)
+                        await smtp.SendMailAsync(message);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Xử lý lỗi nếu có
+                    Console.WriteLine(ex.Message);
+                }
+            }
+
 
             if (status.ToLower() == "cancel" && order.Status.ToLower() == "pending")
             {
