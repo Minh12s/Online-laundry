@@ -162,6 +162,27 @@ namespace OnlineJwellery_Shopping.Controllers
                     return 0.00M;
             }
         }
+        [HttpGet("/provinces")]
+        public IActionResult GetProvinces()
+        {
+            string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Api", "provinces");
+            string jsonContent = System.IO.File.ReadAllText(path);
+            return Content(jsonContent, "application/json");
+        }
+        [HttpGet("/districts")]
+        public IActionResult GetDistricts()
+        {
+            string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Api", "districts");
+            string jsonContent = System.IO.File.ReadAllText(path);
+            return Content(jsonContent, "application/json");
+        }
+        [HttpGet("/wards")]
+        public IActionResult GetWards()
+        {
+            string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Api", "wards");
+            string jsonContent = System.IO.File.ReadAllText(path);
+            return Content(jsonContent, "application/json");
+        }
         private string GenerateEmailContent(Order order, List<OrderProduct> orderProducts)
         {
             // Đọc nội dung mẫu email từ file

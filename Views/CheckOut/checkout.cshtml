@@ -45,23 +45,30 @@
                         <div class="w-100"></div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="towncity">City</label>
-                                <input type="text" name="Province" class="form-control" placeholder="" required>
+                                <label for="province">Province</label>
+                                <select name="Province" id='provinces' onchange='getProvinces(event)' class="form-control" required>
+                                    <option value=''>-- select provinces --</option>
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="postcodezip">District</label>
-                                <input type="text" name="District" class="form-control" required>
+                                <label for="district">District</label>
+                                <select name="District" id='districts' onchange='getDistricts(event)' class="form-control" required>
+                                    <option value=''>-- select districts --</option>
+                                </select>
                             </div>
                         </div>
                         <div class="w-100"></div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="emailaddress">Ward</label>
-                                <input class="form-control" placeholder="" type="text" name="Ward" required>
+                                <label for="ward">Ward</label>
+                                <select name="Ward" id='wards' class="form-control" required>
+                                    <option value=''>-- select wards --</option>
+                                </select>
                             </div>
                         </div>
+
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="phone">Phone</label>
@@ -267,3 +274,50 @@
             alert('Có lỗi xảy ra trong quá trình thanh toán PayPal: ' + err);
         }
     }).render('#paypal-button-container');</script>
+<script>fetch('/Api/provinces.json')
+        .then(response => response.json())
+        .then(result => {
+            let provinces = result.data.data;
+            provinces.forEach(province => {
+                var option = document.createElement("option");
+                option.text = province.name_with_type;
+                option.value = province.name_with_type; // Sử dụng name_with_type thay vì code
+                document.getElementById("provinces").appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Lỗi khi fetch dữ liệu tỉnh từ file JSON:', error);
+        });
+
+    fetch('/Api/districts.json')
+        .then(response => response.json())
+        .then(result => {
+            let districts = result.data.data;
+            districts.forEach(district => {
+                var option = document.createElement("option");
+                option.text = district.name_with_type;
+                option.value = district.name_with_type; // Sử dụng name_with_type thay vì code
+                document.getElementById("districts").appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Lỗi khi fetch dữ liệu quận/huyện từ file JSON:', error);
+        });
+
+    fetch('/Api/wards.json')
+        .then(response => response.json())
+        .then(result => {
+            let wards = result.data.data;
+            wards.forEach(ward => {
+                var option = document.createElement("option");
+                option.text = ward.name_with_type;
+                option.value = ward.name_with_type; // Sử dụng name_with_type thay vì code
+                document.getElementById("wards").appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Lỗi khi fetch dữ liệu phường/xã từ file JSON:', error);
+        });</script>
+
+
+
