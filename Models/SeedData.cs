@@ -273,6 +273,7 @@ namespace OnlineJwellery_Shopping.Models
                         UserId = userIds[random.Next(userIds.Count)],
                         Comment = $"This product is amazing! Highly recommended.",
                         RatingValue = random.Next(1, 5),
+                        ReviewDate = DateTime.Now.AddDays(-i),
                         Status = reviewStatuses[random.Next(reviewStatuses.Length)] // Chọn ngẫu nhiên một trạng thái từ mảng reviewStatuses
                     };
                     context.Review.Add(review);

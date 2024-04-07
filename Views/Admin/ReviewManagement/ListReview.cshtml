@@ -28,61 +28,56 @@
             </a>
         </header>
         <div class="card-content">
-            <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0" id="sampleTable">
-                <thead>
-                    <tr>
-                        <th width="10"><input type="checkbox" id="all"></th>
-                        <th>User Id</th>
-                        <th>Customer name</th>
-                        <th>Email</th>
-                  
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var review in Model)
-                    {
+            @if (Model.Count == 0)
+            {
+                <p style="text-align: center;">There are no reviews available.</p>
+
+
+            }
+            else
+            {
+                <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0" id="sampleTable">
+                    <thead>
                         <tr>
                             <th width="10"><input type="checkbox" id="all"></th>
-                            <td>@review.User.UserId</td>
-                            <td>@review.User.Username</td>
-                            <td>@review.User.Email</td>
-                       
-                            <td>
-                         
-                                @if (review.Status == "pending")
-                                {
-                                    <span class="badge bg-warning text-pending">
-                                        <!-- Sử dụng lớp 'text-pending' -->
-                                        @Html.DisplayFor(modelItem => review.Status)
-                                    </span>
-                                }
-                                else if (review.Status == "approved")
-                                {
-                                    <span class="badge bg-primary text-approved">
-                                        <!-- Sử dụng lớp 'text-confirmed' -->
-                                        @Html.DisplayFor(modelItem => review.Status)
-                                    </span>
-                                }
-                                else if (review.Status == "rejected")
-                                {
-                                    <span class="badge bg-info text-rejected">
-                                        <!-- Sử dụng lớp 'text-shipping' -->
-                                        @Html.DisplayFor(modelItem => review.Status)
-                                    </span>
-                                }
-                            </td>
-                            <td>
-                                <a asp-controller="Admin" asp-action="DetailsReview" asp-route-id="@review.Id" class="btn btn-primary" style="background-color:green; color:white;">Details</a>
-                            </td>
-
+                            <th>User Id</th>
+                            <th>Customer name</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Action</th>
                         </tr>
-                    }
+                    </thead>
+                    <tbody>
+                        @foreach (var review in Model)
+                        {
+                            <tr>
+                                <th width="10"><input type="checkbox" id="all"></th>
+                                <td>@review.User.UserId</td>
+                                <td>@review.User.Username</td>
+                                <td>@review.User.Email</td>
+                                <td>
+                                    @if (review.Status == "pending")
+                                    {
+                                        <span class="badge bg-warning text-pending">@Html.DisplayFor(modelItem => review.Status)</span>
+                                    }
+                                    else if (review.Status == "approved")
+                                    {
+                                        <span class="badge bg-primary text-approved">@Html.DisplayFor(modelItem => review.Status)</span>
+                                    }
+                                    else if (review.Status == "rejected")
+                                    {
+                                        <span class="badge bg-info text-rejected">@Html.DisplayFor(modelItem => review.Status)</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-controller="Admin" asp-action="DetailsReview" asp-route-id="@review.Id" class="btn btn-primary" style="background-color:green; color:white;">Details</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
 
-
-                </tbody>
-            </table>
 
 
         </div>

@@ -8,6 +8,7 @@ namespace OnlineJwellery_Shopping.Models
         public int UserId { get; set; }
         public string Comment { get; set; }
         public int RatingValue { get; set; }
+        public DateTime ReviewDate { get; set; }
         public string Status { get; set; }
 
         public Product Product { get; set; }

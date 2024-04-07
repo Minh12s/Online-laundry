@@ -561,7 +561,7 @@ namespace OnlineJwellery_Shopping.Controllers
                 ProductId = productId,
                 RatingValue = ratingValue,
                 Comment = comment,
-               
+                ReviewDate = DateTime.Now,
                 Status = "pending"
             };
 
