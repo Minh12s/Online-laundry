@@ -704,14 +704,55 @@ namespace OnlineJwellery_Shopping.Controllers
         [Authentication]
         public IActionResult Review()
         {
-            return View("ReviewManagement/Review");
+            // Truy vấn thông tin sản phẩm và tổng trung bình RatingValue
+            var productsWithAvgRating = _context.Product
+                .Select(p => new ProductWithAvgRating
+                {
+                    Product = p,
+                    AvgRating = p.Reviews.Any() ? p.Reviews.Average(r => r.RatingValue) : 0
+                })
+                .ToList();
+
+            // Truyền dữ liệu sang view để hiển thị
+            return View("ReviewManagement/Review", productsWithAvgRating);
         }
 
+
         [Authentication]
-        public IActionResult detailReview()
+        public IActionResult ListReview(int productId)
         {
-            return View("ReviewManagement/detailReview");
+            // Lấy danh sách các review của sản phẩm từ cơ sở dữ liệu kèm theo thông tin của người dùng
+            var reviews = _context.Review
+                .Include(r => r.User) // Kèm theo thông tin của người dùng
+                .Where(r => r.ProductId == productId)
+                .ToList();
+
+            // Truyền danh sách review sang view để hiển thị
+            return View("ReviewManagement/ListReview", reviews);
         }
+        [Authentication]
+        public IActionResult DetailsReview(int id)
+        {
+            var review = _context.Review
+                .Include(r => r.User)
+                .FirstOrDefault(r => r.Id == id);
+
+            if (review == null)
+            {
+                return NotFound();
+            }
+
+            // Tạo một danh sách chứa review này
+            var reviewList = new List<Review> { review };
+
+            // Truyền danh sách review sang view để hiển thị
+            return View("ReviewManagement/DetailsReview", reviewList);
+        }
+
+
+
+
+
 
 
     }

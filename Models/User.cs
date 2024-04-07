@@ -16,7 +16,8 @@ namespace OnlineJwellery_Shopping.Models
 
             // Navigation property
             public ICollection<Order> Orders { get; set; }
-        }
+        public ICollection<Review> Reviews { get; set; }
+    }
     
 }
 

@@ -1,21 +1,16 @@
-﻿@model IEnumerable<OnlineJwellery_Shopping.Models.ProductWithAvgRating>
+﻿@model List<OnlineJwellery_Shopping.Models.Review>
+
+
+
 @{
-    ViewData["Title"] = "Review";
+    ViewData["Title"] = "Details Review";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
-<section class="is-title-bar">
-    <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
-        <ul>
-            <li style="margin-left:-50px;">Admin</li>
-            <li>Review</li>
-        </ul>
 
-    </div>
-</section>
 <section class="is-hero-bar">
     <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
         <h1 class="title">
-            List of product
+            List of reviews
         </h1>
     </div>
 </section>
@@ -25,7 +20,7 @@
         <header class="card-header">
             <p class="card-header-title">
                 @*<span class="icon"><i class="mdi mdi-shopping"></i></span>*@
-                Product review
+                Review
             </p>
 
             <a href="#" class="card-header-icon">
@@ -37,30 +32,28 @@
                 <thead>
                     <tr>
                         <th width="10"><input type="checkbox" id="all"></th>
-                        <th>Id</th>
-                        <th>Thumbnail</th>
-                        <th>Product Name</th>
-                        <th>Price</th>
-                        <th>Average number of stars</th>
-                        <th></th>
+                        <th>User Id</th>
+                        <th>Customer name</th>
+                        <th>Comment</th>
+                        <th>RatingValue</th>
+                      
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model)
+                    @foreach (var review in Model)
                     {
                         <tr>
-                            <td><input type="checkbox"></td>
-                            <td>@item.Product.ProductId</td>
-                            <td><img src="@item.Product.Thumbnail" alt="Thumbnail" width="100" height="100"></td>
-                            <td>@item.Product.ProductName</td>
-                            <td>@item.Product.Price</td>
-                            <td>@item.AvgRating</td>
-                            <td>
-                                <a asp-controller="Admin" asp-action="ListReview" asp-route-productId="@item.Product.ProductId" class="btn btn-primary" style="background-color:green; color:white;">List Review</a>
-                            </td>
-
+                            <th width="10"><input type="checkbox" id="all"></th>
+                            <td>@review.User.UserId</td>
+                            <td>@review.User.Username</td>
+                            <td>@review.Comment</td>
+                            <td>@review.RatingValue</td>
+                    
+                           
                         </tr>
                     }
+
+
                 </tbody>
             </table>
 

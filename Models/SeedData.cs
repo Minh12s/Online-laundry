@@ -263,6 +263,7 @@ namespace OnlineJwellery_Shopping.Models
                 // Seed data for Review
                 var productIds = context.Product.Select(p => p.ProductId).ToList();
                 var userIds = context.User.Select(u => u.UserId).ToList();
+                var reviewStatuses = new string[] { "pending", "approved", "rejected" }; // Mảng các trạng thái đánh giá
 
                 for (int i = 1; i <= 10; i++)
                 {
@@ -272,11 +273,13 @@ namespace OnlineJwellery_Shopping.Models
                         UserId = userIds[random.Next(userIds.Count)],
                         Email = $"{i}@example.com",
                         Comment = $"This product is amazing! Highly recommended.",
-                        RatingValue = random.Next(1, 5)
+                        RatingValue = random.Next(1, 5),
+                        Status = reviewStatuses[random.Next(reviewStatuses.Length)] // Chọn ngẫu nhiên một trạng thái từ mảng reviewStatuses
                     };
                     context.Review.Add(review);
                 }
                 context.SaveChanges();
+
 
 
                 // seed data for Blog

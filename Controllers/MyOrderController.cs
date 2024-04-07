@@ -11,6 +11,7 @@ using OnlineJwellery_Shopping.Heplers;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Mail;
+using Microsoft.CodeAnalysis;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -26,7 +27,7 @@ namespace OnlineJwellery_Shopping.Controllers
             db = context;
             _configuration = configuration;
         }
-     
+
         [Authentication]
         public async Task<IActionResult> MyOrder(int page = 1, int pageSize = 10)
         {
@@ -121,7 +122,7 @@ namespace OnlineJwellery_Shopping.Controllers
                     var body = @"Hey there!<br><br>Thanks for shopping with us. We hope the product will meet your expectations and you will purchase from Online Jewellery shop again!<br><br>While you wait for your package, check out other products that may be a great addition to your collection.<br><br>See you around!<br><br>Admin<br>Owner of Online Jewellery shop";
 
                     var message = new MailMessage();
-                    message.To.Add(new MailAddress("minhtnth2209037@fpt.edu.vn")); // Địa chỉ email của khách hàng
+                    message.To.Add(new MailAddress("dungprohn1409@gmail.com")); // Địa chỉ email của khách hàng
                     message.From = new MailAddress(_configuration["EmailSettings:Username"]); // Địa chỉ email của bạn từ cấu hình
                     message.Subject = "Order has been received";
                     message.Body = body;
@@ -494,7 +495,7 @@ namespace OnlineJwellery_Shopping.Controllers
                 // Xử lý tệp tin ảnh và lưu đường dẫn
                 if (thumbnail != null && thumbnail.Length > 0)
                 {
-                    var uploadsFolder = Path.Combine("wwwroot","images", "avatars");
+                    var uploadsFolder = Path.Combine("wwwroot", "images", "avatars");
                     if (!Directory.Exists(uploadsFolder))
                     {
                         Directory.CreateDirectory(uploadsFolder);
@@ -527,31 +528,51 @@ namespace OnlineJwellery_Shopping.Controllers
             // Trả về View nếu dữ liệu không hợp lệ
             return View("EditProfile", model);
         }
-        public IActionResult Review(int productId)
+        [Authentication]
+        public async Task<IActionResult> Review(int productId)
         {
+            // Lấy thông tin người dùng từ HttpContext
+            var userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+
             ViewBag.ProductId = productId;
+            ViewBag.UserId = userId;
             return View();
         }
         [HttpPost]
-
-        public async Task<IActionResult> Review(int productId, int ratingValue, string comment)
+        public async Task<IActionResult> Review(int productId, int ratingValue, string comment, string email)
         {
+            // Kiểm tra xem sản phẩm có tồn tại không
+            var product = await _context.Product.FirstOrDefaultAsync(p => p.ProductId == productId);
+            if (product == null)
+            {
+                TempData["ErrorMessage"] = "The product does not exist or cannot be reviewed.";
+                TempData["MessageType"] = "error";
+                TempData["ProductId"] = productId;
+                return RedirectToAction("Review", new { productId = productId });
+            }
+
+            // Lấy userId từ session
+            var userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+
             // Lưu đánh giá vào trạng thái "pending"
             var review = new Review
             {
+                UserId = userId,
                 ProductId = productId,
                 RatingValue = ratingValue,
                 Comment = comment,
-                Status = "pending" // Thiết lập trạng thái "pending"
+                Email = email,
+                Status = "pending"
             };
 
             // Thêm đánh giá vào cơ sở dữ liệu
             _context.Review.Add(review);
             await _context.SaveChangesAsync();
 
-            TempData["Message"] = "Cảm ơn bạn đã đánh giá sản phẩm. Đánh giá của bạn đang chờ duyệt.";
-            return RedirectToAction("Review", "MyOrder", new { productId });
+            TempData["Message"] = "Thank you for your product review";
+            TempData["MessageType"] = "success";
+            return RedirectToAction("OrderComplete", "MyOrder");
         }
+
     }
 }
-

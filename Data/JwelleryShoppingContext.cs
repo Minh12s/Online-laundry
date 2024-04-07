@@ -36,6 +36,15 @@ namespace OnlineJwellery_Shopping.Data
                 .HasMany(p => p.OrderProducts)
                 .WithOne(op => op.Product)
                 .HasForeignKey(op => op.ProductId);
+
+            // Thiết lập quan hệ giữa bảng Review và User
+           modelBuilder.Entity<Review>()
+                .HasOne(r => r.User)
+                .WithMany(u => u.Reviews)
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.Cascade); // Tuỳ chọn này sẽ xóa tất cả các đánh giá liên quan khi người dùng bị xóa
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }
