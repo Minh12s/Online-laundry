@@ -702,20 +702,60 @@ namespace OnlineJwellery_Shopping.Controllers
             return RedirectToAction("Blog", "Admin");
         }
         [Authentication]
-        public IActionResult Review()
+        public IActionResult Review(
+        decimal? Price_from,
+        decimal? Price_to,
+        string ProductName,
+        double? AvgRating,
+        int page = 1,
+        int pageSize = 10)
         {
-            // Truy vấn thông tin sản phẩm và tổng trung bình RatingValue
+            // Bắt đầu từ truy vấn ban đầu để truy xuất thông tin sản phẩm và tổng trung bình RatingValue
             var productsWithAvgRating = _context.Product
                 .Select(p => new ProductWithAvgRating
                 {
                     Product = p,
-                    AvgRating = p.Reviews.Any() ? p.Reviews.Average(r => r.RatingValue) : 0
+                    AvgRating = p.Reviews.Any() ? Math.Round(p.Reviews.Average(r => r.RatingValue), 1) : 0
                 })
-                .ToList();
+                .AsQueryable(); // Chuyển đổi thành một truy vấn có khả năng mở rộng
+
+            // Áp dụng các tiêu chí lọc nếu chúng được cung cấp
+            if (Price_from.HasValue)
+            {
+                productsWithAvgRating = productsWithAvgRating.Where(p => p.Product.Price >= Price_from);
+            }
+
+            if (Price_to.HasValue)
+            {
+                productsWithAvgRating = productsWithAvgRating.Where(p => p.Product.Price <= Price_to);
+            }
+
+            if (!string.IsNullOrEmpty(ProductName))
+            {
+                productsWithAvgRating = productsWithAvgRating.Where(p => p.Product.ProductName.Contains(ProductName));
+            }
+
+            if (AvgRating.HasValue)
+            {
+                productsWithAvgRating = productsWithAvgRating.Where(p => Math.Round(p.AvgRating, 1) == Math.Round(AvgRating.Value, 1));
+            }
+
+            // Phân trang
+            var totalProducts = productsWithAvgRating.Count();
+            var totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
+            var productList = productsWithAvgRating.Skip((page - 1) * pageSize)
+                                                    .Take(pageSize)
+                                                    .ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.PageSize = pageSize;
 
             // Truyền dữ liệu sang view để hiển thị
-            return View("ReviewManagement/Review", productsWithAvgRating);
+            return View("ReviewManagement/Review", productList);
         }
+
+
 
 
         [Authentication]
@@ -742,17 +782,31 @@ namespace OnlineJwellery_Shopping.Controllers
                 return NotFound();
             }
 
-            // Tạo một danh sách chứa review này
-            var reviewList = new List<Review> { review };
-
-            // Truyền danh sách review sang view để hiển thị
-            return View("ReviewManagement/DetailsReview", reviewList);
+            // Truyền một đối tượng đánh giá đơn vào view
+            return View("ReviewManagement/DetailsReview", review);
         }
 
 
+        [Authentication]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateStatusReview(int id, string status, string returnUrl)
+        {
+            var review = await _context.Review.FindAsync(id);
 
+            if (review == null)
+            {
+                return NotFound();
+            }
 
+            // Cập nhật trạng thái cho đánh giá
+            review.Status = status;
+            _context.Update(review);
+            await _context.SaveChangesAsync();
 
+            // Chuyển hướng đến trang ListReview với tham số productId
+            return Redirect($"/Admin/ListReview?productId={review.ProductId}");
+        }
 
 
     }

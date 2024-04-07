@@ -54,7 +54,7 @@ namespace OnlineJwellery_Shopping.Controllers
             return View();
         }
         [HttpPost]
-        [Authentication]
+   
         public IActionResult Checkout(Order model)
         {
             if (true)

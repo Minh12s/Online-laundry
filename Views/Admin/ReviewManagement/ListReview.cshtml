@@ -35,7 +35,7 @@
                         <th>User Id</th>
                         <th>Customer name</th>
                         <th>Email</th>
-                        <th>Phone number</th>
+                  
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -48,8 +48,31 @@
                             <td>@review.User.UserId</td>
                             <td>@review.User.Username</td>
                             <td>@review.User.Email</td>
-                            <td>@review.User.PhoneNumber</td>
-                            <td>@review.Status</td>
+                       
+                            <td>
+                         
+                                @if (review.Status == "pending")
+                                {
+                                    <span class="badge bg-warning text-pending">
+                                        <!-- Sử dụng lớp 'text-pending' -->
+                                        @Html.DisplayFor(modelItem => review.Status)
+                                    </span>
+                                }
+                                else if (review.Status == "approved")
+                                {
+                                    <span class="badge bg-primary text-approved">
+                                        <!-- Sử dụng lớp 'text-confirmed' -->
+                                        @Html.DisplayFor(modelItem => review.Status)
+                                    </span>
+                                }
+                                else if (review.Status == "rejected")
+                                {
+                                    <span class="badge bg-info text-rejected">
+                                        <!-- Sử dụng lớp 'text-shipping' -->
+                                        @Html.DisplayFor(modelItem => review.Status)
+                                    </span>
+                                }
+                            </td>
                             <td>
                                 <a asp-controller="Admin" asp-action="DetailsReview" asp-route-id="@review.Id" class="btn btn-primary" style="background-color:green; color:white;">Details</a>
                             </td>
@@ -67,6 +90,17 @@
 
 </section>
 <style>
+    .text-pending {
+        color: orange; /* Màu chữ cho trạng thái "pending" */
+    }
+
+    .text-approved {
+        color: green; /* Màu chữ cho trạng thái "confirmed" */
+    }
+
+    .text-rejected {
+        color: red; /* Màu chữ cho trạng thái "shipping" */
+    }
     .btn-primary {
         color: rgb(245 157 57);
         background-color: rgb(251 226 197);

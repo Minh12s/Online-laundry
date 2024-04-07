@@ -1,67 +1,10 @@
-﻿@model List<OnlineJwellery_Shopping.Models.Review>
-
+﻿@model OnlineJwellery_Shopping.Models.Review
 
 
 @{
     ViewData["Title"] = "Details Review";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
-
-<section class="is-hero-bar">
-    <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
-        <h1 class="title">
-            List of reviews
-        </h1>
-    </div>
-</section>
-<section class="section main-section">
-
-    <div class="card has-table">
-        <header class="card-header">
-            <p class="card-header-title">
-                @*<span class="icon"><i class="mdi mdi-shopping"></i></span>*@
-                Review
-            </p>
-
-            <a href="#" class="card-header-icon">
-                <span class="icon"><i class="mdi mdi-reload"></i></span>
-            </a>
-        </header>
-        <div class="card-content">
-            <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0" id="sampleTable">
-                <thead>
-                    <tr>
-                        <th width="10"><input type="checkbox" id="all"></th>
-                        <th>User Id</th>
-                        <th>Customer name</th>
-                        <th>Comment</th>
-                        <th>RatingValue</th>
-                      
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var review in Model)
-                    {
-                        <tr>
-                            <th width="10"><input type="checkbox" id="all"></th>
-                            <td>@review.User.UserId</td>
-                            <td>@review.User.Username</td>
-                            <td>@review.Comment</td>
-                            <td>@review.RatingValue</td>
-                    
-                           
-                        </tr>
-                    }
-
-
-                </tbody>
-            </table>
-
-
-        </div>
-    </div>
-
-</section>
 <style>
     .btn-primary {
         color: rgb(245 157 57);
@@ -88,3 +31,91 @@
             background-color: #f0f0f0; /* Màu nền khi hover */
         }
 </style>
+<section class="is-hero-bar">
+    <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+        <h1 class="title">
+            Reviews product
+        </h1>
+    </div>
+</section>
+<section class="section main-section">
+
+    <div class="card has-table">
+        <header class="card-header">
+            <p class="card-header-title">
+                @*<span class="icon"><i class="mdi mdi-shopping"></i></span>*@
+                Review
+            </p>
+
+            <a href="#" class="card-header-icon">
+                <span class="icon"><i class="mdi mdi-reload"></i></span>
+            </a>
+        </header>
+        <div class="card-content">
+            <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0" id="sampleTable">
+                <thead>
+                    <tr>
+                        <th width="10"><input type="checkbox" id="all"></th>
+                        <th>User Id</th>
+                        <th>Customer name</th>
+                        <th>Comment</th>
+                        <th>RatingValue</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th width="10"><input type="checkbox" id="all"></th>
+                        <td>@Model.User.UserId</td>
+                        <td>@Model.User.Username</td>
+                        <td>@Model.Comment</td>
+                        <td>@Model.RatingValue</td>
+                    </tr>
+
+
+                </tbody>
+            </table>
+
+
+        </div>
+    </div>
+
+</section>
+<div>
+    <!-- Thêm input hidden để chứa giá trị returnUrl -->
+    <input type="hidden" id="returnUrl" name="returnUrl" value="@Url.Action("ListReview", "Admin", new { productId = Model.ProductId })" />
+
+    <div style="float:right; margin-top: 10px; display: flex; gap: 10px;">
+        @if (Model.Status == "pending")
+        {
+            <!-- Hiển thị nút approved và rejected -->
+            <div>
+                <form method="post" action="@Url.Action("UpdateStatusReview", "Admin", new { id = Model.Id, status = "approved" })">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="returnUrl" value="@Url.Action("ListReview", "Admin", new { productId = Model.ProductId })" />
+                    <button onclick="return confirm('Surely you want to update the status to: Approved')" type="submit" class="btn btn-success" style="padding: 5px 10px; border-radius: 5px; margin-right: 10px; background-color: green; color:white;">
+                        Approved
+                    </button>
+                </form>
+            </div>
+
+            <div>
+                <form method="post" action="@Url.Action("UpdateStatusReview", "Admin", new { id = Model.Id, status = "rejected" })">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="returnUrl" value="@Url.Action("ListReview", "Admin", new { productId = Model.ProductId })" />
+                    <button onclick="return confirm('Surely you want to update the status to: Rejected')" type="submit" class="btn btn-danger" style="padding: 5px 10px; border-radius: 5px; margin-right: 10px; background-color: red; color: white;">
+                        Rejected
+                    </button>
+                </form>
+            </div>
+        }
+        else if (Model.Status == "approved" || Model.Status == "rejected")
+        {
+            <!-- Hiển thị nút back -->
+            <div>
+                <a style="padding: 5px 10px; border-radius: 5px; margin-right: 10px; background-color: red; color: white; " href="@Url.Action("ListReview", "Admin", new { productId = Model.ProductId })" class="btn btn-warning">Back</a>
+            </div>
+        }
+    </div>
+</div>
+
