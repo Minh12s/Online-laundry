@@ -6,7 +6,6 @@ namespace OnlineJwellery_Shopping.Models
         public int Id { get; set; }
         public int ProductId { get; set; }
         public int UserId { get; set; }
-        public string Email { get; set; }
         public string Comment { get; set; }
         public int RatingValue { get; set; }
         public string Status { get; set; }

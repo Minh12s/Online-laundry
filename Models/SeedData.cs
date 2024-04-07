@@ -271,7 +271,6 @@ namespace OnlineJwellery_Shopping.Models
                     {
                         ProductId = productIds[random.Next(productIds.Count)],
                         UserId = userIds[random.Next(userIds.Count)],
-                        Email = $"{i}@example.com",
                         Comment = $"This product is amazing! Highly recommended.",
                         RatingValue = random.Next(1, 5),
                         Status = reviewStatuses[random.Next(reviewStatuses.Length)] // Chọn ngẫu nhiên một trạng thái từ mảng reviewStatuses

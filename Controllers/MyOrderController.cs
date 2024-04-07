@@ -561,7 +561,7 @@ namespace OnlineJwellery_Shopping.Controllers
                 ProductId = productId,
                 RatingValue = ratingValue,
                 Comment = comment,
-                Email = email,
+               
                 Status = "pending"
             };
 
