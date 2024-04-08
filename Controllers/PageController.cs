@@ -151,7 +151,7 @@ namespace OnlineJwellery_Shopping.Controllers
 
             // Truy xuất dữ liệu Brand và Gold Age từ cơ sở dữ liệu
             var brands = await _context.Brand.ToListAsync();
-      
+
             var goldAges = await _context.GoldAge.ToListAsync();
 
             // Truyền dữ liệu vào view
@@ -302,10 +302,10 @@ namespace OnlineJwellery_Shopping.Controllers
             switch (sortOrder)
             {
                 case "price_asc":
-                    productsInCategory = productsInCategory.OrderBy(p => p.Price);
+                    productsInCategory = productsInCategory.OrderBy(p => (double)p.Price);
                     break;
                 case "price_desc":
-                    productsInCategory = productsInCategory.OrderByDescending(p => p.Price);
+                    productsInCategory = productsInCategory.OrderByDescending(p => (double)p.Price);
                     break;
                 case "newest":
                     productsInCategory = productsInCategory.OrderByDescending(p => p.ProductId);
@@ -314,13 +314,14 @@ namespace OnlineJwellery_Shopping.Controllers
                     // Sắp xếp theo số lượng sản phẩm đã bán
                     productsInCategory = productsInCategory.OrderByDescending(p =>
                         _context.OrderProduct
-.Where(op => op.Order.Status == "complete" && op.ProductId == p.ProductId)
+                            .Where(op => op.Order.Status == "complete" && op.ProductId == p.ProductId)
                             .Sum(op => op.Qty)
                     );
                     break;
                 default:
                     break;
             }
+
 
             // Tính toán và chuyển thông tin phân trang vào ViewBag hoặc ViewModel
             ViewBag.CategorySlug = slug;
