@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Mail;
 using Microsoft.CodeAnalysis;
+using Microsoft.IdentityModel.Tokens;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -29,7 +30,7 @@ namespace OnlineJwellery_Shopping.Controllers
         }
 
         [Authentication]
-        public async Task<IActionResult> MyOrder(int page = 1, int pageSize = 10)
+        public async Task<IActionResult> MyOrder(String OrderDate,String IsPaid, string searchTerm, int page = 1, int pageSize = 10)
         {
             // Kế thừa các logic chung từ BaseController
             await SetCommonViewData();
@@ -46,6 +47,34 @@ namespace OnlineJwellery_Shopping.Controllers
             if (user == null)
             {
                 return NotFound();
+            }
+
+            // Tìm kiếm theo tên nếu có giá trị searchTerm được cung cấp
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                user.Orders = user.Orders
+                    .Where(o => o.FullName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+            if (!string.IsNullOrEmpty(IsPaid))
+            {
+                // Lọc theo trạng thái đã thanh toán (Paid/Unpaid)
+                bool isPaid = IsPaid == "1";
+                user.Orders = user.Orders
+                    .Where(o => o.IsPaid == (isPaid ? "paid" : "unpaid"))
+                    .ToList();
+            }
+            if (!string.IsNullOrEmpty(OrderDate))
+            {
+                // Chuyển đổi chuỗi OrderDate thành kiểu DateTime
+                DateTime orderDateValue;
+                if (DateTime.TryParse(OrderDate, out orderDateValue))
+                {
+                    // Lọc theo ngày đặt hàng (OrderDate)
+                    user.Orders = user.Orders
+                        .Where(o => o.OrderDate.Date == orderDateValue.Date)
+                        .ToList();
+                }
             }
 
             // Logic phân trang ở đây

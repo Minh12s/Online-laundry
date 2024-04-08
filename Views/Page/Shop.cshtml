@@ -191,6 +191,18 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8 col-lg-10 order-md-last">
+                <form action="@Url.Action("Shop", "Page")" method="get">
+                    <input type="hidden" name="slug" value="@ViewBag.CategorySlug" />
+                    <div style="margin-bottom: 20px; text-align: right; margin-top: -10px;">
+                        <select style="padding: 5px 5px; border: 1px solid black; display: inline-block;" name="sortOrder" onchange="this.form.submit()">
+                            <option value="">Sort By: </option>
+                            <option value="price_asc">Price Low to High</option>
+                            <option value="price_desc">Price High to Low</option>
+                            <option value="newest">Newest</option>
+                            <option value="BestSelling">Best selling product</option>
+                        </select>
+                    </div>
+                </form>
                 <div class="row">
                     @if (Model.Count > 0)
                     {
