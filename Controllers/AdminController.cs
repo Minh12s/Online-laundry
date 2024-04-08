@@ -552,27 +552,60 @@ namespace OnlineJwellery_Shopping.Controllers
             // Chuyển hướng đến returnUrl
             return Redirect(returnUrl);
         }
-        public async Task<IActionResult> Blog(int? page)
+        public async Task<IActionResult> Blog(int? page, string Title = null, string Tag = null, DateTime? startDate = null, DateTime? endDate = null, string search = null)
         {
             int pageSize = 10; // Số lượng bài đăng mỗi trang
             int pageNumber = page ?? 1; // Trang hiện tại, mặc định là trang 1 nếu không có page được cung cấp
 
             // Lấy tổng số bài đăng từ cơ sở dữ liệu
-            int totalBlogs = await _context.Blog.CountAsync();
+            var blogs = _context.Blog.AsQueryable();
+
+            // Áp dụng các tiêu chí lọc nếu chúng được cung cấp
+            if (!string.IsNullOrEmpty(Title))
+            {
+                blogs = blogs.Where(b => b.Title.Contains(Title));
+            }
+
+            if (!string.IsNullOrEmpty(Tag))
+            {
+                blogs = blogs.Where(b => b.Tag.Contains(Tag));
+            }
+
+            if (startDate != null)
+            {
+                blogs = blogs.Where(b => b.BlogDate >= startDate);
+            }
+
+            if (endDate != null)
+            {
+                // Chú ý: Khi lọc theo ngày kết thúc, hãy thêm 1 ngày vào để bao gồm tất cả các bài đăng được đăng vào ngày kết thúc
+                blogs = blogs.Where(b => b.BlogDate < endDate.Value.AddDays(1));
+            }
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                blogs = blogs.Where(b => b.Title.Contains(search)
+                                        || b.Tag.Contains(search)
+                                        || b.Content.Contains(search));
+            }
 
             // Phân trang danh sách bài đăng và sắp xếp theo thời gian gần nhất
-            var blogs = await _context.Blog.OrderByDescending(b => b.BlogDate)
-                                           .Skip((pageNumber - 1) * pageSize)
-                                           .Take(pageSize)
-                                           .ToListAsync();
+            var paginatedBlogs = await blogs.OrderByDescending(b => b.BlogDate)
+                                            .Skip((pageNumber - 1) * pageSize)
+                                            .Take(pageSize)
+                                            .ToListAsync();
+
+            // Lấy tổng số bài đăng sau khi áp dụng các tiêu chí lọc
+            int totalBlogs = await blogs.CountAsync();
 
             // Chuyển thông tin phân trang vào ViewBag
             ViewBag.CurrentPage = pageNumber;
             ViewBag.TotalPages = (int)Math.Ceiling((double)totalBlogs / pageSize);
             ViewBag.TotalBlogs = totalBlogs;
 
-            return View("BlogManagement/Blog", blogs);
+            return View("BlogManagement/Blog", paginatedBlogs);
         }
+
 
 
 
