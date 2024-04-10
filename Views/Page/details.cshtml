@@ -206,7 +206,7 @@
                         }
                     </p>
                     <p class="text-left mr-4">
-                        <a href="#" class="mr-2" style="color: #000;">100 <span style="color: #bbb;">Rating</span></a>
+                        <a href="#" class="mr-2" style="color: #000;">@ViewBag.ApprovedReviewsCount <span style="color: #bbb;">Rating</span></a>
                     </p>
                     <p class="text-left">
                         <a href="#" class="mr-2" style="color: #000;">@ViewBag.SoldQuantity <span style="color: #bbb;">Sold</span></a>
@@ -319,62 +319,62 @@
             </div>
         </div>
     </div>
-</section>
-<section class="ftco-section">
-    <section id="comments-section" class="ftco-section ftco-degree-bg">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 ftco-animate">
-                    <div class="pt-5 mt-5">
-                        <h3 class="mb-5">Comments</h3>
-                        @if (ViewBag.ApprovedReviewsCount > 0)
-                        {
-                            <ul class="comment-list">
-                                @foreach (var review in ViewBag.ApprovedReviews)
-                                {
-                                    <li class="comment">
-                                        <div class="vcard bio">
-                                            @if (review.User != null && !string.IsNullOrEmpty(review.User.Thumbnail))
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 ftco-animate">
+                <div class="pt-5 mt-5">
+                    <h3 class="mb-5">@ViewBag.ApprovedReviewsCount Comments</h3>
+                    @if (ViewBag.ApprovedReviewsCount > 0)
+                    {
+                        <ul class="comment-list" >
+                            @foreach (var review in ViewBag.ApprovedReviews)
+                            {
+                                <li class="comment" >
+                                    <div class="vcard bio">
+                                        @if (review.User != null && !string.IsNullOrEmpty(review.User.Thumbnail))
+                                        {
+                                            <img src="@review.User.Thumbnail" alt="Image placeholder">
+                                        }
+                                    </div>
+                                    <div class="comment-body">
+                                        @if (review.User != null && !string.IsNullOrEmpty(review.User.Username))
+                                        {
+                                            <h3>@review.User.Username</h3>
+                                        }
+                                        <div class="meta">
+                                            @if (review.ReviewDate != null)
                                             {
-                                                <img src="@review.User.Thumbnail" alt="Image placeholder">
+                                                <div>@review.ReviewDate.ToString("MMMM dd, yyyy")</div>
                                             }
                                         </div>
-                                        <div class="comment-body">
-                                            @if (review.User != null && !string.IsNullOrEmpty(review.User.Username))
+                                        <div class="rating">
+                                            @for (int i = 0; i < review.RatingValue; i++)
                                             {
-                                                <h3>@review.User.Username</h3>
+                                                <a href="#"><span class="ion-ios-star star-yellow"></span></a>
                                             }
-                                            <div class="meta">
-                                                @if (review.ReviewDate != null)
-                                                {
-                                                    <div>@review.ReviewDate.ToString("MMMM dd, yyyy")</div>
-                                                }
-                                            </div>
-                                            <div class="rating">
-                                                @for (int i = 0; i < review.RatingValue; i++)
-                                                {
-                                                    <a href="#"><span class="ion-ios-star star-yellow"></span></a>
-                                                }
-                                                @for (int i = review.RatingValue; i < 5; i++)
-                                                {
-                                                    <a href="#"><span class="ion-ios-star-outline star-yellow"></span></a>
-                                                }
-                                            </div>
-                                            <p>@review.Comment</p>
+                                            @for (int i = review.RatingValue; i < 5; i++)
+                                            {
+                                                <a href="#"><span class="ion-ios-star-outline star-yellow"></span></a>
+                                            }
                                         </div>
-                                    </li>
-                                }
-                            </ul>
-                        }
-                        else
-                        {
-                            <p>No approved reviews yet.</p>
-                        }
-                    </div>
+                                        <p>@review.Comment</p>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p>No approved reviews yet.</p>
+                    }
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+
+</section>
+
+   
 
 <section class="ftco-section bg-light">
     <div class="container">
