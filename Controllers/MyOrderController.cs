@@ -22,11 +22,13 @@ namespace OnlineJwellery_Shopping.Controllers
     {
         private readonly JwelleryShoppingContext db;
         private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _env;
 
-        public MyOrderController(JwelleryShoppingContext context, IConfiguration configuration) : base(context)
+        public MyOrderController(JwelleryShoppingContext context, IConfiguration configuration, IWebHostEnvironment env) : base(context)
         {
             db = context;
             _configuration = configuration;
+            _env = env;
         }
 
         [Authentication]
@@ -425,6 +427,137 @@ namespace OnlineJwellery_Shopping.Controllers
             // Trả dữ liệu người dùng có đơn hàng Pending cho view
             return View(user);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ReasonCancel()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> ReasonCancel(int id, string[] Reason, string otherReason)
+        {
+            // Lấy thông tin đơn hàng từ cơ sở dữ liệu
+            var order = await _context.Order
+                .Include(o => o.OrderProducts)
+                .ThenInclude(op => op.Product)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            if (order.Status.ToLower() == "pending")
+            {
+                // Cập nhật trạng thái của đơn hàng thành "cancel"
+                order.Status = "cancel";
+
+                // Trả lại số lượng sản phẩm đã mua
+                foreach (var orderProduct in order.OrderProducts)
+                {
+                    // Kiểm tra xem số lượng trả lại có vượt quá số lượng đã mua không
+                    int quantityToReturn = Math.Min(orderProduct.Qty, orderProduct.Product.Qty);
+
+                    // Cập nhật số lượng trong kho
+                    orderProduct.Product.Qty += quantityToReturn;
+                }
+
+                // Lưu thay đổi vào cơ sở dữ liệu
+                _context.Update(order);
+
+                // Lưu lý do huỷ đơn hàng vào bảng OrderCancel (nếu có)
+                if (Reason != null && Reason.Any())
+                {
+                    foreach (var reason in Reason)
+                    {
+                        // Tạo một đối tượng OrderCancel và lưu vào cơ sở dữ liệu
+                        var orderCancel = new OrderCancel
+                        {
+                            OrderId = id,
+                            Reason = reason
+                        };
+
+                        _context.OrderCancel.Add(orderCancel);
+                    }
+                }
+
+                // Lưu lý do khác (nếu có)
+                if (!string.IsNullOrEmpty(otherReason))
+                {
+                    var orderCancel = new OrderCancel
+                    {
+                        OrderId = id,
+                        Reason = otherReason
+                    };
+
+                    _context.OrderCancel.Add(orderCancel);
+                }
+
+                // Lưu thay đổi vào cơ sở dữ liệu
+                await _context.SaveChangesAsync();
+
+                // Gửi email thông báo huỷ đơn hàng
+                await SendCancellationEmail(order);
+
+                TempData["Message"] = "Thank you for sharing the reason for your order";
+                TempData["MessageType"] = "success";
+            }
+
+            // Redirect người dùng về trang chi tiết đơn hàng
+            return RedirectToAction("OrderDetail", "MyOrder", new { id = id });
+        }
+
+        private async Task SendCancellationEmail(Order order)
+        {
+            string recipientEmail = order.Email;
+            string emailContent = GenerateCancellationEmailContent(order);
+
+            string smtpServer = _configuration["EmailSettings:SmtpServer"];
+            int port = _configuration.GetValue<int>("EmailSettings:Port");
+            string username = _configuration["EmailSettings:Username"];
+            string password = _configuration["EmailSettings:Password"];
+
+            using (var client = new SmtpClient(smtpServer))
+            {
+                client.Port = port;
+                client.Credentials = new System.Net.NetworkCredential(username, password);
+                client.EnableSsl = true;
+
+                var message = new MailMessage(username, recipientEmail)
+                {
+                    Subject = "Your Order Cancellation Confirmation",
+                    Body = emailContent,
+                    IsBodyHtml = true
+                };
+
+                try
+                {
+                    await client.SendMailAsync(message);
+                    ViewBag.Message = "Cancellation email sent successfully";
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Error = $"Failed to send cancellation email: {ex.Message}";
+                }
+            }
+        }
+
+        private string GenerateCancellationEmailContent(Order order)
+        {
+            // Đọc nội dung mẫu email từ file
+            string emailTemplatePath = _env.ContentRootPath + "/Views/Email/CancelEmail.cshtml";
+            string emailContent = System.IO.File.ReadAllText(emailTemplatePath);
+
+            // Thay thế các placeholder trong mẫu email bằng thông tin đơn hàng
+            emailContent = emailContent.Replace("{OrderNumber}", order.OrderId.ToString());
+            emailContent = emailContent.Replace("{OrderDate}", order.OrderDate.ToString("dd/MM/yyyy HH:mm"));
+            emailContent = emailContent.Replace("{CustomerName}", order.FullName);
+            emailContent = emailContent.Replace("{CustomerEmail}", order.Email);
+            emailContent = emailContent.Replace("{Status}", order.Status);
+
+            return emailContent;
+        }
+
 
 
         [Authentication]

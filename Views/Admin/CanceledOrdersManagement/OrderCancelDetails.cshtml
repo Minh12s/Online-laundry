@@ -1,0 +1,103 @@
+﻿@model OnlineJwellery_Shopping.Models.Order
+@{
+    ViewData["Title"] = "Order Cancel deatils";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<style>
+    .row {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        margin-right: 15px;
+        margin-left: 15px;
+    }
+
+    .col-lg-4 {
+        -webkit-box-flex: 0;
+        -ms-flex: 0 0 33.3333333333%;
+        flex: 0 0 33.3333333333%;
+        max-width: 33.3333333333%;
+</style>
+<section class="section main-section">
+
+    <div class="container">
+        <div class="row order_d_inner">
+            @if (Model != null)
+            {
+                <div class="col-lg-4">
+                    <div class="details_item">
+                        <h4>Order Info</h4>
+                        <ul class="list">
+                            <li><a href="#"><span>Order id</span>: @Model.OrderId</a></li>
+                            <li><a href="#"><span>Date</span>: @Model.OrderDate.ToShortDateString()</a></li>
+                            <li><a href="#"><span>Total</span>: $@Model.TotalAmount</a></li>
+                            <li><a href="#"><span>Payment Method</span>: @Model.PaymentMethod</a></li>
+                            <li><a href="#"><span>IsPaid</span>: @Model.IsPaid</a></li>
+                            <li><a href="#"><span>Status</span>: @Model.Status</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="details_item">
+                        <h3>Customer Information</h3>
+                        <ul class="list">
+                            <li><a href="#"><span>Full Name</span>: @Model.FullName</a></li>
+                            <li><a href="#"><span>Telephone</span>: @Model.Telephone</a></li>
+                            <li><a href="#"><span>Email</span>: @Model.User.Email</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="details_item">
+                        <h3>Shipping</h3>
+                        <ul class="list">
+                            <li><a href="#"><span>Shipping method</span>: @Model.ShippingMethod</a></li>
+                            <li><a href="#"><span>Address</span>: @Model.GetFullAddress()</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="order_details_table">
+                    <h2>Order Details</h2>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th style="width:100px;" scope="col">ID</th>
+                                    <th style="width:200px;" scope="col">Thumbnail </th>
+                                    <th style="width:300px;" scope="col">Name</th>
+                                    <th style="width:200px;" scope="col">Price</th>
+                                    <th style="width:200px;" scope="col">Quantity</th>
+                                    <th style="width:200px;" scope="col">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var orderProduct in Model.OrderProducts)
+                                {
+                                    <tr>
+                                        <td>@orderProduct.Product.ProductId</td>
+                                        <td><img src="@orderProduct.Product.Thumbnail" width="120" /></td>
+                                        <td>@orderProduct.Product.ProductName</td>
+                                        <td>@orderProduct.Product.Price</td>
+                                        <td>@orderProduct.Qty</td>
+                                        <td>$@(orderProduct.Product.Price * orderProduct.Qty)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <p>No order information available.</p>
+
+            }
+        </div>
+    </div>
+
+</section>
+
+
+

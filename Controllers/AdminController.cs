@@ -14,6 +14,7 @@ using System.Net.Mail;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using static NuGet.Packaging.PackagingConstants;
 using System.IO;
+using PayPal.Api;
 
 namespace OnlineJwellery_Shopping.Controllers
 {
@@ -842,5 +843,106 @@ namespace OnlineJwellery_Shopping.Controllers
         }
 
 
+        public async Task<IActionResult> OrderCancel(int page = 1, int pageSize = 10, string Email = null, string Telephone = null, string TotalAmount = null, string search = null)
+        {
+            // Lấy danh sách các đơn hàng đã huỷ và thông tin của chúng
+            var canceledOrders = await _context.OrderCancel
+                .Include(oc => oc.Order)
+                .ToListAsync();
+
+            // Chuyển đổi các đơn hàng đã huỷ thành một danh sách ViewModel để truyền đến view
+            var canceledOrdersViewModel = canceledOrders.Select(oc => new OrderCancelViewModel
+            {
+                OrderCancelId = oc.OrderCancelId,
+                OrderId = oc.OrderId,
+                FullName = oc.Order.FullName,
+                Email = oc.Order.Email,
+                Telephone = oc.Order.Telephone,
+                TotalAmount = oc.Order.TotalAmount,
+                Reason = oc.Reason
+            }).ToList();
+
+            // Lọc theo Email
+            if (!string.IsNullOrEmpty(Email))
+            {
+                canceledOrdersViewModel = canceledOrdersViewModel.Where(oc => oc.Email.Contains(Email)).ToList();
+            }
+
+            // Lọc theo Telephone
+            if (!string.IsNullOrEmpty(Telephone))
+            {
+                canceledOrdersViewModel = canceledOrdersViewModel.Where(oc => oc.Telephone.Contains(Telephone)).ToList();
+            }
+
+            // Lọc theo TotalAmount
+            if (!string.IsNullOrEmpty(TotalAmount))
+            {
+                decimal totalAmountValue;
+                if (decimal.TryParse(TotalAmount, out totalAmountValue))
+                {
+                    canceledOrdersViewModel = canceledOrdersViewModel.Where(oc => oc.TotalAmount == totalAmountValue).ToList();
+                }
+            }
+
+            // Lọc theo từ khóa tìm kiếm
+            if (!string.IsNullOrEmpty(search))
+            {
+                canceledOrdersViewModel = canceledOrdersViewModel.Where(oc => oc.FullName.Contains(search)
+                                                                            || oc.Email.Contains(search)
+                                                                            || oc.Telephone.Contains(search)
+                                                                            || oc.TotalAmount.ToString().Contains(search)
+                                                                            || oc.Reason.Contains(search)).ToList();
+            }
+
+            // Tạo một Dictionary để lưu số lần xuất hiện của mỗi lý do
+            var reasonCounts = new Dictionary<string, int>();
+
+            // Lặp qua danh sách các đơn hàng đã huỷ và đếm số lần xuất hiện của mỗi lý do
+            foreach (var order in canceledOrdersViewModel)
+            {
+                if (reasonCounts.ContainsKey(order.Reason))
+                {
+                    reasonCounts[order.Reason]++;
+                }
+                else
+                {
+                    reasonCounts.Add(order.Reason, 1);
+                }
+            }
+
+            // Phân trang
+            var totalOrders = canceledOrdersViewModel.Count();
+            var totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
+            var paginatedOrders = canceledOrdersViewModel.Skip((page - 1) * pageSize)
+                                                         .Take(pageSize)
+                                                         .ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.PageSize = pageSize;
+            ViewBag.ReasonCounts = reasonCounts; // Truyền danh sách số lần xuất hiện của mỗi lý do đến view
+
+            return View("CanceledOrdersManagement/OrderCancel", paginatedOrders);
+        }
+
+        public async Task<IActionResult> OrderCancelDetails(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var order = _context.Order
+                .Include(o => o.User)
+                .Include(o => o.OrderProducts)
+                    .ThenInclude(op => op.Product)
+                .FirstOrDefault(o => o.OrderId == id);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+            return View("CanceledOrdersManagement/OrderCancelDetails", order);
+        }
+      
     }
 }

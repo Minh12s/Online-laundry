@@ -1,0 +1,240 @@
+﻿@model IEnumerable<OnlineJwellery_Shopping.Models.OrderCancelViewModel>
+@{
+    ViewData["Title"] = "Order Cancel";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+@{
+    // Danh sách các lý do và icon tương ứng
+    var reasonIcons = new Dictionary<string, string>
+{
+        { "Order takes a long time to confirm", "mdi-clock" },
+        { "I don't need to buy anymore", "mdi-cancel" },
+        { "I want to update my shipping address", "mdi-truck" },
+        { "I found a better place to buy (Cheaper, more reputable, faster delivery...)", "mdi-thumb-up" },
+        { "I don't have enough money to buy it", "mdi-currency-usd" }
+    };
+
+    // Tính tổng số lý do khác
+    int otherReasonCount = 0;
+    foreach (var item in ViewBag.ReasonCounts)
+    {
+        if (!reasonIcons.ContainsKey(item.Key))
+        {
+            otherReasonCount += item.Value;
+        }
+    }
+}
+<section class="is-title-bar">
+    <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+        <ul>
+            <li style="margin-left:-50px;">Admin</li>
+            <li>Order Cancel</li>
+        </ul>
+
+    </div>
+
+</section>
+
+<section class="is-hero-bar">
+    <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+        <h1 class="title">
+            Order List
+        </h1>
+    </div>
+</section>
+
+<section class="section main-section">
+    <div class="grid gap-6 grid-cols-1 md:grid-cols-3 mb-6">
+        @foreach (var item in reasonIcons)
+        {
+            <div class="card">
+                <div class="card-content">
+                    <div class="flex items-center justify-between">
+                        <div class="widget-label">
+                            <h3>
+                                @item.Key <!-- Hiển thị lý do -->
+                            </h3>
+                            <h1>
+                                @(ViewBag.ReasonCounts.ContainsKey(item.Key) ? ViewBag.ReasonCounts[item.Key] : 0)
+                            </h1>
+
+                        </div>
+                        <span class="icon widget-icon text-red-500"><i class="mdi @item.Value mdi-48px"></i></span> <!-- Icon tương ứng -->
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Card cho lý do khác -->
+        <div class="card">
+            <div class="card-content">
+                <div class="flex items-center justify-between">
+                    <div class="widget-label">
+                        <h3>
+                            Other
+                        </h3>
+                        <h1>
+                            @otherReasonCount <!-- Hiển thị tổng số lý do khác -->
+                        </h1>
+                    </div>
+                    <span class="icon widget-icon text-red-500"><i class="mdi mdi-help-circle mdi-48px"></i></span> <!-- Icon cho lý do khác -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form style="display: flex; align-items: center; border-radius: 5px; margin-top: 10px; flex-wrap: wrap;" asp-action="OrderCancel" asp-controller="Admin" method="get">
+        <div class="input-group input-group-sm" style="margin-right: -23px; margin-bottom: 10px;" margin-left: -28px;>
+            <input value="" class="form-control" type="text" name="Email" placeholder="Email" style="height: 45px; font-size: 0.765625rem; padding: 4px 8px; background-color: #F1F1F1; border-radius: 5px; width: 120px; margin-left: 2px;" />
+        </div>
+        <div class="input-group input-group-sm" style=" margin-right: 5px; margin-bottom: 10px;">
+            <input value="" class="form-control" type="text" name="Telephone" placeholder="Telephone" style="height: 45px; font-size: 0.765625rem; padding: 4px 8px; background-color: #F1F1F1; border-radius: 5px; width: 120px; margin-left: 28px;" />
+        </div>
+        <div class="input-group input-group-sm" style=" margin-right: 5px; margin-bottom: 10px;">
+            <input value="" class="form-control" type="text" name="TotalAmount" placeholder="Total Amount" style="height: 45px; font-size: 0.765625rem; padding: 4px 8px; background-color: #F1F1F1; border-radius: 5px; width: 120px; margin-right: -10px;" />
+        </div>
+      
+
+        <div class="input-group input-group-sm" style="margin-left: 5px; margin-bottom: 10px;">
+            <input value="" type="text" name="search" class="form-control" placeholder="Search" style="height: 45px; font-size: 0.765625rem; padding: 4px 8px; background-color: #F1F1F1; border-radius: 5px; width: 300px; margin-left:7px;" />
+        </div>
+        <div class="input-group input-group-sm" style="margin-bottom: 10px; margin-left: -5px;">
+            <button style=" margin-left:10px; height: 45px; background-color: #F1F1F1; border: none; border-radius: 5px;" type="submit" class="btn btn-default">
+                <i class="mdi mdi-magnify" style="padding: 10px;"></i>
+            </button>
+        </div>
+    </form>
+    <div class="card has-table">
+        <header class="card-header">
+            <p class="card-header-title">
+                @*<span class="icon"><i class="mdi mdi-shopping"></i></span>*@
+                Order
+            </p>
+
+            <a href="#" class="card-header-icon">
+                <span class="icon"><i class="mdi mdi-reload"></i></span>
+            </a>
+        </header>
+
+        <div class="card-content">
+            <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0" id="sampleTable">
+                <thead>
+                    <tr>
+                        <th width="10"><input type="checkbox" id="all"></th>
+                        <th>Id</th>
+                        <th>Order Id</th>
+                        <th>Full name</th>
+                        <th>Email</th>
+                        <th>Telephone</th>
+                        <th>Total Amount</th>
+                        <th>Reason</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var orderCancel in Model)
+                    {
+                        <tr>
+                            <td width="10"><input type="checkbox" name="check1" value="1"></td>
+                            <td>@orderCancel.OrderCancelId</td>
+                            <td>@orderCancel.OrderId</td>
+                            <td>@orderCancel.FullName</td>
+                            <td>@orderCancel.Email</td>
+                            <td>@orderCancel.Telephone</td>
+                            <td>@orderCancel.TotalAmount</td>
+                            <td>@orderCancel.Reason</td>
+                            <td>
+
+                                <a asp-action="OrderCancelDetails" asp-controller="Admin" class="btn btn-primary" style="background-color:green; color:white;" asp-route-id="@orderCancel.OrderId">Details</a>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+
+            <div class="table-pagination">
+                <div class="flex items-center justify-between">
+                    <div class="buttons">
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            <button type="button" class="button @(ViewBag.CurrentPage == i ? "active" : "")" onclick="location.href='@Url.Action("OrderCancel", new { page = i, pageSize = ViewBag.PageSize })'">@i</button>
+                        }
+                    </div>
+                    <small>Page @ViewBag.CurrentPage of @ViewBag.TotalPages</small>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+</section>
+<style>
+
+    .btn-primary {
+        color: rgb(245 157 57);
+        background-color: rgb(251 226 197);
+        border-color: none;
+        /* border-top-left-radius: 10px !important; */
+        /* border-bottom-right-radius: 10px !important; */
+        border-radius: .357rem;
+        border: none;
+        font-weight: 600;
+        padding: 5px 20px; /* Điều chỉnh kích thước theo ý muốn */
+    }
+
+    .edit-button {
+        margin-top: 10px; /* Điều chỉnh giá trị margin-top theo ý muốn */
+    }
+
+    .btn-add {
+        color: white;
+        background-color: black;
+        border-color: none;
+        /* border-top-left-radius: 10px !important; */
+        /* border-bottom-right-radius: 10px !important; */
+        border-radius: .357rem;
+        border: none;
+        font-weight: 600;
+        padding: 10px 20px; /* Điều chỉnh kích thước theo ý muốn */
+    }
+
+    .btn-danger {
+        color: #FFF;
+        background-color: #dc3545;
+        border-color: #dc3545;
+        border-color: none;
+        /* border-top-left-radius: 10px !important; */
+        /* border-bottom-right-radius: 10px !important; */
+        border-radius: .357rem;
+        border: none;
+        font-weight: 600;
+        padding: 5px 20px;
+    }
+
+        .btn-danger:hover {
+            color: #FFF;
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+
+        .btn-danger:focus, .btn-danger.focus {
+            -webkit-box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.5);
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.5);
+        }
+
+        .btn-danger.disabled, .btn-danger:disabled {
+            color: #FFF;
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+    .button-group {
+        display: flex;
+    }
+
+        .button-group > * {
+            margin-right: 10px; /* Khoảng cách giữa các nút */
+        }
+</style>

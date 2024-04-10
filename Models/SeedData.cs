@@ -22,7 +22,7 @@ namespace OnlineJwellery_Shopping.Models
                 // Look for any existing data.
                 if (context.User.Any() || context.Category.Any() || context.Blog.Any() || context.Brand.Any() ||
                 context.Favorite.Any() || context.GoldAge.Any() || context.Order.Any() || context.OrderProduct.Any() ||
-                context.Product.Any() || context.Review.Any())
+                context.Product.Any() || context.Review.Any() || context.OrderCancel.Any())
                 {
                     return;   // Database has been seeded
                 }
@@ -240,6 +240,30 @@ namespace OnlineJwellery_Shopping.Models
                         Price = random.Next(1, 101)
                     };
                     context.OrderProduct.Add(orderProduct);
+                }
+                context.SaveChanges();
+
+                // Seed data for OrderCancel
+                var cancelReasons = new List<string>
+                {
+                  "Out of stock",
+                  "Customer changed mind",
+                  "Item damaged during shipping",
+                  "Duplicate order",
+                  "Payment issue",
+                  "Incorrect address provided",
+                  "Item not as described",
+                  "Customer request"
+                };
+
+                for (int i = 1; i <= 10; i++)
+                {
+                    var orderCancel = new OrderCancel
+                    {
+                        OrderId = random.Next(1, 10),
+                        Reason = cancelReasons[random.Next(cancelReasons.Count)]
+                    };
+                    context.OrderCancel.Add(orderCancel);
                 }
                 context.SaveChanges();
 

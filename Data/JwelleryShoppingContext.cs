@@ -18,6 +18,7 @@ namespace OnlineJwellery_Shopping.Data
         public DbSet<Product> Product { get; set; }
         public DbSet<Order> Order { get; set; }
         public DbSet<OrderProduct> OrderProduct { get; set; }
+        public DbSet<OrderCancel> OrderCancel { get; set; }
         public DbSet<Favorite> Favorite { get; set; }
         public DbSet<Review> Review { get; set; }
         public DbSet<Blog> Blog { get; set; }

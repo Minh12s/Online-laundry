@@ -54,10 +54,10 @@ namespace OnlineJwellery_Shopping.Controllers
             return View();
         }
         [HttpPost]
-   
         public IActionResult Checkout(Order model)
         {
-            if (true)
+            // Kiểm tra xem session có sẵn hay không
+            if (HttpContext.Session.IsAvailable)
             {
                 // Lấy UserId từ Session
                 if (HttpContext.Session.TryGetValue("UserId", out byte[] userIdBytes) &&
