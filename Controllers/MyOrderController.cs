@@ -32,7 +32,7 @@ namespace OnlineJwellery_Shopping.Controllers
         }
 
         [Authentication]
-        public async Task<IActionResult> MyOrder(String OrderDate,String IsPaid, string searchTerm, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> MyOrder(String OrderDate,String IsPaid, string searchTerm, int page = 1, int pageSize = 6)
         {
             // Kế thừa các logic chung từ BaseController
             await SetCommonViewData();

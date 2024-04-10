@@ -14,7 +14,6 @@ using System.Net.Mail;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using static NuGet.Packaging.PackagingConstants;
 using System.IO;
-using PayPal.Api;
 
 namespace OnlineJwellery_Shopping.Controllers
 {
@@ -33,20 +32,41 @@ namespace OnlineJwellery_Shopping.Controllers
         }
         [Authentication]
         // Customer Management
-        public async Task<IActionResult> Customer(int? page)
+        [Authentication]
+        public async Task<IActionResult> Customer(int? page, string userNameSearch, string addressSearch, string phoneNumberSearch, string emailSearch)
         {
-            int pageSize = 1; // Số lượng người dùng mỗi trang
+            int pageSize = 10; // Số lượng người dùng mỗi trang
             int pageNumber = page ?? 1; // Trang hiện tại, mặc định là trang 1 nếu không có page được cung cấp
 
             if (_context.User != null)
             {
-                // Lấy tổng số người dùng từ cơ sở dữ liệu
-                int totalUsers = await _context.User.CountAsync();
+                IQueryable<User> query = _context.User; // Tạo một IQueryable ban đầu
+
+                // Áp dụng bộ lọc theo từng trường nếu có từ khóa tìm kiếm
+                if (!string.IsNullOrEmpty(userNameSearch))
+                {
+                    query = query.Where(u => u.Username.Contains(userNameSearch));
+                }
+                if (!string.IsNullOrEmpty(addressSearch))
+                {
+                    query = query.Where(u => u.Address.Contains(addressSearch));
+                }
+                if (!string.IsNullOrEmpty(phoneNumberSearch))
+                {
+                    query = query.Where(u => u.PhoneNumber.Contains(phoneNumberSearch));
+                }
+                if (!string.IsNullOrEmpty(emailSearch))
+                {
+                    query = query.Where(u => u.Email.Contains(emailSearch));
+                }
+
+                // Lấy tổng số người dùng từ cơ sở dữ liệu sau khi áp dụng bộ lọc
+                int totalUsers = await query.CountAsync();
 
                 // Phân trang danh sách người dùng
-                var userList = await _context.User.Skip((pageNumber - 1) * pageSize)
-                                                  .Take(pageSize)
-                                                  .ToListAsync();
+                var userList = await query.Skip((pageNumber - 1) * pageSize)
+                                          .Take(pageSize)
+                                          .ToListAsync();
 
                 // Chuyển thông tin phân trang vào ViewBag
                 ViewBag.CurrentPage = pageNumber;
@@ -59,6 +79,7 @@ namespace OnlineJwellery_Shopping.Controllers
                 return Problem("Entity set 'OgainShopContext.User' is null.");
             }
         }
+
 
         [Authentication]
         public IActionResult OrderUser(int? id)

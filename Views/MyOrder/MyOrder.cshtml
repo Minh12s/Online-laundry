@@ -77,13 +77,13 @@
 
         </div>
         <div class="content-top-title">
-            <form asp-controller="MyOrder" style="display:flex;" asp-action="MyOrder" method="get">
+            <form style="display:flex;" method="get" action="/MyOrder/MyOrder">
 
-                <div class="input-group input-group-sm" style="width: 150px;">
-                    <input value="@ViewBag.SearchTerm" type="text" name="searchTerm" class="form-control float-right" placeholder="searchTerm">
+                <div class="input-group input-group-sm" style="width: 220px;">
+                    <input type="text" name="searchTerm" class="form-control float-right" placeholder="searchTerm">
 
                 </div>
-                <div class="input-group input-group-sm mr-2" style="width: 150px; margin-left: 5px;">
+                <div class="input-group input-group-sm mr-2" style="width: 150px; margin-left: 10px;">
                     <select style="height: 45px;" name="IsPaid" class="form-control">
                         <option value="">Select paid</option>
                         <option value="1">paid</option>
