@@ -29,13 +29,18 @@
                                     <p class="price"><span class="mr-2 price-dc">$120.00</span><span class="price-sale">$@product.Price</span></p>
                                 </div>
                                 <div class="rating">
-                                    <p class="text-right">
-                                        <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                        <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                        <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                        <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                        <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                    </p>
+                                    @for (int i = 0; i < (int)ViewBag.ProductAverageRating[product.ProductId]; i++)
+                                    {
+                                        <a href="#"><span class="ion-ios-star star-yellow"></span></a>
+                                    }
+                                    @if (ViewBag.ProductAverageRating[product.ProductId] - (int)ViewBag.ProductAverageRating[product.ProductId] >= 0.5)
+                                    {
+                                        <a href="#"><span class="ion-ios-star star-yellow ion-ios-star-half"></span></a>
+                                    }
+                                    @for (int i = 0; i < 5 - (int)ViewBag.ProductAverageRating[product.ProductId] - ((ViewBag.ProductAverageRating[product.ProductId] - (int)ViewBag.ProductAverageRating[product.ProductId] >= 0.5 ? 1 : 0)); i++)
+                                    {
+                                        <a href="#"><span class="ion-ios-star-outline star-yellow"></span></a>
+                                    }
                                 </div>
                             </div>
                             <p class="bottom-area d-flex px-3">
@@ -67,4 +72,9 @@ else
         margin-left: 130px;
     }
 
+</style>
+<style>
+    .star-yellow {
+        color: gold; /* Đổi màu của sao sang màu vàng */
+    }
 </style>

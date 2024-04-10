@@ -6,6 +6,14 @@
     var isFavorite = false; // Biến này sẽ đại diện cho trạng thái yêu thích của sản phẩm
     var favoriteIcon = User.Identity.IsAuthenticated ? "fa-solid fa-heart" : "fa-regular fa-heart"; // Xác định biểu tượng yêu thích ban đầu dựa trên việc người dùng đã đăng nhập hay chưa
 }
+@{
+    double rating = ViewBag.AverageRating;
+    int fullStars = (int)Math.Floor(rating); // Số sao nguyên
+    double remainder = rating - fullStars; // Phần thập phân
+
+    int halfStar = remainder >= 0.5 ? 1 : 0; // Số sao nửa
+    int emptyStars = 5 - fullStars - halfStar; // Số sao trắng
+}
 <style>
     .alert {
         text-align: center;
@@ -181,12 +189,21 @@
                 <h3>@ViewBag.ProductName</h3>
                 <div class="rating d-flex">
                     <p class="text-left mr-4">
-                        <a href="#" class="mr-2">5.0</a>
-                        <a href="#"><span class="ion-ios-star-outline"></span></a>
-                        <a href="#"><span class="ion-ios-star-outline"></span></a>
-                        <a href="#"><span class="ion-ios-star-outline"></span></a>
-                        <a href="#"><span class="ion-ios-star-outline"></span></a>
-                        <a href="#"><span class="ion-ios-star-outline"></span></a>
+                        <a href="#" class="mr-2">@ViewBag.AverageRating.ToString("0.0")</a>
+                        @for (int i = 0; i < fullStars; i++)
+                        {
+                            <a href="#"><span class="ion-ios-star star-yellow"></span></a>
+                        }
+
+                        @if (halfStar == 1)
+                        {
+                            <a href="#"><span class="ion-ios-star star-yellow ion-ios-star-half"></span></a>
+                        }
+
+                        @for (int i = 0; i < emptyStars; i++)
+                        {
+                            <a href="#"><span class="ion-ios-star-outline star-yellow"></span></a>
+                        }
                     </p>
                     <p class="text-left mr-4">
                         <a href="#" class="mr-2" style="color: #000;">100 <span style="color: #bbb;">Rating</span></a>
@@ -303,6 +320,61 @@
         </div>
     </div>
 </section>
+<section class="ftco-section">
+    <section id="comments-section" class="ftco-section ftco-degree-bg">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 ftco-animate">
+                    <div class="pt-5 mt-5">
+                        <h3 class="mb-5">Comments</h3>
+                        @if (ViewBag.ApprovedReviewsCount > 0)
+                        {
+                            <ul class="comment-list">
+                                @foreach (var review in ViewBag.ApprovedReviews)
+                                {
+                                    <li class="comment">
+                                        <div class="vcard bio">
+                                            @if (review.User != null && !string.IsNullOrEmpty(review.User.Thumbnail))
+                                            {
+                                                <img src="@review.User.Thumbnail" alt="Image placeholder">
+                                            }
+                                        </div>
+                                        <div class="comment-body">
+                                            @if (review.User != null && !string.IsNullOrEmpty(review.User.Username))
+                                            {
+                                                <h3>@review.User.Username</h3>
+                                            }
+                                            <div class="meta">
+                                                @if (review.ReviewDate != null)
+                                                {
+                                                    <div>@review.ReviewDate.ToString("MMMM dd, yyyy")</div>
+                                                }
+                                            </div>
+                                            <div class="rating">
+                                                @for (int i = 0; i < review.RatingValue; i++)
+                                                {
+                                                    <a href="#"><span class="ion-ios-star star-yellow"></span></a>
+                                                }
+                                                @for (int i = review.RatingValue; i < 5; i++)
+                                                {
+                                                    <a href="#"><span class="ion-ios-star-outline star-yellow"></span></a>
+                                                }
+                                            </div>
+                                            <p>@review.Comment</p>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p>No approved reviews yet.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
 <section class="ftco-section bg-light">
     <div class="container">
@@ -467,3 +539,8 @@
     // Gọi hàm slideImages để bắt đầu chuyển động tự động
     setInterval(slideImages, slideInterval); // Gọi hàm sau mỗi khoảng thời gian giữa các lần chuyển đổi</script>
 
+    <style>
+        .star-yellow {
+            color: gold; /* Đổi màu của sao sang màu vàng */
+        }
+    </style>

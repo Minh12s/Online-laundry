@@ -13,6 +13,8 @@ using System.Net;
 using System.Net.Mail;
 using Microsoft.CodeAnalysis;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Hosting;
+
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -139,44 +141,17 @@ namespace OnlineJwellery_Shopping.Controllers
             {
                 return NotFound();
             }
+            // Lấy danh sách orderProducts từ đơn hàng
+            var orderProducts = order.OrderProducts.ToList();
             if (status.ToLower() == "complete" && order.Status.ToLower() != "complete")
             {
                 // Cập nhật trạng thái cho đơn hàng
                 order.Status = status;
                 _context.Update(order);
                 await _context.SaveChangesAsync();
-
                 // Gửi email thông báo cho khách hàng
-                try
-                {
-                    var user = order.User;
-                    var body = @"Hey there!<br><br>Thanks for shopping with us. We hope the product will meet your expectations and you will purchase from Online Jewellery shop again!<br><br>While you wait for your package, check out other products that may be a great addition to your collection.<br><br>See you around!<br><br>Admin<br>Owner of Online Jewellery shop";
+                await SendThankYouEmail("minhtnth2209037@fpt.edu.vn", order, orderProducts);
 
-                    var message = new MailMessage();
-                    message.To.Add(new MailAddress("dungprohn1409@gmail.com")); // Địa chỉ email của khách hàng
-                    message.From = new MailAddress(_configuration["EmailSettings:Username"]); // Địa chỉ email của bạn từ cấu hình
-                    message.Subject = "Order has been received";
-                    message.Body = body;
-                    message.IsBodyHtml = true;
-
-                    using (var smtp = new SmtpClient(_configuration["EmailSettings:SmtpServer"],
-                                                      int.Parse(_configuration["EmailSettings:Port"])))
-                    {
-                        var credentials = new NetworkCredential
-                        {
-                            UserName = _configuration["EmailSettings:Username"], // Tài khoản email của bạn từ cấu hình
-                            Password = _configuration["EmailSettings:Password"] // Mật khẩu email của bạn từ cấu hình
-                        };
-                        smtp.Credentials = credentials;
-                        smtp.EnableSsl = true; // Sử dụng SSL (Secure Socket Layer)
-                        await smtp.SendMailAsync(message);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    // Xử lý lỗi nếu có
-                    Console.WriteLine(ex.Message);
-                }
             }
 
 
@@ -207,6 +182,53 @@ namespace OnlineJwellery_Shopping.Controllers
 
             // Chuyển hướng đến returnUrl
             return Redirect(returnUrl);
+        }
+        private async Task SendThankYouEmail(string recipientEmail, Order order, List<OrderProduct> orderProducts)
+        {
+            // Đường dẫn tới mẫu email
+            string emailTemplatePath = Path.Combine(_env.ContentRootPath, "Views", "Email", "MailThankYou.cshtml");
+
+            // Đọc nội dung mẫu email từ file
+            string emailContent = await System.IO.File.ReadAllTextAsync(emailTemplatePath);
+
+            // Thêm thông tin sản phẩm vào email content
+            string productList = "";
+            foreach (var ordProduct in orderProducts)
+            {
+                productList += $"<div class='Order_list_product'><div class='Order_list_product1'><h5>{ordProduct.Product.ProductName}</h5></div><div class='quantity'><p>Qty: {ordProduct.Qty}</p></div><div class='total'><p>${ordProduct.Price}</p></div></div>";
+            }
+            emailContent = emailContent.Replace("{OrderProducts}", productList);
+
+            // Thêm tổng đơn hàng vào email content
+            decimal subtotal = orderProducts.Sum(op => op.Price * op.Qty);
+            decimal shippingFee = order.ShippingMethod == "Express" ? 10.00m : 20.00m; // Giả sử phí vận chuyển là $10 cho Express, $20 cho các phương thức khác
+            decimal totalAmount = subtotal + shippingFee;
+            emailContent = emailContent.Replace("{Subtotal}", subtotal.ToString("0.00"));
+            emailContent = emailContent.Replace("{ShippingFee}", shippingFee.ToString("0.00"));
+            emailContent = emailContent.Replace("{TotalAmount}", totalAmount.ToString("0.00"));
+
+            // Tạo đối tượng MailMessage
+            var message = new MailMessage();
+            message.To.Add(new MailAddress(recipientEmail)); // Địa chỉ email của khách hàng
+            message.From = new MailAddress(_configuration["EmailSettings:Username"]);
+            message.Subject = "Thank You for Your Purchase!";
+            message.Body = emailContent;
+            message.IsBodyHtml = true;
+
+            // Tạo đối tượng SmtpClient để gửi email
+            using (var smtp = new SmtpClient(_configuration["EmailSettings:SmtpServer"], int.Parse(_configuration["EmailSettings:Port"])))
+            {
+                var credentials = new NetworkCredential
+                {
+                    UserName = _configuration["EmailSettings:Username"],
+                    Password = _configuration["EmailSettings:Password"]
+                };
+                smtp.Credentials = credentials;
+                smtp.EnableSsl = true;
+
+                // Gửi email
+                await smtp.SendMailAsync(message);
+            }
         }
 
         [Authentication]

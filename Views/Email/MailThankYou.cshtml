@@ -1,0 +1,253 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .row-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .col-md-4 {
+            width: calc(33.33% - 2px); /* Adjust width as needed, considering the 20px gap */
+            background-color: white; /* Set the background color to white */
+            border: 1px solid #ddd; /* Add a 1px solid border with #ddd color */
+            border-radius: 5px; /* Add a 5px border radius for rounded corners */
+            text-align: center;
+            padding: 20px 0 20px 0;
+        }
+
+
+
+        .container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+
+
+        .order-details table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .order-details table th, .order-details table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+
+            .order-details table th {
+                background-color: #f2f2f2;
+            }
+
+
+
+        .order-summary table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .order-summary table th, .order-summary table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+
+            .order-summary table th {
+                background-color: #f2f2f2;
+            }
+
+
+
+        body {
+            margin-top: 20px;
+        }
+
+
+
+        .order-list th, .order-list td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .order-list th {
+            background-color: #f2f2f2;
+        }
+
+        .cart__total {
+            background: white;
+            padding: 3px 40px 40px;
+            width: 30%;
+            border: 1px solid #ddd;
+            margin-left: 20px;
+        }
+
+            .cart__total h4 {
+                font-size: 23px;
+                border-bottom: 1px solid #ddd;
+                padding: 1px 0 20px 20px;
+            }
+
+
+
+            .cart__total ul {
+                margin-bottom: 5px;
+                padding-left: 1px
+            }
+
+
+                .cart__total ul li {
+                    list-style: none;
+                    font-size: 16px;
+                    color: #444444;
+                    line-height: 50px;
+                    overflow: hidden;
+                }
+
+                    .cart__total ul li span {
+                        font-weight: 700;
+                        /*color: #e53637;*/
+                        float: right;
+                    }
+
+        .Order {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .Order_list {
+            width: 60%;
+            background-color: white;
+            justify-content: space-between;
+            border: 1px solid #ddd;
+        }
+
+            .Order_list h4 {
+                font-size: 23px;
+                border-bottom: 1px solid #ddd;
+                padding: 3px 0 20px 20px;
+            }
+
+
+        .Order_list_product {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+
+        .Order_list_product1 {
+            flex: 2;
+            max-width: 30%; /* Điều chỉnh max-width theo cần thiết */
+            word-wrap: break-word;
+            margin-left: 30px;
+            width: 300px;
+        }
+
+            .Order_list_product1 h5 {
+                font-size: 18px;
+                font-weight: normal; /* Loại bỏ kiểu in đậm */
+            }
+
+        .Order_list_product p {
+            padding: 17px 5px 0 0;
+            text-align: right; /* Canh giá trị giá bên phải */
+        }
+
+        .Order_list_product {
+            display: flex;
+        }
+
+            .Order_list_product img {
+                margin-right: 10px;
+            }
+
+        .Order_list_product1 {
+            flex-grow: 1;
+        }
+
+        .quantity, .total {
+            margin-left: auto;
+        }
+
+        .cart__total ul li.vat {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .navbar-brand {
+            display: inline-block;
+            padding-top: 0.3125rem;
+            padding-bottom: 0.3125rem;
+            margin-right: 1rem;
+            font-size: 1.25rem;
+            line-height: inherit;
+            white-space: nowrap;
+            margin-top: 22px;
+            margin-left: 20px;
+        }
+
+            .navbar-brand:hover, .navbar-brand:focus {
+                text-decoration: none;
+            }
+
+        .ftco-navbar-light .navbar-brand {
+            color: #000000;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a class="navbar-brand">Jewellery</a>
+        <div class="header">
+            <h1>Thank You for Your Purchase!</h1>
+            <p>We hope you are enjoying your recent purchase from Jewellery. We wanted to take a moment to thank you for choosing us.</p>
+            <p>Your satisfaction is our top priority, and we are thrilled that you have chosen our products. If you have any questions or concerns about your purchase, please do not hesitate to contact us.</p>
+            <p>Thank you once again for your trust and support. We look forward to serving you again in the future!</p>
+        </div>
+
+        <div class="Order">
+            <div class="Order_list">
+                <h4>Order List</h4>
+                {OrderProducts}
+            </div>
+
+            <div class="cart__total">
+                <h4>Order Summary</h4>
+                <ul>
+                    <li>Subtotal <span>${Subtotal}</span></li>
+                    <li class="vat">Shipping fee <span>${ShippingFee}</span></li>
+                    <li>Total <span>${TotalAmount}</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>

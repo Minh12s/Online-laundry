@@ -62,12 +62,27 @@ namespace OnlineJwellery_Shopping.Controllers
             // Retrieve the filtered products
             var filteredProducts = await productsQuery.ToListAsync();
 
+            // Khởi tạo ViewBag.ProductAverageRating
+            ViewBag.ProductAverageRating = new Dictionary<int, double>();
+
+
+            foreach (var product in filteredProducts)
+            {
+                var approvedReviewsCount = await _context.Review.CountAsync(r => r.ProductId == product.ProductId && r.Status == "approved");
+                var totalStars = await _context.Review
+                    .Where(r => r.ProductId == product.ProductId && r.Status == "approved")
+                    .SumAsync(r => r.RatingValue);
+                double averageRating = approvedReviewsCount > 0 ? (double)totalStars / approvedReviewsCount : 0;
+                ViewBag.ProductAverageRating[product.ProductId] = averageRating;
+            }
+
             // Pass the filtered products to the view
             ViewBag.SearchResults = filteredProducts;
 
             return View(filteredProducts);
         }
 
+       
         [Authentication]
         public async Task<IActionResult> Details(string slug)
         {
@@ -103,6 +118,21 @@ namespace OnlineJwellery_Shopping.Controllers
 
             ViewBag.SoldQuantity = soldQuantity;
 
+            // Đếm số lượng đánh giá đã được duyệt
+            var approvedReviewsCount = await _context.Review.CountAsync(r => r.ProductId == product.ProductId && r.Status == "approved");
+
+            // Tính tổng số sao từ tất cả đánh giá đã được duyệt
+            var totalStars = await _context.Review
+                .Where(r => r.ProductId == product.ProductId && r.Status == "approved")
+                .SumAsync(r => r.RatingValue);
+
+            // Tính trung bình cộng số sao
+            double averageRating = approvedReviewsCount > 0 ? (double)totalStars / approvedReviewsCount : 0;
+
+            ViewBag.AverageRating = averageRating;
+            ViewBag.ApprovedReviewsCount = approvedReviewsCount;
+
+
             // Đặt các thuộc tính ViewBag cho chi tiết sản phẩm
             ViewBag.ProductId = product.ProductId;
             ViewBag.ProductThumbnail = product.Thumbnail;
@@ -132,6 +162,15 @@ namespace OnlineJwellery_Shopping.Controllers
             ViewBag.Size = product.Size;
             ViewBag.Material = product.Material;
             ViewBag.CertificationCode = product.CertificationCode;
+            // Lấy tất cả các đánh giá đã được duyệt từ tất cả các tài khoản
+            var approvedReviews = await _context.Review
+                .Where(r => r.ProductId == product.ProductId && r.Status == "approved")
+                .Include(r => r.User) // Lấy thông tin người dùng cho mỗi đánh giá
+                .ToListAsync();
+
+            // Lưu danh sách các đánh giá đã được duyệt vào ViewBag
+            ViewBag.ApprovedReviews = approvedReviews;
+
 
             return View(product);
         }
@@ -223,6 +262,20 @@ namespace OnlineJwellery_Shopping.Controllers
             ViewBag.TotalPages = (int)Math.Ceiling((double)totalProductCount / pageSize);
             ViewBag.CurrentPage = page;
             ViewBag.Categories = await _context.Category.ToListAsync();
+
+            // Khởi tạo ViewBag.ProductAverageRating
+            ViewBag.ProductAverageRating = new Dictionary<int, double>();
+
+            // Tính điểm đánh giá trung bình cho từng sản phẩm và truyền vào ViewBag
+            foreach (var product in productList)
+            {
+                var approvedReviewsCount = await _context.Review.CountAsync(r => r.ProductId == product.ProductId && r.Status == "approved");
+                var totalStars = await _context.Review
+                    .Where(r => r.ProductId == product.ProductId && r.Status == "approved")
+                    .SumAsync(r => r.RatingValue);
+                double averageRating = approvedReviewsCount > 0 ? (double)totalStars / approvedReviewsCount : 0;
+                ViewBag.ProductAverageRating[product.ProductId] = averageRating;
+            }
 
             return View(productList);
         }
@@ -337,6 +390,20 @@ namespace OnlineJwellery_Shopping.Controllers
 
             ViewBag.ProductsInCategory = paginatedProducts;
             ViewBag.Categories = await db.Category.ToListAsync();
+            // Khởi tạo ViewBag.ProductAverageRating
+            ViewBag.ProductAverageRating = new Dictionary<int, double>();
+
+            // Tính điểm đánh giá trung bình cho từng sản phẩm và truyền vào ViewBag
+            foreach (var product in paginatedProducts)
+            {
+                var approvedReviewsCount = await _context.Review.CountAsync(r => r.ProductId == product.ProductId && r.Status == "approved");
+                var totalStars = await _context.Review
+                    .Where(r => r.ProductId == product.ProductId && r.Status == "approved")
+                    .SumAsync(r => r.RatingValue);
+                double averageRating = approvedReviewsCount > 0 ? (double)totalStars / approvedReviewsCount : 0;
+                ViewBag.ProductAverageRating[product.ProductId] = averageRating;
+            }
+
 
             return View(paginatedProducts);
         }
