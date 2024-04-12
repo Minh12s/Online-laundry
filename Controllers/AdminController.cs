@@ -703,7 +703,7 @@ namespace OnlineJwellery_Shopping.Controllers
             {
                 if (thumbnail != null && thumbnail.Length > 0)
                 {
-                    var uploadsFolder = Path.Combine("wwwroot", "images","Blogs");
+                    var uploadsFolder = Path.Combine("wwwroot", "images", "Blogs");
                     if (!Directory.Exists(uploadsFolder))
                     {
                         Directory.CreateDirectory(uploadsFolder);
@@ -720,7 +720,7 @@ namespace OnlineJwellery_Shopping.Controllers
                 }
 
                 model.BlogDate = DateTime.Now;
-               
+
 
                 _context.Add(model);
                 await _context.SaveChangesAsync();
@@ -964,6 +964,220 @@ namespace OnlineJwellery_Shopping.Controllers
             }
             return View("CanceledOrdersManagement/OrderCancelDetails", order);
         }
-      
+        public async Task<IActionResult> DataStatistics()
+        {
+            return View("DataStatistics/DataStatistics");
+        }
+        [HttpGet]
+        public async Task<IActionResult> RevenueChart(int? year)
+        {
+            // Sử dụng năm được chỉ định hoặc mặc định là năm hiện tại
+            int selectedYear = year ?? DateTime.Now.Year;
+
+            // Mảng chứa nhãn tháng
+            string[] monthLabels = new string[]
+            {
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            };
+
+            // Truy vấn cơ sở dữ liệu để lấy dữ liệu doanh thu cho mỗi tháng trong năm
+            var data = _context.Order
+                .Where(o => o.Status == "complete" && o.OrderDate.Year == selectedYear)
+                .GroupBy(o => o.OrderDate.Month)
+                .Select(g => new
+                {
+                    Month = g.Key,
+                    ProductsSold = g.Sum(o => o.OrderProducts.Sum(op => (double)op.Qty)), // Chuyển đổi sang kiểu double trước khi tính tổng
+                  
+                })
+                .OrderBy(g => g.Month)
+                .ToList();
+
+            // Mảng chứa số sản phẩm được bán ra hàng tháng
+            int[] productsSold = new int[12];
+
+            foreach (var item in data)
+            {
+                productsSold[item.Month - 1] = (int)item.ProductsSold;
+            }
+
+            return Json(new
+            {
+                labels = monthLabels,
+                productsSold
+            });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> RevenueChartDoanhThu(int? year)
+        {
+            // Sử dụng năm được chỉ định hoặc mặc định là năm hiện tại
+            int selectedYear = year ?? DateTime.Now.Year;
+
+            // Mảng chứa nhãn tháng
+            string[] monthLabels = new string[]
+            {
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            };
+
+            // Truy vấn cơ sở dữ liệu để lấy dữ liệu doanh thu cho mỗi tháng trong năm
+            var data = _context.Order
+                .Where(o => o.Status == "complete" && o.OrderDate.Year == selectedYear)
+                .GroupBy(o => o.OrderDate.Month)
+                .Select(g => new
+                {
+                    Month = g.Key,
+                  
+                    TotalRevenue = g.Sum(o => (double)o.TotalAmount) // Chuyển đổi sang kiểu double trước khi tính tổng
+                })
+                .OrderBy(g => g.Month)
+                .ToList();
+
+            // Mảng chứa doanh thu hàng tháng
+            double[] totalRevenue = new double[12];
+
+            foreach (var item in data)
+            {
+                totalRevenue[item.Month - 1] = item.TotalRevenue;
+            }
+
+            return Json(new
+            {
+                labels = monthLabels,
+                totalRevenue
+            });
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> RevenueChartDay()
+        {
+            // Lấy tham số start_date từ query string, nếu không có sẵn, mặc định là ngày đầu tiên của tháng hiện tại
+            DateTime startDate = HttpContext.Request.Query.ContainsKey("start_date") ?
+                                    DateTime.Parse(HttpContext.Request.Query["start_date"]) :
+                                    new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+
+            // Lấy tham số end_date từ query string, nếu không có sẵn, mặc định là ngày cuối cùng của tháng hiện tại
+            DateTime endDate = HttpContext.Request.Query.ContainsKey("end_date") ?
+                                    DateTime.Parse(HttpContext.Request.Query["end_date"]) :
+                                    new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
+
+            // Truy vấn cơ sở dữ liệu để lấy dữ liệu bán hàng hàng ngày trong khoảng thời gian đã chọn
+            var data = _context.Order
+                .Where(o => o.Status == "complete" && o.OrderDate >= startDate && o.OrderDate <= endDate)
+                .GroupBy(o => o.OrderDate.Date)
+                .Select(g => new
+                {
+                    Date = g.Key,
+                    ProductsSold = g.Sum(o => o.OrderProducts.Sum(op => op.Qty)), // Tính tổng số sản phẩm bán ra trong ngày
+                })
+                .OrderBy(g => g.Date)
+                .ToList();
+
+            // Tạo một danh sách chứa tất cả các ngày trong khoảng thời gian đã chọn
+            List<DateTime> allDatesInRange = Enumerable.Range(0, 1 + endDate.Subtract(startDate).Days)
+                .Select(offset => startDate.AddDays(offset))
+                .ToList();
+
+            // Tạo mảng nhãn ngày và mảng số sản phẩm được bán ra hàng ngày
+            List<string> dateLabels = new List<string>();
+            List<int> productsSoldDay = new List<int>();
+
+            foreach (var date in allDatesInRange)
+            {
+                dateLabels.Add(date.ToString("MMM dd"));
+
+                // Kiểm tra xem dữ liệu có chứa sản phẩm bán ra cho ngày hiện tại không
+                var item = data.FirstOrDefault(d => d.Date.Date == date.Date);
+                if (item != null)
+                    productsSoldDay.Add(item.ProductsSold);
+                else
+                    productsSoldDay.Add(0);
+            }
+
+            // Trả về dữ liệu dưới dạng JSON
+            return Ok(new
+            {
+                labels = dateLabels,
+                productsSoldDay
+            });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> RevenueChartDoanhThuDay()
+        {
+            // Lấy tham số start_date từ query string, nếu không có sẵn, mặc định là ngày đầu tiên của tháng hiện tại
+            DateTime startDate = HttpContext.Request.Query.ContainsKey("start_date") ?
+                                    DateTime.Parse(HttpContext.Request.Query["start_date"]) :
+                                    new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+
+            // Lấy tham số end_date từ query string, nếu không có sẵn, mặc định là ngày cuối cùng của tháng hiện tại
+            DateTime endDate = HttpContext.Request.Query.ContainsKey("end_date") ?
+                                    DateTime.Parse(HttpContext.Request.Query["end_date"]) :
+                                    new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
+
+            // Truy vấn cơ sở dữ liệu để lấy doanh thu hàng ngày trong khoảng thời gian đã chọn
+            var orders = _context.Order
+      .Where(o => o.Status == "complete" && o.OrderDate >= startDate && o.OrderDate <= endDate)
+      .ToList();
+
+            var data = orders
+                .GroupBy(o => o.OrderDate.Date)
+                .Select(g => new
+                {
+                    Date = g.Key,
+                    Revenue = g.Sum(o => o.TotalAmount), // Tính tổng doanh thu trên client side
+                })
+                .OrderBy(g => g.Date)
+                .ToList();
+
+
+            // Tạo một danh sách chứa tất cả các ngày trong khoảng thời gian đã chọn
+            List<DateTime> allDatesInRange = Enumerable.Range(0, 1 + endDate.Subtract(startDate).Days)
+                .Select(offset => startDate.AddDays(offset))
+                .ToList();
+
+            // Tạo mảng nhãn ngày và mảng doanh thu hàng ngày
+            List<string> dateLabels = new List<string>();
+            List<decimal> revenueDay = new List<decimal>();
+
+            foreach (var date in allDatesInRange)
+            {
+                dateLabels.Add(date.ToString("MMM dd"));
+
+                // Kiểm tra xem dữ liệu có chứa doanh thu cho ngày hiện tại không
+                var item = data.FirstOrDefault(d => d.Date.Date == date.Date);
+                if (item != null)
+                    revenueDay.Add(item.Revenue);
+                else
+                    revenueDay.Add(0);
+            }
+
+            // Trả về dữ liệu dưới dạng JSON
+            return Ok(new
+            {
+                labels = dateLabels,
+                revenueDay
+            });
+        }
+        [HttpGet]
+        public async Task<IActionResult> OrderStatusStatistics()
+        {
+            // Lấy tất cả các trạng thái trong đơn hàng và số lượng của mỗi trạng thái
+            var statusCounts = await _context.Order
+                .GroupBy(o => o.Status)
+                .Select(g => new
+                {
+                    Status = g.Key,
+                    Count = g.Count()
+                })
+                .ToListAsync();
+
+            // Trả về dữ liệu dưới dạng JSON
+            return Ok(statusCounts);
+        }
+
     }
 }

@@ -24,6 +24,74 @@
         }
     }
 }
+<style>
+
+    .btn-primary {
+        color: rgb(245 157 57);
+        background-color: rgb(251 226 197);
+        border-color: none;
+        /* border-top-left-radius: 10px !important; */
+        /* border-bottom-right-radius: 10px !important; */
+        border-radius: .357rem;
+        border: none;
+        font-weight: 600;
+        padding: 5px 20px; /* Điều chỉnh kích thước theo ý muốn */
+    }
+
+    .edit-button {
+        margin-top: 10px; /* Điều chỉnh giá trị margin-top theo ý muốn */
+    }
+
+    .btn-add {
+        color: white;
+        background-color: black;
+        border-color: none;
+        /* border-top-left-radius: 10px !important; */
+        /* border-bottom-right-radius: 10px !important; */
+        border-radius: .357rem;
+        border: none;
+        font-weight: 600;
+        padding: 10px 20px; /* Điều chỉnh kích thước theo ý muốn */
+    }
+
+    .btn-danger {
+        color: #FFF;
+        background-color: #dc3545;
+        border-color: #dc3545;
+        border-color: none;
+        /* border-top-left-radius: 10px !important; */
+        /* border-bottom-right-radius: 10px !important; */
+        border-radius: .357rem;
+        border: none;
+        font-weight: 600;
+        padding: 5px 20px;
+    }
+
+        .btn-danger:hover {
+            color: #FFF;
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+
+        .btn-danger:focus, .btn-danger.focus {
+            -webkit-box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.5);
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.5);
+        }
+
+        .btn-danger.disabled, .btn-danger:disabled {
+            color: #FFF;
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+    .button-group {
+        display: flex;
+    }
+
+        .button-group > * {
+            margin-right: 10px; /* Khoảng cách giữa các nút */
+        }
+</style>
 <section class="is-title-bar">
     <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
         <ul>
@@ -35,13 +103,6 @@
 
 </section>
 
-<section class="is-hero-bar">
-    <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
-        <h1 class="title">
-            Order List
-        </h1>
-    </div>
-</section>
 
 <section class="section main-section">
     <div class="grid gap-6 grid-cols-1 md:grid-cols-3 mb-6">
@@ -82,7 +143,12 @@
             </div>
         </div>
     </div>
+    <section class="is-hero-bar">
+        <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+            @*<button id="exportExcelBtn" class="btn btn-primary print-file">Export to Excel</button>*@
+        </div>
 
+    </section>
     <form style="display: flex; align-items: center; border-radius: 5px; margin-top: 10px; flex-wrap: wrap;" asp-action="OrderCancel" asp-controller="Admin" method="get">
         <div class="input-group input-group-sm" style="margin-right: -23px; margin-bottom: 10px;" margin-left: -28px;>
             <input value="" class="form-control" type="text" name="Email" placeholder="Email" style="height: 45px; font-size: 0.765625rem; padding: 4px 8px; background-color: #F1F1F1; border-radius: 5px; width: 120px; margin-left: 2px;" />
@@ -93,7 +159,7 @@
         <div class="input-group input-group-sm" style=" margin-right: 5px; margin-bottom: 10px;">
             <input value="" class="form-control" type="text" name="TotalAmount" placeholder="Total Amount" style="height: 45px; font-size: 0.765625rem; padding: 4px 8px; background-color: #F1F1F1; border-radius: 5px; width: 120px; margin-right: -10px;" />
         </div>
-      
+
 
         <div class="input-group input-group-sm" style="margin-left: 5px; margin-bottom: 10px;">
             <input value="" type="text" name="search" class="form-control" placeholder="Search" style="height: 45px; font-size: 0.765625rem; padding: 4px 8px; background-color: #F1F1F1; border-radius: 5px; width: 300px; margin-left:7px;" />
@@ -170,71 +236,108 @@
     </div>
 
 </section>
-<style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha512-3P8rXCuGJdNZOnUx/03c1jOTnMn3rP63nBip5gOP2qmUh5YAdVAvFZ1E+QLZZbC1rtMrQb+mah3AfYW11RUrWA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    .btn-primary {
-        color: rgb(245 157 57);
-        background-color: rgb(251 226 197);
-        border-color: none;
-        /* border-top-left-radius: 10px !important; */
-        /* border-bottom-right-radius: 10px !important; */
-        border-radius: .357rem;
-        border: none;
-        font-weight: 600;
-        padding: 5px 20px; /* Điều chỉnh kích thước theo ý muốn */
+<!-- Data table plugin-->
+<script type="text/javascript" src="~/Admin/js/plugins/jquery.dataTables.min.js"></script>
+
+
+
+<script type="text/javascript">$('#sampleTable').DataTable();</script>
+<script>function deleteRow(r) {
+        var i = r.parentNode.parentNode.rowIndex;
+        document.getElementById("myTable").deleteRow(i);
     }
+    jQuery(function () {
+        jQuery(".trash").click(function () {
+            swal({
+                title: "Cảnh báo",
 
-    .edit-button {
-        margin-top: 10px; /* Điều chỉnh giá trị margin-top theo ý muốn */
-    }
+                text: "Bạn có chắc chắn là muốn xóa nhân viên này?",
+                buttons: ["Hủy bỏ", "Đồng ý"],
+            })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        swal("Đã xóa thành công.!", {
 
-    .btn-add {
-        color: white;
-        background-color: black;
-        border-color: none;
-        /* border-top-left-radius: 10px !important; */
-        /* border-bottom-right-radius: 10px !important; */
-        border-radius: .357rem;
-        border: none;
-        font-weight: 600;
-        padding: 10px 20px; /* Điều chỉnh kích thước theo ý muốn */
-    }
+                        });
+                    }
+                });
+        });
+    });
+    oTable = $('#sampleTable').dataTable();
+    $('#all').click(function (e) {
+        $('#sampleTable tbody :checkbox').prop('checked', $(this).is(':checked'));
+        e.stopImmediatePropagation();
+    });
 
-    .btn-danger {
-        color: #FFF;
-        background-color: #dc3545;
-        border-color: #dc3545;
-        border-color: none;
-        /* border-top-left-radius: 10px !important; */
-        /* border-bottom-right-radius: 10px !important; */
-        border-radius: .357rem;
-        border: none;
-        font-weight: 600;
-        padding: 5px 20px;
-    }
-
-        .btn-danger:hover {
-            color: #FFF;
-            background-color: #c82333;
-            border-color: #bd2130;
+    $(document).ready(function () {
+        // Kiểm tra nếu DataTable đã tồn tại trên bảng
+        if ($.fn.DataTable.isDataTable('#sampleTable')) {
+            // Nếu có, xóa DataTable đã tồn tại
+            $('#sampleTable').DataTable().destroy();
         }
 
-        .btn-danger:focus, .btn-danger.focus {
-            -webkit-box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.5);
-            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.5);
-        }
+        // Khởi tạo lại DataTable với cài đặt mới
+        $('#sampleTable').DataTable({
+            paging: false, // Tắt phân trang
+            searching: false, // Tắt chức năng tìm kiếm
+            ordering: false, // Tắt chức năng sắp xếp
+            info: false // Tắt thông báo "Hiện 1 đến 10 của 10 danh mục"
+        });
+    });
 
-        .btn-danger.disabled, .btn-danger:disabled {
-            color: #FFF;
-            background-color: #dc3545;
-            border-color: #dc3545;
-        }
 
-    .button-group {
-        display: flex;
+
+    //In dữ liệu
+    var myApp = new function () {
+        this.printTable = function () {
+            var tab = document.getElementById('sampleTable');
+            var win = window.open('', '', 'height=700,width=700');
+            win.document.write(tab.outerHTML);
+            win.document.close();
+            win.print();
+        }
     }
+    // EXCEL
+    $(document).ready(function () {
+        $('#exportExcelBtn').click(function (e) {
+            e.preventDefault(); // Ngăn chặn hành động mặc định của nút
 
-        .button-group > * {
-            margin-right: 10px; /* Khoảng cách giữa các nút */
-        }
-</style>
+            // Thu thập dữ liệu từ bảng HTML
+            var table = document.getElementById('sampleTable').outerHTML;
+
+            // Tạo tệp Excel từ dữ liệu bảng
+            var uri = 'data:application/vnd.ms-excel;base64,';
+            var template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Sheet1</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>{table}</body></html>';
+            var base64 = function (s) {
+                return window.btoa(unescape(encodeURIComponent(s)));
+            };
+            var format = function (s, c) {
+                return s.replace(/{(\w+)}/g, function (m, p) {
+                    return c[p];
+                });
+            };
+
+            var ctx = {
+                worksheet: 'Sheet1',
+                table: table
+            };
+
+            // Tạo tệp Excel
+            var link = document.createElement('a');
+            link.href = uri + base64(format(template, ctx));
+            link.download = 'products.xls';
+
+            // Thêm liên kết vào tài liệu và kích hoạt sự kiện click để tải xuống
+            document.body.appendChild(link);
+            link.click();
+
+            // Xóa liên kết sau khi đã tải xuống
+            document.body.removeChild(link);
+        });
+    });
+    //Modal
+    $("#show-emp").on("click", function () {
+        $("#ModalUP").modal({ backdrop: false, keyboard: false })
+    });</script>

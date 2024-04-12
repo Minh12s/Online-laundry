@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Mail;
 using Microsoft.CodeAnalysis;
-using Microsoft.IdentityModel.Tokens;
+
 using Microsoft.AspNetCore.Hosting;
 
 
@@ -150,7 +150,7 @@ namespace OnlineJwellery_Shopping.Controllers
                 _context.Update(order);
                 await _context.SaveChangesAsync();
                 // Gửi email thông báo cho khách hàng
-                await SendThankYouEmail("minhtnth2209037@fpt.edu.vn", order, orderProducts);
+                await SendThankYouEmail("dungprohn1409@gmail.com", order, orderProducts);
 
             }
 

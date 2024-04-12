@@ -1,0 +1,658 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<style>
+    .input-row {
+        display: flex;
+    }
+
+    .input-col {
+        margin-right: 10px; /* Điều chỉnh khoảng cách giữa các cột nếu cần */
+    }
+</style>
+<section class="is-title-bar">
+    <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+        <ul>
+            <li>Admin</li>
+            <li>Dashboard</li>
+        </ul>
+        <a href="https://justboil.me/" onclick="alert('Coming soon'); return false" target="_blank" class="button blue">
+            <span class="icon"><i class="mdi mdi-credit-card-outline"></i></span>
+            <span>Premium Demo</span>
+        </a>
+    </div>
+</section>
+<section class="is-hero-bar">
+    <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+        <h1 class="title">
+            Dashboard
+        </h1>
+        <button class="button light">Button</button>
+    </div>
+</section>
+<section class="section main-section">
+    <div class="card mb-6">
+        @*Order Status Statistics*@
+        <header class="card-header">
+            <p class="card-header-title">
+                <span class="icon"><i class="mdi mdi-finance"></i></span>
+                Order Status Statistics
+            </p>
+            <a href="#" class="card-header-icon">
+                <span class="icon"><i class="mdi mdi-reload"></i></span>
+            </a>
+        </header>
+        <div class="card-content">
+            <canvas id="orderStatusChart"></canvas>
+        </div>
+    </div>
+
+    @*SALES STATISTICS BY YEAR*@
+    <div class="card mb-6">
+        <header class="card-header">
+            <p class="card-header-title">
+                <span class="icon"><i class="mdi mdi-finance"></i></span>
+                SALES STATISTICS BY YEAR
+            </p>
+            <a href="#" class="card-header-icon">
+                <span class="icon"><i class="mdi mdi-reload"></i></span>
+            </a>
+        </header>
+        <div class="card-content">
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="tile">
+
+                        <form autocomplete="off" class="input-row">
+                            <div class="input-col">
+                                <p style="margin-bottom:-28px;" class="input-label">
+                                    Filter by:
+                                </p>
+                                <select style="border: 1px solid black; padding: 5px 10px; margin-left: 70px;" id="yearSelect1" onchange="changeYearProductSold(this.value)"
+                                        class="dashboard-filter form-control">
+                                    <option value="2022">2022</option>
+                                    <option value="2023">2023</option>
+                                    <option value="2024" selected>2024</option>
+                                </select>
+                            </div>
+                        </form>
+                        <div class="col-md-12">
+                            <canvas id="productSoldChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    @*REVENUE STATISTICS BY YEAR*@
+    <div class="card mb-6">
+        <header class="card-header">
+            <p class="card-header-title">
+                <span class="icon"><i class="mdi mdi-finance"></i></span>
+                REVENUE STATISTICS BY YEAR
+            </p>
+            <a href="#" class="card-header-icon">
+                <span class="icon"><i class="mdi mdi-reload"></i></span>
+            </a>
+        </header>
+        <div class="card-content">
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="tile">
+
+                        <form autocomplete="off" class="input-row">
+                            <div class="input-col">
+                                <p style="margin-bottom:-28px;" class="input-label">
+                                    Filter by:
+                                </p>
+                                <select style="border: 1px solid black; padding: 5px 10px; margin-left: 70px;" id="yearSelect2" onchange="changeYearRevenue(this.value)"
+                                        class="dashboard-filter form-control">
+                                    <option value="2022">2022</option>
+                                    <option value="2023">2023</option>
+                                    <option value="2024" selected>2024</option>
+                                </select>
+                            </div>
+                        </form>
+                        <div class="col-md-12">
+                            <canvas id="revenue"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    @*SALES STATISTICS BY DAY*@
+    <div class="card mb-6">
+        <header class="card-header">
+            <p class="card-header-title">
+                <span class="icon"><i class="mdi mdi-finance"></i></span>
+                SALES STATISTICS BY DAY
+            </p>
+            <a href="#" class="card-header-icon">
+                <span class="icon"><i class="mdi mdi-reload"></i></span>
+            </a>
+        </header>
+        <div class="card-content">
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="tile">
+
+                        <form autocomplete="off" class="input-row">
+
+                            <div style="margin-bottom:10px;" class="input-row">
+                                <div class="input-col">
+                                    <p class="input-label">Since:</p>
+                                    <input style="border: 1px solid black;" type="text" id="datepicker1" class="form-control">
+                                </div>
+                                <div class="input-col">
+                                    <p class="input-label">To date:</p>
+                                    <input style="border: 1px solid black;" type="text" id="datepicker2" class="form-control">
+                                </div>
+
+                            </div>
+                        </form>
+                        <input style="margin-bottom: 15px; border-radius: 5px; padding: 5px 10px; border: 1px solid white; margin-top: 15px; background-color: #FFA45C; color: white;" type="button" id="btn-dashboard-filter"
+                               class="btn btn-primary btn-sm" value="Filter">
+                        <div class="col-md-12">
+                            <canvas id="productSoldChartDay"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+    @*REVENUE STATISTICS BY DAY*@
+    <div class="card mb-6">
+        <header class="card-header">
+            <p class="card-header-title">
+                <span class="icon"><i class="mdi mdi-finance"></i></span>
+                REVENUE STATISTICS BY DAY
+            </p>
+            <a href="#" class="card-header-icon">
+                <span class="icon"><i class="mdi mdi-reload"></i></span>
+            </a>
+        </header>
+        <div class="card-content">
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="tile">
+
+                        <form autocomplete="off" class="input-row">
+
+                            <div style="margin-bottom:10px;" class="input-row">
+                                <div class="input-col">
+                                    <p class="input-label">Since:</p>
+                                    <input style="border: 1px solid black;" type="text" id="datepicker3" class="form-control">
+                                </div>
+                                <div class="input-col">
+                                    <p class="input-label">To date:</p>
+                                    <input style="border: 1px solid black;" type="text" id="datepicker4" class="form-control">
+                                </div>
+
+                            </div>
+                        </form>
+                        <input style="margin-bottom: 15px; border-radius: 5px; padding: 5px 10px; border: 1px solid white; margin-top: 15px; background-color: #FFA45C; color: white;" type="button" id="btn-dashboard-filter1"
+                               class="btn btn-primary btn-sm" value="Filter">
+                        <div class="col-md-12">
+                            <canvas id="revenueDay"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+
+
+</section>
+<script src="~/Admin/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="~/Admin/js/plugins/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Admin/js/plugins/dataTables.bootstrap.min.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script type="text/javascript">$(function () {
+        $("#datepicker1").datepicker({
+            prevText: "Tháng trước",
+            nextText: "Tháng sau",
+            dateFormat: "yy-mm-dd",
+            dayNamesMin: ["thứ 2", "thứ 3", "thứ 4", "thứ 5", "thứ 6", "thứ 7", "chủ nhật"],
+            duration: "slow"
+        });
+        $("#datepicker2").datepicker({
+            prevText: "Tháng trước",
+            nextText: "Tháng sau",
+            dateFormat: "yy-mm-dd",
+            dayNamesMin: ["thứ 2", "thứ 3", "thứ 4", "thứ 5", "thứ 6", "thứ 7", "chủ nhật"],
+            duration: "slow"
+        });
+        $("#datepicker3").datepicker({
+            prevText: "Tháng trước",
+            nextText: "Tháng sau",
+            dateFormat: "yy-mm-dd",
+            dayNamesMin: ["thứ 2", "thứ 3", "thứ 4", "thứ 5", "thứ 6", "thứ 7", "chủ nhật"],
+            duration: "slow"
+        });
+        $("#datepicker4").datepicker({
+            prevText: "Tháng trước",
+            nextText: "Tháng sau",
+            dateFormat: "yy-mm-dd",
+            dayNamesMin: ["thứ 2", "thứ 3", "thứ 4", "thứ 5", "thứ 6", "thứ 7", "chủ nhật"],
+            duration: "slow"
+        });
+    });</script>
+<!-- Script cho biểu đồ đầu tiên -->
+<script>let ctxSoldChart = document.getElementById('productSoldChart').getContext('2d');
+    let chartSold;
+
+    function fetchSoldChartData(year) {
+        fetch(`/Admin/RevenueChart?year=${year}`) // Đảm bảo endpoint URL khớp với đường dẫn tới phương thức trong Controller
+            .then(response => response.json())
+            .then(data => {
+                if (chartSold) {
+                    chartSold.data.labels = data.labels;
+                    chartSold.data.datasets[0].data = data.productsSold;
+                    chartSold.update();
+                } else {
+                    createSoldChart(data); // Tạo biểu đồ nếu chưa có
+                }
+            });
+    }
+
+    // Hàm thay đổi năm cho biểu đồ đầu tiên
+    function changeYearProductSold(year) {
+        fetchSoldChartData(year);
+    }
+
+    function createSoldChart(data) {
+        chartSold = new Chart(ctxSoldChart, {
+            type: 'bar',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Products sold',
+                    data: data.productsSold,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        stepSize: 10,
+                        max: 100,
+                        min: 0,
+                    }
+                }
+            }
+        });
+    }
+
+    // Fetch dữ liệu mặc định khi trang được load
+    fetchSoldChartData(2024); // Thay đổi ngày mặc định cho phù hợp với nhu cầu của bạn</script>
+
+<!-- Script cho biểu đồ thứ hai -->
+<script>let ctxRevenueChart = document.getElementById('revenue').getContext('2d');
+    let chartRevenue;
+
+    function fetchRevenueData(year) {
+        fetch(`/Admin/RevenueChartDoanhThu?year=${year}`) // Thay đổi URL tại đây
+            .then(response => response.json())
+            .then(data => {
+                if (chartRevenue) {
+                    chartRevenue.data.labels = data.labels;
+                    chartRevenue.data.datasets[0].data = data.totalRevenue; // Thay đổi dữ liệu từ 'revenue' sang 'totalRevenue'
+                    chartRevenue.update();
+                } else {
+                    createRevenueChart(data);
+                }
+            });
+    }
+
+    // Hàm thay đổi năm cho biểu đồ thứ hai
+    function changeYearRevenue(year) {
+        fetchRevenueData(year);
+    }
+
+    function createRevenueChart(data) {
+        chartRevenue = new Chart(ctxRevenueChart, {
+            type: 'bar',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Revenue',
+                    data: data.totalRevenue, // Thay đổi dữ liệu từ 'revenue' sang 'totalRevenue'
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        stepSize: 10,
+                        max: 10000,
+                        min: 0,
+                    }
+                }
+            }
+        });
+    }
+
+    // Fetch dữ liệu mặc định khi trang được load
+    fetchRevenueData(2024); // Thay đổi ngày mặc định cho phù hợp với nhu cầu của bạn</script>
+
+
+<!-- Script cho biểu đồ thứ ba -->
+<script>let ctxSoldChartDay = document.getElementById('productSoldChartDay').getContext('2d');
+    let chartSoldDay;
+
+    document.getElementById('btn-dashboard-filter').addEventListener('click', function () {
+        let startDate = document.getElementById('datepicker1').value;
+        let endDate = document.getElementById('datepicker2').value;
+
+        fetchSoldChartDataDay(startDate, endDate);
+    });
+
+    function fetchSoldChartDataDay(startDate, endDate) {
+        fetch(`/admin/RevenueChartDay?start_date=${startDate}&end_date=${endDate}`)
+            .then(response => response.json())
+            .then(data => {
+                updateSoldChartDay(data);
+            });
+    }
+
+    function updateSoldChartDay(data) {
+        if (chartSoldDay) {
+            chartSoldDay.data.labels = data.labels;
+            chartSoldDay.data.datasets[0].data = data.productsSoldDay;
+            chartSoldDay.update();
+        } else {
+            createSoldChartDay(data);
+        }
+    }
+
+    function createSoldChartDay(data) {
+        chartSoldDay = new Chart(ctxSoldChartDay, {
+            type: 'bar',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Products sold',
+                    data: data.productsSoldDay,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        stepSize: 10,
+                        max: 100,
+                        min: 0,
+                    }
+                }
+            }
+        });
+    }
+
+    // Thực hiện fetch dữ liệu mặc định khi trang được load
+    fetchSoldChartDataDay('2024-04-01', '2024-04-20'); // Thay đổi ngày mặc định cho phù hợp với nhu cầu của bạn</script>
+
+<!-- Script cho biểu đồ thứ bốn -->
+<script>let ctxRevenueDay = document.getElementById('revenueDay').getContext('2d');
+    let chartRevenueDay;
+
+    document.getElementById('btn-dashboard-filter1').addEventListener('click', function () {
+        let startDate = document.getElementById('datepicker3').value;
+        let endDate = document.getElementById('datepicker4').value;
+
+        fetchRevenueDataDay(startDate, endDate);
+    });
+
+    function fetchRevenueDataDay(startDate, endDate) {
+        fetch(`/admin/RevenueChartDoanhThuDay?start_date=${startDate}&end_date=${endDate}`)
+            .then(response => response.json())
+            .then(data => {
+                updateRevenueChartDay(data);
+            });
+    }
+
+    function updateRevenueChartDay(data) {
+        if (chartRevenueDay) {
+            chartRevenueDay.data.labels = data.labels;
+            chartRevenueDay.data.datasets[0].data = data.revenueDay;
+            chartRevenueDay.update();
+        } else {
+            createRevenueChartDay(data);
+        }
+    }
+
+    function createRevenueChartDay(data) {
+        chartRevenueDay = new Chart(ctxRevenueDay, {
+            type: 'bar',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Revenue',
+                    data: data.revenueDay,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        stepSize: 10,
+                        max: 3000,
+                        min: 0,
+                    }
+                }
+            }
+        });
+    }
+
+    // Thực hiện fetch dữ liệu mặc định khi trang được load
+    fetchRevenueDataDay('2024-04-01', '2024-04-20');// Thay đổi ngày mặc định cho phù hợp với nhu</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0-beta.0"></script>
+
+<script>// Gửi yêu cầu AJAX để lấy dữ liệu từ phương thức OrderStatusStatistics
+    fetch('/admin/OrderStatusStatistics')
+        .then(response => response.json())
+        .then(data => {
+            // Dữ liệu sẽ có dạng [{ status: 'pending', count: 10 }, { status: 'confirmed', count: 20 }, ...]
+
+            // Tạo mảng nhãn (labels) và mảng dữ liệu (data) cho biểu đồ tròn
+            const labels = data.map(item => item.status);
+            const counts = data.map(item => item.count);
+
+            // Vẽ biểu đồ tròn
+            var ctx = document.getElementById('orderStatusChart').getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '# of Orders',
+                        data: counts,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Order Status Statistics'
+                        },
+                        datalabels: {
+                            formatter: (value, ctx) => {
+                                let sum = 0;
+                                let dataArr = ctx.chart.data.datasets[0].data;
+                                dataArr.map(data => {
+                                    sum += data;
+                                });
+                                let percentage = (value * 100 / sum).toFixed(2) + "%";
+                                return percentage;
+                            },
+                            color: '#fff',
+                            font: {
+                                weight: 'bold'
+                            }
+                        }
+                    }
+                }
+            });
+        });</script>
+
+
+<script>oTable = $('#sampleTable').dataTable();
+    $('#all').click(function (e) {
+        $('#sampleTable tbody :checkbox').prop('checked', $(this).is(':checked'));
+        e.stopImmediatePropagation();
+    });
+
+    //EXCEL
+    // $(document).ready(function () {
+    //   $('#').DataTable({
+
+    //     dom: 'Bfrtip',
+    //     "buttons": [
+    //       'excel'
+    //     ]
+    //   });
+    // });
+
+
+    //Thời Gian
+    function time() {
+        var today = new Date();
+        var weekday = new Array(7);
+        weekday[0] = "Chủ Nhật";
+        weekday[1] = "Thứ Hai";
+        weekday[2] = "Thứ Ba";
+        weekday[3] = "Thứ Tư";
+        weekday[4] = "Thứ Năm";
+        weekday[5] = "Thứ Sáu";
+        weekday[6] = "Thứ Bảy";
+        var day = weekday[today.getDay()];
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1;
+        var yyyy = today.getFullYear();
+        var h = today.getHours();
+        var m = today.getMinutes();
+        var s = today.getSeconds();
+        m = checkTime(m);
+        s = checkTime(s);
+        nowTime = h + " giờ " + m + " phút " + s + " giây";
+        if (dd < 10) {
+            dd = '0' + dd
+        }
+        if (mm < 10) {
+            mm = '0' + mm
+        }
+        today = day + ', ' + dd + '/' + mm + '/' + yyyy;
+        tmp = '<span class="date"> ' + today + ' - ' + nowTime +
+            '</span>';
+        document.getElementById("clock").innerHTML = tmp;
+        clocktime = setTimeout("time()", "1000", "Javascript");
+
+        function checkTime(i) {
+            if (i < 10) {
+                i = "0" + i;
+            }
+            return i;
+        }
+    }
+    //In dữ liệu
+    var myApp = new function () {
+        this.printTable = function () {
+            var tab = document.getElementById('sampleTable');
+            var win = window.open('', '', 'height=700,width=700');
+            win.document.write(tab.outerHTML);
+            win.document.close();
+            win.print();
+        }
+    }
+    //     //Sao chép dữ liệu
+    //     var copyTextareaBtn = document.querySelector('.js-textareacopybtn');
+
+    // copyTextareaBtn.addEventListener('click', function(event) {
+    //   var copyTextarea = document.querySelector('.js-copytextarea');
+    //   copyTextarea.focus();
+    //   copyTextarea.select();
+
+    //   try {
+    //     var successful = document.execCommand('copy');
+    //     var msg = successful ? 'successful' : 'unsuccessful';
+    //     console.log('Copying text command was ' + msg);
+    //   } catch (err) {
+    //     console.log('Oops, unable to copy');
+    //   }
+    // });
+
+
+    //Modal
+    $("#show-emp").on("click", function () {
+        $("#ModalUP").modal({ backdrop: false, keyboard: false })
+    });</script>
+
+<!-- Google analytics script-->
+<script type="text/javascript">if (document.location.hostname == 'pratikborsadiya.in') {
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+        ga('create', 'UA-72504830-1', 'auto');
+        ga('send', 'pageview');
+    }</script>
