@@ -68,9 +68,32 @@
 
             </p>
 
-            <a href="#" class="card-header-icon">
-                <span class="icon"><i class="mdi mdi-reload"></i></span>
-            </a>
+            <form class="card-header-icon asp-controller="Admin" asp-action="Order" method="get" onchange="this.submit()">
+
+                <select style="margin-left:-10px; padding: 5px 10px;border:1px solid #F1F1F1 " name="PageSize">
+                    <option value="10"
+                            selected="@(ViewBag.PageSize == 10)">
+                        10
+                    </option>
+                    <option value="20"
+                            selected="@(ViewBag.PageSize == 20)">
+                        20
+                    </option>
+                    <option value="50"
+                            selected="@(ViewBag.PageSize == 50)">
+                        50
+                    </option>
+                    <option value="100"
+                            selected="@(ViewBag.PageSize == 100)">
+                        100
+                    </option>
+                </select>
+
+                <input type="hidden" name="page" value="@ViewBag.CurrentPage">
+
+                @*<button style="border:1px solid white ;background-color:#FFA45C; color: white;" type="submit">filter</button>*@
+
+            </form>
         </header>
         <div class="card-content">
             <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0" id="sampleTable">
@@ -174,7 +197,7 @@
                     <div class="buttons">
                         @for (int i = 1; i <= ViewBag.TotalPages; i++)
                         {
-                            <button type="button" class="button @(i == ViewBag.CurrentPage ? "active" : "")" onclick="location.href='@Url.Action("Order", new { page = i })'">@i</button>
+                            <button type="button" class="button @(i == ViewBag.CurrentPage ? "active" : "")" onclick="location.href='@Url.Action("Order", new { page = i,pageSize = ViewBag.PageSize })'">@i</button>
                         }
                     </div>
                     <small>Page @ViewBag.CurrentPage of @ViewBag.TotalPages</small>

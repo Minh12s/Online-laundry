@@ -33,9 +33,8 @@ namespace OnlineJwellery_Shopping.Controllers
         [Authentication]
         // Customer Management
         [Authentication]
-        public async Task<IActionResult> Customer(int? page, string userNameSearch, string addressSearch, string phoneNumberSearch, string emailSearch)
+        public async Task<IActionResult> Customer(int? page, string userNameSearch, string addressSearch, string phoneNumberSearch, string emailSearch, int pageSize = 10)
         {
-            int pageSize = 10; // Số lượng người dùng mỗi trang
             int pageNumber = page ?? 1; // Trang hiện tại, mặc định là trang 1 nếu không có page được cung cấp
 
             if (_context.User != null)
@@ -72,6 +71,8 @@ namespace OnlineJwellery_Shopping.Controllers
                 ViewBag.CurrentPage = pageNumber;
                 ViewBag.TotalPages = (int)Math.Ceiling((double)totalUsers / pageSize);
                 ViewBag.TotalUsers = totalUsers;
+                ViewBag.PageSize = pageSize;
+
                 return View("CustomerManagement/Customer", userList);
             }
             else
@@ -528,6 +529,7 @@ namespace OnlineJwellery_Shopping.Controllers
             ViewBag.TotalOrders = totalOrders;
             ViewBag.TotalPages = totalPages;
             ViewBag.CurrentPage = page;
+            ViewBag.PageSize = pageSize;
 
             // Trả về view với danh sách đơn hàng đã lọc và phân trang
             return View("OrderManagement/Order", await orders.ToListAsync());
@@ -574,9 +576,8 @@ namespace OnlineJwellery_Shopping.Controllers
             // Chuyển hướng đến returnUrl
             return Redirect(returnUrl);
         }
-        public async Task<IActionResult> Blog(int? page, string Title = null, string Tag = null, DateTime? startDate = null, DateTime? endDate = null, string search = null)
+        public async Task<IActionResult> Blog(int? page, string Title = null, string Tag = null, DateTime? startDate = null, DateTime? endDate = null, string search = null, int pageSize = 10)
         {
-            int pageSize = 10; // Số lượng bài đăng mỗi trang
             int pageNumber = page ?? 1; // Trang hiện tại, mặc định là trang 1 nếu không có page được cung cấp
 
             // Lấy tổng số bài đăng từ cơ sở dữ liệu
@@ -624,6 +625,7 @@ namespace OnlineJwellery_Shopping.Controllers
             ViewBag.CurrentPage = pageNumber;
             ViewBag.TotalPages = (int)Math.Ceiling((double)totalBlogs / pageSize);
             ViewBag.TotalBlogs = totalBlogs;
+            ViewBag.PageSize = pageSize;
 
             return View("BlogManagement/Blog", paginatedBlogs);
         }
@@ -804,6 +806,7 @@ namespace OnlineJwellery_Shopping.Controllers
 
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = totalPages;
+            ViewBag.PageSize = pageSize;
             ViewBag.PageSize = pageSize;
 
             // Truyền dữ liệu sang view để hiển thị

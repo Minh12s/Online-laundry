@@ -49,9 +49,32 @@
                 Product review
             </p>
 
-            <a href="#" class="card-header-icon">
-                <span class="icon"><i class="mdi mdi-reload"></i></span>
-            </a>
+            <form class="card-header-icon asp-controller="Admin" asp-action="Review" method="get" onchange="this.submit()">
+
+                <select style="margin-left:-10px; padding: 5px 10px;border:1px solid #F1F1F1 " name="PageSize">
+                    <option value="10"
+                            selected="@(ViewBag.PageSize == 10)">
+                        10
+                    </option>
+                    <option value="20"
+                            selected="@(ViewBag.PageSize == 20)">
+                        20
+                    </option>
+                    <option value="50"
+                            selected="@(ViewBag.PageSize == 50)">
+                        50
+                    </option>
+                    <option value="100"
+                            selected="@(ViewBag.PageSize == 100)">
+                        100
+                    </option>
+                </select>
+
+                <input type="hidden" name="page" value="@ViewBag.CurrentPage">
+
+                @*<button style="border:1px solid white ;background-color:#FFA45C; color: white;" type="submit">filter</button>*@
+
+            </form>
         </header>
         <div class="card-content">
             <table class="table table-hover table-bordered js-copytextarea" cellpadding="0" cellspacing="0" border="0" id="sampleTable">
@@ -95,7 +118,7 @@
                             Price_from = ViewBag.Price_from,
                             Price_to = ViewBag.Price_to,
                             ProductName = ViewBag.ProductName,
-                            AvgRating = ViewBag.AvgRating })'">
+                            AvgRating = ViewBag.AvgRating,pageSize = ViewBag.PageSize })'">
                                 @i
                         </button>
                     }
