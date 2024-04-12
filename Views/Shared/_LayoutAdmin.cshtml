@@ -244,7 +244,18 @@
     <script type="text/javascript" src="~/admin/js/chart.sample.min.js"></script>
 
 
-    <script>!function (f, b, e, v, n, t, s) {
+    <script>
+        var myApp = new function () {
+            this.printTable = function () {
+                var tab = document.getElementById('sampleTable');
+                var win = window.open('', '', 'height=700,width=700');
+                win.document.write(tab.outerHTML);
+                win.document.close();
+                win.print();
+            }
+        }
+
+        !function (f, b, e, v, n, t, s) {
             if (f.fbq) return; n = f.fbq = function () {
                 n.callMethod ?
                     n.callMethod.apply(n, arguments) : n.queue.push(arguments)

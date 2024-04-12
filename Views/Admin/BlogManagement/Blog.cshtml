@@ -12,20 +12,28 @@
         </div>
 
     </section>
-    <section class="is-hero-bar">
-        <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
-
-        </div>
+<section class="is-hero-bar">
+    <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+        <!-- Phần này để chứa nút "Add Blog" -->
         <div class="col-sm-2">
-
-            <a class="btn btn-add " asp-controller="Admin" asp-action="addBlog" title="Thêm">
+            <a class="btn btn-add" asp-controller="Admin" asp-action="addBlog" title="Thêm">
                 <i class="fas fa-plus"></i>
                 Add Blog
             </a>
         </div>
 
-    </section>
-    <form style="display: flex; align-items: center; border-radius: 5px; margin-top: 10px; flex-wrap: wrap;" asp-action="Blog" asp-controller="Admin" method="get">
+        <!-- Phần này để chứa nút "Print PDF" -->
+        <div class="flex items-center">
+            <!-- Thêm một phần tử div để căn chỉnh vị trí -->
+            <button onclick="myApp.printTable()" class="btn btn-add ml-2" style="margin-right: 950px">
+                <!-- Thêm lớp ml-2 để tạo khoảng cách giữa nút -->
+                <i class="fas fa-file-pdf"></i> <!-- Thay thế icon print bằng icon pdf -->
+                Print PDF <!-- Đổi chữ "Print" thành "Print PDF" -->
+            </button>
+        </div>
+    </div>
+</section>
+<form style="display: flex; align-items: center; border-radius: 5px; margin-top: 10px; flex-wrap: wrap;" asp-action="Blog" asp-controller="Admin" method="get">
         <div class="input-group input-group-sm" style="margin-right: 5px; margin-bottom: 10px;">
             <input value="" class="form-control" type="text" name="Title" placeholder="Title" style="height: 45px; font-size: 0.765625rem; padding: 4px 8px; background-color: #F1F1F1; border-radius: 5px; width: 120px; margin-left: 28px;" />
         </div>

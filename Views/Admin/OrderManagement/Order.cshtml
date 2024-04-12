@@ -15,10 +15,14 @@
     </div>
 </section>
 <section class="is-hero-bar">
-    <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
-        <h1 class="title">
-            Order List
-        </h1>
+
+    <div class="flex items-center">
+        <!-- Thêm một phần tử div để căn chỉnh vị trí -->
+        <button onclick="myApp.printTable()" class="btn btn-add ml-2">
+            <!-- Thêm lớp ml-2 để tạo khoảng cách giữa nút -->
+            <i class="fas fa-file-pdf"></i> <!-- Thay thế icon print bằng icon pdf -->
+            Print PDF <!-- Đổi chữ "Print" thành "Print PDF" -->
+        </button>
     </div>
 </section>
 <form style="display: flex; align-items: center; border-radius: 5px; margin-top: 10px; flex-wrap: wrap;" asp-action="Order" asp-controller="Admin" method="get">
@@ -243,5 +247,17 @@
         border: none;
         font-weight: 600;
         padding: 5px 20px; /* Điều chỉnh kích thước theo ý muốn */
+    }
+
+    .btn-add {
+        color: white;
+        background-color: black;
+        border-color: none;
+        /* border-top-left-radius: 10px !important; */
+        /* border-bottom-right-radius: 10px !important; */
+        border-radius: .357rem;
+        border: none;
+        font-weight: 600;
+        padding: 10px 20px; /* Điều chỉnh kích thước theo ý muốn */
     }
 </style>

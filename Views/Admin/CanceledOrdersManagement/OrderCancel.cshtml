@@ -102,6 +102,17 @@
     </div>
 
 </section>
+<section class="is-hero-bar">
+
+    <div class="flex items-center">
+        <!-- Thêm một phần tử div để căn chỉnh vị trí -->
+        <button onclick="myApp.printTable()" class="btn btn-add ml-2">
+            <!-- Thêm lớp ml-2 để tạo khoảng cách giữa nút -->
+            <i class="fas fa-file-pdf"></i> <!-- Thay thế icon print bằng icon pdf -->
+            Print PDF <!-- Đổi chữ "Print" thành "Print PDF" -->
+        </button>
+    </div>
+</section>
 
 
 <section class="section main-section">
@@ -340,4 +351,16 @@
     //Modal
     $("#show-emp").on("click", function () {
         $("#ModalUP").modal({ backdrop: false, keyboard: false })
-    });</script>
+    });
+     .btn - add {
+        color: white;
+        background - color: black;
+        border - color: none;
+        /* border-top-left-radius: 10px !important; */
+        /* border-bottom-right-radius: 10px !important; */
+        border - radius: .357rem;
+        border: none;
+        font - weight: 600;
+        padding: 10px 20px; /* Điều chỉnh kích thước theo ý muốn */
+    }
+</script>
