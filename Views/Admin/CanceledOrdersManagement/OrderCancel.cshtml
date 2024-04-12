@@ -102,17 +102,6 @@
     </div>
 
 </section>
-<section class="is-hero-bar">
-
-    <div class="flex items-center">
-        <!-- Thêm một phần tử div để căn chỉnh vị trí -->
-        <button onclick="myApp.printTable()" class="btn btn-add ml-2">
-            <!-- Thêm lớp ml-2 để tạo khoảng cách giữa nút -->
-            <i class="fas fa-file-pdf"></i> <!-- Thay thế icon print bằng icon pdf -->
-            Print PDF <!-- Đổi chữ "Print" thành "Print PDF" -->
-        </button>
-    </div>
-</section>
 
 
 <section class="section main-section">
@@ -155,10 +144,15 @@
         </div>
     </div>
     <section class="is-hero-bar">
-        <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
-            @*<button id="exportExcelBtn" class="btn btn-primary print-file">Export to Excel</button>*@
-        </div>
 
+        <div class="flex items-center">
+            <!-- Thêm một phần tử div để căn chỉnh vị trí -->
+            <button onclick="myApp.printTable()" class="btn btn-add ml-2">
+                <!-- Thêm lớp ml-2 để tạo khoảng cách giữa nút -->
+                <i class="fas fa-file-pdf"></i> <!-- Thay thế icon print bằng icon pdf -->
+                Print PDF <!-- Đổi chữ "Print" thành "Print PDF" -->
+            </button>
+        </div>
     </section>
     <form style="display: flex; align-items: center; border-radius: 5px; margin-top: 10px; flex-wrap: wrap;" asp-action="OrderCancel" asp-controller="Admin" method="get">
         <div class="input-group input-group-sm" style="margin-right: -23px; margin-bottom: 10px;" margin-left: -28px;>
@@ -188,9 +182,32 @@
                 Order
             </p>
 
-            <a href="#" class="card-header-icon">
-                <span class="icon"><i class="mdi mdi-reload"></i></span>
-            </a>
+            <form class="card-header-icon asp-controller="Admin" asp-action="OrderCancel" method="get" onchange="this.submit()">
+
+                <select style="margin-left:-10px; padding: 5px 10px;border:1px solid #F1F1F1 " name="PageSize">
+                    <option value="10"
+                            selected="@(ViewBag.PageSize == 10)">
+                        10
+                    </option>
+                    <option value="20"
+                            selected="@(ViewBag.PageSize == 20)">
+                        20
+                    </option>
+                    <option value="50"
+                            selected="@(ViewBag.PageSize == 50)">
+                        50
+                    </option>
+                    <option value="100"
+                            selected="@(ViewBag.PageSize == 100)">
+                        100
+                    </option>
+                </select>
+
+                <input type="hidden" name="page" value="@ViewBag.CurrentPage">
+
+                @*<button style="border:1px solid white ;background-color:#FFA45C; color: white;" type="submit">filter</button>*@
+
+            </form>
         </header>
 
         <div class="card-content">
@@ -250,7 +267,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha512-3P8rXCuGJdNZOnUx/03c1jOTnMn3rP63nBip5gOP2qmUh5YAdVAvFZ1E+QLZZbC1rtMrQb+mah3AfYW11RUrWA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <!-- Data table plugin-->
-<script type="text/javascript" src="~/Admin/js/plugins/jquery.dataTables.min.js"></script>
+<!--<script type="text/javascript" src="~/Admin/js/plugins/jquery.dataTables.min.js"></script>-->
 
 
 
