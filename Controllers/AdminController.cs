@@ -26,10 +26,81 @@ namespace OnlineJwellery_Shopping.Controllers
             _context = context;
         }
         [Authentication]
-        public IActionResult Dashboard()
+        public IActionResult Dashboard(int UserId, int page = 1, int pageSize = 10)
         {
+            // Số lượng khách hàng (User)
+            var totalUsers = _context.User.Count(u => u.Role == "User");
+            // Số lượng sản phẩm
+            var totalProducts = _context.Product.Count();
+            // Số lượng đơn hàng
+            var totalOrders = _context.Order.Count();
+            // Số lượng đơn hàng đã hủy
+            var cancelledOrders = _context.Order.Count(o => o.Status == "cancel");
+            // Số sản phẩm hết hàng
+            var outOfStockProducts = _context.Product.Where(p => p.Qty == 0).ToList();
+            // Tổng thu nhập
+            var totalRevenue = _context.Order.Where(o => o.IsPaid == "paid").Sum(o => o.TotalAmount);
+            var outOfStockProductCount = outOfStockProducts.Count;
+            var pendingReviews = _context.Review
+     .Where(r => r.Status == "pending")
+     .Include(r => r.User)
+    .Include(r => r.Product) // Bao gồm thông tin sản phẩm
+     .ToList();
+
+
+            // Lấy danh sách đơn hàng dựa trên trang và kích thước trang
+            var orders = _context.Order.Skip((page - 1) * pageSize).Take(pageSize);
+            var Products = _context.Product.Skip((page - 1) * pageSize).Take(pageSize);
+            var outOfStockProductsPaged = outOfStockProducts.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            var pendingReviewsPaged = pendingReviews.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+            // Lọc và tính toán số lượng trang cho từng trạng thái của đơn hàng
+            var pendingOrders = orders.Where(o => o.Status == "pending").ToList();
+
+            // Tính toán số lượng trang cho từng trạng thái
+            var pendingTotalPages = (int)Math.Ceiling((double)pendingOrders.Count / pageSize);
+
+            var outOfStockTotalPages = (int)Math.Ceiling((double)outOfStockProducts.Count / pageSize);
+            var pendingReviewTotalPages = (int)Math.Ceiling((double)pendingReviews.Count / pageSize);
+
+            // Truyền thông tin phân trang và số lượng trang cho từng trạng thái vào ViewBag
+            ViewBag.PendingOrders = pendingOrders;
+
+            ViewBag.PendingTotalPages = pendingTotalPages;
+            ViewBag.OutOfStockProducts = outOfStockProducts;
+            ViewBag.OutOfStockTotalPages = outOfStockTotalPages;
+            ViewBag.OutOfStockProductCount = outOfStockProductCount;
+            ViewBag.PendingReviews = pendingReviews;
+            ViewBag.PendingReviewTotalPages = pendingReviewTotalPages;
+            // Truy vấn để lấy sản phẩm bán chạy nhất
+            var query = Products.Select(p => new
+            {
+                Product = p,
+                TotalQuantitySold = _context.OrderProduct
+               .Where(op => op.Order.Status == "complete" && op.ProductId == p.ProductId)
+               .Sum(op => op.Qty)
+            })
+       .OrderByDescending(item => item.TotalQuantitySold)
+       .ToList();
+
+            // Truyền danh sách sản phẩm vào ViewBag
+            ViewBag.BestSellingProducts = query;
+
+            // Truyền thông tin phân trang cho sản phẩm bán chạy nhất
+            ViewBag.BestSellingTotalPages = (int)Math.Ceiling((double)query.Count() / pageSize);
+
+            // Truyền các giá trị khác vào view để hiển thị trên dashboard
+            ViewBag.CurrentPage = page;
+            ViewBag.PageSize = pageSize;
+            ViewBag.TotalUsers = totalUsers;
+            ViewBag.TotalProducts = totalProducts;
+            ViewBag.OutOfStockProducts = outOfStockProducts;
+            ViewBag.TotalRevenue = totalRevenue;
+            ViewBag.CancelledOrders = cancelledOrders;
+            ViewBag.TotalOrders = totalOrders;
             return View("DashboardAdmin/Dashboard");
         }
+
         [Authentication]
         // Customer Management
         [Authentication]

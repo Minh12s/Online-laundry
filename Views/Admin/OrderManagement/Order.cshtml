@@ -15,14 +15,21 @@
     </div>
 </section>
 <section class="is-hero-bar">
-
-    <div class="flex items-center">
-        <!-- Thêm một phần tử div để căn chỉnh vị trí -->
-        <button onclick="myApp.printTable()" class="btn btn-add ml-2">
-            <!-- Thêm lớp ml-2 để tạo khoảng cách giữa nút -->
-            <i class="fas fa-file-pdf"></i> <!-- Thay thế icon print bằng icon pdf -->
-            Print PDF <!-- Đổi chữ "Print" thành "Print PDF" -->
-        </button>
+    <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+        <div class="col-sm-2 flex items-center">
+            <!-- Nút "Print PDF" -->
+            <button onclick="myApp.printTable()" class="btn btn-add ml-2">
+                <i class="fas fa-file-pdf"></i>
+                Print PDF
+            </button>
+        </div>
+        <div class="col-sm-2 flex items-center">
+            <!-- Nút "Export Excel" sử dụng cùng một lớp với nút "Print PDF" -->
+            <button onclick="exportToExcel()" class="btn btn-add ml-2" style="margin-right:930px">
+                <i class="fas fa-file-excel"></i>
+                Export Excel
+            </button>
+        </div>
     </div>
 </section>
 <form style="display: flex; align-items: center; border-radius: 5px; margin-top: 10px; flex-wrap: wrap;" asp-action="Order" asp-controller="Admin" method="get">

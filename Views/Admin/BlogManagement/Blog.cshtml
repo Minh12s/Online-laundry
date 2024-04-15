@@ -25,10 +25,16 @@
         <!-- Phần này để chứa nút "Print PDF" -->
         <div class="flex items-center">
             <!-- Thêm một phần tử div để căn chỉnh vị trí -->
-            <button onclick="myApp.printTable()" class="btn btn-add ml-2" style="margin-right: 920px">
+            <button onclick="myApp.printTable()" class="btn btn-add ml-2">
                 <!-- Thêm lớp ml-2 để tạo khoảng cách giữa nút -->
                 <i class="fas fa-file-pdf"></i> <!-- Thay thế icon print bằng icon pdf -->
                 Print PDF <!-- Đổi chữ "Print" thành "Print PDF" -->
+            </button>
+        </div>
+        <div class="flex items-center">
+            <button onclick="exportBlogToExcel()" class="btn btn-add ml-2" style="margin-right:800px">
+                <i class="fas fa-file-excel"></i>
+                Export Excel
             </button>
         </div>
     </div>
@@ -218,3 +224,38 @@
                 margin-right: 10px; /* Khoảng cách giữa các nút */
             }
     </style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.2/xlsx.full.min.js"></script>
+<script>
+    function exportBlogToExcel() {
+        $.ajax({
+            url: '/Excel/ExportBlogToExcel',
+            type: 'GET',
+            success: function (data) {
+                var wb = XLSX.utils.book_new();
+                var ws = XLSX.utils.json_to_sheet(data);
+                XLSX.utils.book_append_sheet(wb, ws, "Blogs");
+                var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+                var blob = new Blob([s2ab(wbout)], { type: 'application/octet-stream' });
+                var link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'blogs.xlsx';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    function s2ab(s) {
+        var buf = new ArrayBuffer(s.length);
+        var view = new Uint8Array(buf);
+        for (var i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+        return buf;
+    }
+</script>
+

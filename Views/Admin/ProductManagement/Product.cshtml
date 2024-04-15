@@ -98,11 +98,17 @@
             </a>
         </div>
         <div class="col-sm-2 flex items-center">
-            <!-- Sử dụng margin-left ở đây -->
             <!-- Nút "Print PDF" -->
-            <button onclick="myApp.printTable()" class="btn btn-print" style="margin-right: 890px">
+            <button onclick="myApp.printTable()" class="btn btn-print">
                 <i class="fas fa-file-pdf"></i>
                 Print PDF
+            </button>
+        </div>
+        <div class="col-sm-2 flex items-center">
+            <!-- Nút "Export Excel" sử dụng cùng một lớp với nút "Print PDF" -->
+            <button onclick="exportToExcel()" class="btn btn-print" style="margin-right:800px">
+                <i class="fas fa-file-excel"></i>
+                Export Excel
             </button>
         </div>
     </div>
@@ -265,6 +271,43 @@
     </div>
 
 </section>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.2/xlsx.full.min.js"></script>
+<script>
+    // Hàm xuất Excel
+    function exportToExcel() {
+        $.ajax({
+            url: '/Excel/ExportProductsToExcel',
+            type: 'GET',
+            success: function (data) {
+                // Xử lý dữ liệu JSON trả về ở đây và xuất vào tệp Excel
+                var wb = XLSX.utils.book_new();
+                var ws = XLSX.utils.json_to_sheet(data);
+                XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+                var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
+                var blob = new Blob([s2ab(wbout)], { type: 'application/octet-stream' });
+                var link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'products.xlsx';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    // Hàm chuyển đổi chuỗi sang mảng byte
+    function s2ab(s) {
+        var buf = new ArrayBuffer(s.length);
+        var view = new Uint8Array(buf);
+        for (var i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
+        return buf;
+    }
+</script>
 
 
 
