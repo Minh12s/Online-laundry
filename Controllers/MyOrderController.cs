@@ -12,8 +12,13 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Mail;
 using Microsoft.CodeAnalysis;
-
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Hosting;
+using NuGet.Protocol.Core.Types;
+using System.Diagnostics;
+
+
 
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -103,9 +108,10 @@ namespace OnlineJwellery_Shopping.Controllers
             // Trả dữ liệu danh sách đơn hàng cho view
             return View(user);
         }
-        public IActionResult OrderDetail(int? id)
+        public async Task<IActionResult> OrderDetail(int? id)
         {
-
+            // Kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
             if (id == null)
             {
                 return NotFound(); // Trả về lỗi 404 nếu không có ID đơn hàng
@@ -458,6 +464,8 @@ namespace OnlineJwellery_Shopping.Controllers
         [HttpPost]
         public async Task<IActionResult> ReasonCancel(int id, string[] Reason, string otherReason)
         {
+            // Kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
             // Lấy thông tin đơn hàng từ cơ sở dữ liệu
             var order = await _context.Order
                 .Include(o => o.OrderProducts)
@@ -528,6 +536,108 @@ namespace OnlineJwellery_Shopping.Controllers
             // Redirect người dùng về trang chi tiết đơn hàng
             return RedirectToAction("OrderDetail", "MyOrder", new { id = id });
         }
+       
+        [HttpGet]
+        public async Task<IActionResult> RequestRefund(int productId, decimal total, int orderId)
+        {
+            ViewBag.Total = total;
+            var userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            // Thêm logic lấy thông tin đơn hàng từ orderId và userId nếu cần
+            var order = await _context.Order.FindAsync(orderId);
+            if (order == null || order.UserId != userId)
+            {
+                // Xử lý khi không tìm thấy đơn hàng hoặc đơn hàng không thuộc về người dùng hiện tại
+                return BadRequest("Invalid order or unauthorized access");
+            }
+            // Trả về View với model có chứa thông tin cần thiết
+            return View(new OrderReturnViewModel { OrderId = orderId });
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RequestRefund(OrderReturnViewModel model, List<IFormFile> ImagePath)
+        {
+            var userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+
+            if (model == null || model.OrderId == 0)
+            {
+                // Xử lý khi model là null hoặc OrderId không hợp lệ
+                return BadRequest("Invalid model or OrderId");
+            }
+
+            var orderReturn = new OrderReturn
+            {
+                OrderId = model.OrderId,
+                UserId = userId,
+                ReturnDate = DateTime.Now,
+                Status = "Pending",
+                Reason = model.Reason,
+                Description = model.Description,
+                RefundAmount = model.RefundAmount
+            };
+
+            _context.OrderReturn.Add(orderReturn);
+            await _context.SaveChangesAsync(); // Lưu để có OrderReturnId được tạo
+
+            // Lấy OrderReturnId đã được tạo
+            var orderReturnId = orderReturn.OrderReturnId;
+
+            // Lưu hình ảnh vào thư mục và cơ sở dữ liệu
+            if (ImagePath != null && ImagePath.Count > 0)
+            {
+                var uploadsFolder = Path.Combine("wwwroot", "images", "OrderReturn");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                int maxImagesToSave = Math.Min(ImagePath.Count, 4); // Giới hạn số lượng ảnh tối đa là 4
+                for (int i = 0; i < maxImagesToSave; i++)
+                {
+                    var file = ImagePath[i];
+                    if (file != null && file.Length > 0)
+                    {
+                        var uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
+                        var imagePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                        using (var stream = new FileStream(imagePath, FileMode.Create))
+                        {
+                            await file.CopyToAsync(stream);
+                        }
+
+                        var relativeImagePath = "/images/OrderReturn/" + uniqueFileName;
+
+                        ReturnImages returnImage = new ReturnImages
+                        {
+                            OrderReturnId = orderReturnId,
+                            ImagePath = relativeImagePath
+                        };
+
+                        _context.ReturnImages.Add(returnImage);
+                        // Debug
+                        Debug.WriteLine($"Saved image: {relativeImagePath}");
+                    }
+
+                }
+            }
+
+            // Cập nhật trạng thái của các sản phẩm trong đơn hàng
+            var orderProducts = _context.OrderProduct.Where(op => op.OrderId == model.OrderId).ToList();
+            foreach (var orderProduct in orderProducts)
+            {
+                orderProduct.Status = 1; // Đã yêu cầu hoàn trả
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["Message"] = "The request has been sent, please wait for processing";
+            TempData["MessageType"] = "success";
+
+            return RedirectToAction("OrderComplete", "MyOrder");
+        }
+
+
 
         private async Task SendCancellationEmail(Order order)
         {

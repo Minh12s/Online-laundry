@@ -22,7 +22,8 @@ namespace OnlineJwellery_Shopping.Models
                 // Look for any existing data.
                 if (context.User.Any() || context.Category.Any() || context.Blog.Any() || context.Brand.Any() ||
                 context.Favorite.Any() || context.GoldAge.Any() || context.Order.Any() || context.OrderProduct.Any() ||
-                context.Product.Any() || context.Review.Any() || context.OrderCancel.Any())
+                context.Product.Any() || context.Review.Any() || context.OrderCancel.Any() || context.OrderReturn.Any() ||
+                context.ReturnImages.Any())
                 {
                     return;   // Database has been seeded
                 }
@@ -237,7 +238,8 @@ namespace OnlineJwellery_Shopping.Models
                         OrderId = random.Next(1, 10),
                         ProductId = random.Next(1, 10),
                         Qty = random.Next(1, 5),
-                        Price = random.Next(1, 101)
+                        Price = random.Next(1, 101),
+                        Status = random.Next(2) // Randomly assigns 0 or 1
                     };
                     context.OrderProduct.Add(orderProduct);
                 }
@@ -266,6 +268,52 @@ namespace OnlineJwellery_Shopping.Models
                     context.OrderCancel.Add(orderCancel);
                 }
                 context.SaveChanges();
+
+                // Seed data for OrderReturn
+                var rerurnStatuses = new string[] { "pending", "approved", "rejected" };
+                var returnReasons = new List<string>
+                {
+                  "Item damaged during shipping",
+                  "Incorrect item received",
+                  "Item not as described",
+                  "Customer changed mind",
+                  "Duplicate order",
+                  "Payment issue",
+                  "Other"
+                };
+
+                for (int i = 1; i <= 10; i++)
+                {
+                    var orderReturn = new OrderReturn
+                    {
+                        OrderId = random.Next(1, 10),
+                        UserId = random.Next(1, users.Length + 1),
+                        ReturnDate = DateTime.Now.AddDays(-i),
+                        Reason = returnReasons[random.Next(returnReasons.Count)],
+                        Status = rerurnStatuses[random.Next(rerurnStatuses.Length)],
+                        Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                        RefundAmount = random.Next(100, 1001)
+                    };
+                    context.OrderReturn.Add(orderReturn);
+                }
+
+                context.SaveChanges();
+
+                // Seed data for ReturnImages
+                var returnImagePaths = Enumerable.Range(1, 80).Select(i => $"/images/product-{i}.jpg").ToList();
+                for (int i = 1; i <= 10; i++)
+                {
+                    var returnImage = new ReturnImages
+                    {
+                        OrderReturnId = random.Next(1, 10),
+                        ImagePath = returnImagePaths[i % 80]
+                    };
+                    context.ReturnImages.Add(returnImage);
+                }
+                context.SaveChanges();
+
+
+
 
                 // Seed data for Favorite
                 for (int i = 1; i <= 10; i++)

@@ -116,7 +116,8 @@ namespace OnlineJwellery_Shopping.Controllers
                                 OrderId = order.OrderId,
                                 ProductId = cartItem.ProductId,
                                 Qty = cartItem.Qty,
-                                Price = cartItem.Price
+                                Price = cartItem.Price,
+                                Status = 0 
                             };
 
                             _context.OrderProduct.Add(orderProduct);
