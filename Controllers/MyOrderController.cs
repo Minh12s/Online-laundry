@@ -455,6 +455,51 @@ namespace OnlineJwellery_Shopping.Controllers
             // Trả dữ liệu người dùng có đơn hàng Pending cho view
             return View(user);
         }
+        public async Task<IActionResult> OrderReturn(int page = 1, int pageSize = 5)
+        {
+            // Kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
+
+            // Lấy UserId từ Session
+            int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+
+            // Truy vấn database để lấy thông tin về các sản phẩm hoàn trả của người dùng có trạng thái "pending"
+            var pendingOrderReturns = _context.OrderReturn
+                .Where(or => or.UserId == userId && or.Status == "pending")
+                .OrderByDescending(or => or.ReturnDate)  // Sắp xếp theo ngày hoàn trả mới nhất
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Join(
+                    _context.Product, // Tham gia bảng Product
+                    or => or.ProductId, // Khóa ngoại trong OrderReturn
+                    p => p.ProductId, // Khóa chính trong Product
+                    (or, p) => new // Chọn các trường bạn muốn từ cả hai bảng
+                    {
+             
+                        ProductName = p.ProductName,
+                        Thumbnail = p.Thumbnail,
+                        OrderReturnId = or.OrderReturnId,
+                        Status = or.Status,
+                        RefundAmount = or.RefundAmount,
+                        Description = or.Description,
+                        Reason = or.Reason,
+                        ReturnDate = or.ReturnDate
+                    }
+                )
+                .ToList();
+
+            // Logic phân trang
+            var totalPendingOrderReturns = _context.OrderReturn
+                .Count(or => or.UserId == userId && or.Status == "pending");
+            var totalPages = (int)Math.Ceiling((double)totalPendingOrderReturns / pageSize);
+
+            ViewBag.TotalPages = totalPages;
+            ViewBag.CurrentPage = page;
+
+            // Trả dữ liệu các sản phẩm hoàn trả đang chờ xử lý cho view
+            return View(pendingOrderReturns);
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> ReasonCancel()
@@ -536,7 +581,7 @@ namespace OnlineJwellery_Shopping.Controllers
             // Redirect người dùng về trang chi tiết đơn hàng
             return RedirectToAction("OrderDetail", "MyOrder", new { id = id });
         }
-       
+
         [HttpGet]
         public async Task<IActionResult> RequestRefund(int productId, decimal total, int orderId)
         {
@@ -550,8 +595,9 @@ namespace OnlineJwellery_Shopping.Controllers
                 return BadRequest("Invalid order or unauthorized access");
             }
             // Trả về View với model có chứa thông tin cần thiết
-            return View(new OrderReturnViewModel { OrderId = orderId });
+            return View(new OrderReturnViewModel { OrderId = orderId, ProductId = productId });
         }
+
 
 
         [HttpPost]
@@ -565,13 +611,19 @@ namespace OnlineJwellery_Shopping.Controllers
                 // Xử lý khi model là null hoặc OrderId không hợp lệ
                 return BadRequest("Invalid model or OrderId");
             }
+            if (model == null || model.ProductId == 0)
+            {
+                // Xử lý khi model là null hoặc OrderId không hợp lệ
+                return BadRequest("Invalid model or ProductId");
+            }
 
             var orderReturn = new OrderReturn
             {
                 OrderId = model.OrderId,
                 UserId = userId,
+                ProductId = model.ProductId,
                 ReturnDate = DateTime.Now,
-                Status = "Pending",
+                Status = "pending",
                 Reason = model.Reason,
                 Description = model.Description,
                 RefundAmount = model.RefundAmount

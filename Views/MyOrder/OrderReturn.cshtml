@@ -1,4 +1,4 @@
-﻿@model OnlineJwellery_Shopping.Models.User
+﻿
 
 
 @{
@@ -65,12 +65,13 @@
     <div class="content-top1 d-flex">
         <a href="/MyOrder/MyOrder" class="btn">All</a>
         <a href="/MyOrder/OrderPending" class="btn">Pending</a>
-        <a style="color:#FFA45C ;font-weight: bold" href="/MyOrder/OrderConfirmed" class="btn">Confirmed</a>
+        <a href="/MyOrder/OrderConfirmed" class="btn">Confirmed</a>
         <a href="/MyOrder/OrderShipping" class="btn">Shipping</a>
         <a href="/MyOrder/OrderShipped" class="btn">Shipped</a>
         <a href="/MyOrder/OrderComplete" class="btn">Complete</a>
-        <a type="button" href="/MyOrder/OrderCancel" class="btn cancel-btn">Cancel</a>
-        <a href="/MyOrder/OrderReturn" class="btn">Return</a>
+
+        <a  type="button" href="/MyOrder/OrderCancel" class="btn cancel-btn">Cancel</a>
+        <a style="color:#FFA45C ;font-weight: bold" href="/MyOrder/OrderReturn" class="btn">Return</a>
     </div>
 
 
@@ -78,44 +79,35 @@
     <table class="order-table">
         <thead>
             <tr>
-                <th>ID </th>
-                <th>Created At</th>
-                <th>Grand Total</th>
-                <th>Full Name</th>
-                <th>Shipping Method</th>
-                <th>Payment Method</th>
-                <th>Paid</th>
+                <th>Id</th>
+                <th>Product Name</th>
+                <th>Thumbnail</th>
+                <th>Return Date</th>
+                <th>Description</th>
+                <th>Reason</th>
+                <th>Refund Amount</th>
                 <th>Status</th>
-                <th width="60">Action</th>
             </tr>
         </thead>
         <tbody>
-                @foreach (var order in Model.Orders)
-                {
+            @foreach (var orderReturn in Model)
+            {
                 <tr>
-
-                    <td>@order.OrderId</td>
-                    <td>@order.OrderDate</td>
-                    <td>@order.TotalAmount</td>
-
-                    <td>@order.FullName</td>
-
-                    <td>@order.ShippingMethod</td>
-
-                    <td>@order.PaymentMethod</td>
-                    <td>@order.IsPaid</td>
-                    <td>@order.Status</td>
+                    <td>@orderReturn.OrderReturnId</td>
+                    <td>@orderReturn.ProductName</td>
                     <td>
-
-                        <button asp-controller="MyOrder" asp-action="OrderDetail" asp-route-id="@order.OrderId" style="padding: 7px 7px;" class="site-btn" type="submit">
-                            <a style="color: white;" asp-controller="MyOrder" asp-action="OrderDetail" asp-route-id="@order.OrderId">Detail</a>
-                        </button>
+                        <img style="width:100px; height:100px;" src="@orderReturn.Thumbnail" alt="Product Thumbnail" />
                     </td>
-
+                    <td>@orderReturn.ReturnDate</td>
+                    <td>@orderReturn.Description</td>
+                    <td>@orderReturn.Reason</td>
+                    <td>$@orderReturn.RefundAmount</td>
+                    <td>@orderReturn.Status</td>
                 </tr>
-                }
+            }
         </tbody>
     </table>
+
 
 
 
@@ -123,12 +115,12 @@
 </div>
 <div style="display: flex; justify-content: center; align-items: center; margin-top: 20px; margin-bottom: 20px;">
     <ul class="pagination">
-            @for (int i = 1; i <= ViewBag.TotalPages; i++)
-            {
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
             <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
-                <a class="page-link" href="@Url.Action("OrderConfirmed", new { page = i })">@i</a>
+                <a class="page-link" href="@Url.Action("OrderReturn", new { page = i })">@i</a>
             </li>
-            }
+        }
     </ul>
 </div>
     </div>

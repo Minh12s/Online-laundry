@@ -14,6 +14,7 @@ using System.Net.Mail;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using static NuGet.Packaging.PackagingConstants;
 using System.IO;
+using PayPal.Api;
 
 namespace OnlineJwellery_Shopping.Controllers
 {
@@ -38,50 +39,63 @@ namespace OnlineJwellery_Shopping.Controllers
             var cancelledOrders = _context.Order.Count(o => o.Status == "cancel");
             // Số sản phẩm hết hàng
             var outOfStockProducts = _context.Product.Where(p => p.Qty == 0).ToList();
+            // số lượng đơn hàng hoàn trả
+            var totalOrderReturns = _context.OrderReturn.Count();
             // Tổng thu nhập
-            var totalRevenue = _context.Order.Where(o => o.IsPaid == "paid").Sum(o => o.TotalAmount);
+            var totalRevenue = _context.Order
+                .Where(o => o.IsPaid == "paid")
+                .ToList()
+                .Sum(o => o.TotalAmount);
             var outOfStockProductCount = outOfStockProducts.Count;
             var pendingReviews = _context.Review
-     .Where(r => r.Status == "pending")
-     .Include(r => r.User)
-    .Include(r => r.Product) // Bao gồm thông tin sản phẩm
-     .ToList();
-
+                .Where(r => r.Status == "pending")
+                .Include(r => r.User)
+                .Include(r => r.Product) // Bao gồm thông tin sản phẩm
+                .ToList();
+            var pendingOrderReturns = _context.OrderReturn
+    .Where(or => or.Status == "pending")
+    .ToList();
 
             // Lấy danh sách đơn hàng dựa trên trang và kích thước trang
             var orders = _context.Order.Skip((page - 1) * pageSize).Take(pageSize);
             var Products = _context.Product.Skip((page - 1) * pageSize).Take(pageSize);
             var outOfStockProductsPaged = outOfStockProducts.Skip((page - 1) * pageSize).Take(pageSize).ToList();
             var pendingReviewsPaged = pendingReviews.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            var pendingOrderReturnsPaged = pendingOrderReturns.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
             // Lọc và tính toán số lượng trang cho từng trạng thái của đơn hàng
             var pendingOrders = orders.Where(o => o.Status == "pending").ToList();
 
             // Tính toán số lượng trang cho từng trạng thái
             var pendingTotalPages = (int)Math.Ceiling((double)pendingOrders.Count / pageSize);
-
             var outOfStockTotalPages = (int)Math.Ceiling((double)outOfStockProducts.Count / pageSize);
             var pendingReviewTotalPages = (int)Math.Ceiling((double)pendingReviews.Count / pageSize);
+            var pendingOrderReturnsTotalPages = (int)Math.Ceiling((double)pendingOrderReturns.Count / pageSize);
 
             // Truyền thông tin phân trang và số lượng trang cho từng trạng thái vào ViewBag
             ViewBag.PendingOrders = pendingOrders;
-
             ViewBag.PendingTotalPages = pendingTotalPages;
+
             ViewBag.OutOfStockProducts = outOfStockProducts;
             ViewBag.OutOfStockTotalPages = outOfStockTotalPages;
             ViewBag.OutOfStockProductCount = outOfStockProductCount;
+
             ViewBag.PendingReviews = pendingReviews;
             ViewBag.PendingReviewTotalPages = pendingReviewTotalPages;
+
+            ViewBag.PendingOrderReturns = pendingOrderReturns;
+            ViewBag.PendingOrderReturnsTotalPages = pendingOrderReturnsTotalPages;
+
             // Truy vấn để lấy sản phẩm bán chạy nhất
             var query = Products.Select(p => new
             {
                 Product = p,
                 TotalQuantitySold = _context.OrderProduct
-               .Where(op => op.Order.Status == "complete" && op.ProductId == p.ProductId)
-               .Sum(op => op.Qty)
+                    .Where(op => op.Order.Status == "complete" && op.ProductId == p.ProductId)
+                    .Sum(op => op.Qty)
             })
-       .OrderByDescending(item => item.TotalQuantitySold)
-       .ToList();
+            .OrderByDescending(item => item.TotalQuantitySold)
+            .ToList();
 
             // Truyền danh sách sản phẩm vào ViewBag
             ViewBag.BestSellingProducts = query;
@@ -98,10 +112,15 @@ namespace OnlineJwellery_Shopping.Controllers
             ViewBag.TotalRevenue = totalRevenue;
             ViewBag.CancelledOrders = cancelledOrders;
             ViewBag.TotalOrders = totalOrders;
+            ViewBag.TotalOrderReturns = totalOrderReturns;
+
+
+
             return View("DashboardAdmin/Dashboard");
         }
 
-        [Authentication]
+
+
         // Customer Management
         [Authentication]
         public async Task<IActionResult> Customer(int? page, string userNameSearch, string addressSearch, string phoneNumberSearch, string emailSearch, int pageSize = 10)
@@ -369,21 +388,58 @@ namespace OnlineJwellery_Shopping.Controllers
                     {
                         model.SmallThumbnail1 = await SaveImage(smallThumbnail1);
                     }
+                    else
+                    {
+                        // Giữ ảnh hiện tại nếu không có ảnh mới được cung cấp
+                        var existingProduct = _context.Product.AsNoTracking().FirstOrDefault(p => p.ProductId == model.ProductId);
+                        if (existingProduct != null)
+                        {
+                            model.SmallThumbnail1 = existingProduct.SmallThumbnail1;
+                        }
+                    }
 
                     if (smallThumbnail2 != null && smallThumbnail2.Length > 0)
                     {
                         model.SmallThumbnail2 = await SaveImage(smallThumbnail2);
+                    }
+                    else
+                    {
+                        // Giữ ảnh hiện tại nếu không có ảnh mới được cung cấp
+                        var existingProduct = _context.Product.AsNoTracking().FirstOrDefault(p => p.ProductId == model.ProductId);
+                        if (existingProduct != null)
+                        {
+                            model.SmallThumbnail2 = existingProduct.SmallThumbnail2;
+                        }
                     }
 
                     if (smallThumbnail3 != null && smallThumbnail3.Length > 0)
                     {
                         model.SmallThumbnail3 = await SaveImage(smallThumbnail3);
                     }
+                    else
+                    {
+                        // Giữ ảnh hiện tại nếu không có ảnh mới được cung cấp
+                        var existingProduct = _context.Product.AsNoTracking().FirstOrDefault(p => p.ProductId == model.ProductId);
+                        if (existingProduct != null)
+                        {
+                            model.SmallThumbnail3 = existingProduct.SmallThumbnail3;
+                        }
+                    }
 
                     if (smallThumbnail4 != null && smallThumbnail4.Length > 0)
                     {
                         model.SmallThumbnail4 = await SaveImage(smallThumbnail4);
                     }
+                    else
+                    {
+                        // Giữ ảnh hiện tại nếu không có ảnh mới được cung cấp
+                        var existingProduct = _context.Product.AsNoTracking().FirstOrDefault(p => p.ProductId == model.ProductId);
+                        if (existingProduct != null)
+                        {
+                            model.SmallThumbnail4 = existingProduct.SmallThumbnail4;
+                        }
+                    }
+
 
                     // Tạo slug từ tên sản phẩm và gán cho thuộc tính Slug của model
                     model.Slug = SlugHelper.GenerateSlug(model.ProductName, model.ProductId);
@@ -1038,6 +1094,165 @@ namespace OnlineJwellery_Shopping.Controllers
             }
             return View("CanceledOrdersManagement/OrderCancelDetails", order);
         }
+        public async Task<IActionResult> OrderReturn(OrderReturnViewModel model, int page = 1, int pageSize = 10, string search = null)
+        {
+            // Lấy danh sách các đơn hàng đã trả về từ cơ sở dữ liệu, sắp xếp theo thời gian trả về giảm dần
+            var orderReturns = await _context.OrderReturn
+                .Include(o => o.ReturnImages) 
+                .OrderByDescending(o => o.ReturnDate)
+                .ToListAsync();
+
+            // Lọc dữ liệu theo từng thuộc tính trong OrderReturnViewModel nếu giá trị của thuộc tính đó được cung cấp trong model
+            if (model.OrderId != 0)
+            {
+                orderReturns = orderReturns.Where(o => o.OrderId == model.OrderId).ToList();
+            }
+
+            if (model.UserId != 0)
+            {
+                orderReturns = orderReturns.Where(o => o.UserId == model.UserId).ToList();
+            }
+
+            if (!string.IsNullOrEmpty(model.Reason))
+            {
+                orderReturns = orderReturns.Where(o => o.Reason.Contains(model.Reason)).ToList();
+            }
+
+            if (!string.IsNullOrEmpty(model.Description))
+            {
+                orderReturns = orderReturns.Where(o => o.Description.Contains(model.Description)).ToList();
+            }
+            if (!string.IsNullOrEmpty(model.Status))
+            {
+                orderReturns = orderReturns.Where(o => o.Status.Contains(model.Status)).ToList();
+            }
+            if (model.ReturnDate != default)
+            {
+                // Lọc dữ liệu theo ngày trả về nếu model.ReturnDate được cung cấp
+                orderReturns = orderReturns.Where(o => o.ReturnDate.Date == model.ReturnDate.Date).ToList();
+            }
+
+            if (model.RefundAmount != 0)
+            {
+                orderReturns = orderReturns.Where(o => o.RefundAmount == model.RefundAmount).ToList();
+            }
+
+            // Lọc theo từ khóa tìm kiếm
+            if (!string.IsNullOrEmpty(search))
+            {
+                orderReturns = orderReturns.Where(o =>
+                    o.OrderId.ToString().Contains(search) ||
+                    o.UserId.ToString().Contains(search) ||
+                    o.ProductId.ToString().Contains(search) ||
+                    o.Status.Contains(search) ||
+                    o.Reason.Contains(search) ||
+                    o.Description.Contains(search) ||
+                    o.RefundAmount.ToString().Contains(search) ||
+                    o.ReturnDate.ToString().Contains(search) ||
+                    (o.ReturnImages != null && o.ReturnImages.Any(ri => ri.ImagePath.Contains(search)))
+                ).ToList();
+            }
+
+            // Chuyển đổi danh sách các đơn hàng đã trả về thành danh sách ViewModel để truyền đến view
+            var orderReturnViewModels = orderReturns.Select(o => new OrderReturnViewModel
+            {
+                OrderReturnId = o.OrderReturnId,
+                OrderId = o.OrderId,
+                ProductId = o.ProductId,
+                UserId = o.UserId,
+                ReturnDate = o.ReturnDate,
+                Status = o.Status,
+                Reason = o.Reason,
+                Description = o.Description,
+                RefundAmount = o.RefundAmount,
+               ReturnImages = o.ReturnImages.ToList()
+            }).ToList();
+
+            // Tạo một Dictionary để lưu số lần xuất hiện của mỗi lý do
+            var reasonCounts = new Dictionary<string, int>();
+
+            // Lặp qua danh sách các đơn hàng đã trả về và đếm số lần xuất hiện của mỗi lý do
+            foreach (var orderReturn in orderReturnViewModels)
+            {
+                if (reasonCounts.ContainsKey(orderReturn.Reason))
+                {
+                    reasonCounts[orderReturn.Reason]++;
+                }
+                else
+                {
+                    reasonCounts.Add(orderReturn.Reason, 1);
+                }
+            }
+
+            // Phân trang
+            var totalItems = orderReturnViewModels.Count();
+            var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            var paginatedOrderReturns = orderReturnViewModels.Skip((page - 1) * pageSize)
+                                                             .Take(pageSize)
+                                                             .ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.PageSize = pageSize;
+            ViewBag.ReasonCounts = reasonCounts; // Truyền danh sách số lần xuất hiện của mỗi lý do đến view
+
+            // Trả về view với danh sách đơn hàng đã trả về và thông tin phân trang
+            return View("OrderReturnManagement/OrderReturn", paginatedOrderReturns);
+        }
+
+        public async Task<IActionResult> DetailsReturn(int id)
+        {
+            // Tìm kiếm đơn hàng trả về dựa trên orderReturnId
+            var orderReturn = await _context.OrderReturn
+                .FirstOrDefaultAsync(or => or.OrderReturnId == id);
+
+            if (orderReturn == null)
+            {
+                return NotFound(); // Trả về lỗi 404 nếu không tìm thấy đơn hàng trả về
+            }
+
+            // Chuyển đổi OrderReturn sang OrderReturnViewModel
+            var orderReturnViewModel = new OrderReturnViewModel
+            {
+                OrderId = orderReturn.OrderId,
+                ProductId = orderReturn.ProductId,
+                UserId = orderReturn.UserId,
+                ReturnDate = orderReturn.ReturnDate,
+                Status = orderReturn.Status,
+                Reason = orderReturn.Reason,
+                Description = orderReturn.Description,
+                RefundAmount = orderReturn.RefundAmount,
+               
+            };
+
+            return View("OrderReturnManagement/detailsReturn", orderReturnViewModel);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateReturnStatus(int id, string status)
+        {
+            // Tìm kiếm đơn hàng trả về dựa trên orderReturnId
+            var orderReturn = await _context.OrderReturn.FirstOrDefaultAsync(or => or.OrderReturnId == id);
+
+            if (orderReturn == null)
+            {
+                return NotFound(); // Trả về lỗi 404 nếu không tìm thấy đơn hàng trả về
+            }
+
+            // Cập nhật trạng thái cho đơn hàng trả về
+            orderReturn.Status = status;
+            _context.Update(orderReturn);
+            await _context.SaveChangesAsync();
+
+            // Chuyển hướng đến trang OrderReturn của Admin
+            return RedirectToAction("OrderReturn", "Admin");
+        }
+
+
+
+
+
+
         public async Task<IActionResult> DataStatistics()
         {
             return View("DataStatistics/DataStatistics");

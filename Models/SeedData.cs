@@ -287,6 +287,7 @@ namespace OnlineJwellery_Shopping.Models
                     var orderReturn = new OrderReturn
                     {
                         OrderId = random.Next(1, 10),
+                        ProductId = random.Next(1, 10),
                         UserId = random.Next(1, users.Length + 1),
                         ReturnDate = DateTime.Now.AddDays(-i),
                         Reason = returnReasons[random.Next(returnReasons.Count)],

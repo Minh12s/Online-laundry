@@ -45,8 +45,12 @@ namespace OnlineJwellery_Shopping.Data
                .HasOne(or => or.Order)
                .WithMany()
                .HasForeignKey(or => or.OrderId);
+            modelBuilder.Entity<OrderReturn>()
+            .HasOne(or => or.Product)
+            .WithMany()
+            .HasForeignKey(or => or.ProductId);
 
-           
+
 
             // Thiết lập quan hệ giữa bảng Review và User
             modelBuilder.Entity<Review>()

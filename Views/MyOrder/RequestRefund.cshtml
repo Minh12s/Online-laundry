@@ -240,6 +240,11 @@
                 {
                     <input type="hidden" name="OrderId" value="@Model.OrderId" />
                 }
+                @if (Model != null)
+                {
+                    <input type="hidden" name="ProductId" value="@Model.ProductId" />
+                }
+
 
                 <div class="cancel-reason">
                     <label for="reason">Reason for cancellation:</label>

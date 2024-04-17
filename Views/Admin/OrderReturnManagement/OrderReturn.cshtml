@@ -1,31 +1,33 @@
-﻿@model IEnumerable<OnlineJwellery_Shopping.Models.OrderCancelViewModel>
+﻿@model IEnumerable<OnlineJwellery_Shopping.Models.OrderReturnViewModel>
 @{
-    ViewData["Title"] = "Order Cancel";
+    ViewData["Title"] = "Order Return";
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
 }
 @{
     // Danh sách các lý do và icon tương ứng
     var reasonIcons = new Dictionary<string, string>
 {
-        { "Order takes a long time to confirm", "mdi-clock" },
-        { "I don't need to buy anymore", "mdi-cancel" },
-        { "I want to update my shipping address", "mdi-truck" },
-        { "I found a better place to buy (Cheaper, more reputable, faster delivery...)", "mdi-thumb-up" },
-        { "I don't have enough money to buy it", "mdi-currency-usd" }
-    };
+    { "Missing quantity/accessories", "mdi mdi-timer-sand" },
+    { "Seller sent wrong item", "mdi mdi-cancel" },
+    { "The product cannot be used", "mdi mdi-package-variant-closed" },
+    { "Different from description", "mdi mdi-thumb-up" },
+    { "Counterfeit goods, imitation goods", "mdi mdi-cash-refund" },
+    { "The goods are intact but no longer needed", "mdi mdi-arrow-down-bold" }
+};
 
-    // Tính tổng số lý do khác
-    int otherReasonCount = 0;
-    foreach (var item in ViewBag.ReasonCounts)
-    {
-        if (!reasonIcons.ContainsKey(item.Key))
-        {
-            otherReasonCount += item.Value;
-        }
-    }
 }
 <style>
+    .text-pending {
+        color: orange; /* Màu chữ cho trạng thái "pending" */
+    }
 
+    .text-approved {
+        color: green; /* Màu chữ cho trạng thái "confirmed" */
+    }
+
+    .text-rejected {
+        color: red; /* Màu chữ cho trạng thái "shipping" */
+    }
     .btn-primary {
         color: rgb(245 157 57);
         background-color: rgb(251 226 197);
@@ -96,7 +98,7 @@
     <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
         <ul>
             <li style="margin-left:-50px;">Admin</li>
-            <li>Order Cancel</li>
+            <li>Order Return</li>
         </ul>
 
     </div>
@@ -126,22 +128,6 @@
             </div>
         }
 
-        <!-- Card cho lý do khác -->
-        <div class="card">
-            <div class="card-content">
-                <div class="flex items-center justify-between">
-                    <div class="widget-label">
-                        <h3>
-                            Other
-                        </h3>
-                        <h1>
-                            @otherReasonCount <!-- Hiển thị tổng số lý do khác -->
-                        </h1>
-                    </div>
-                    <span class="icon widget-icon text-red-500"><i class="mdi mdi-help-circle mdi-48px"></i></span> <!-- Icon cho lý do khác -->
-                </div>
-            </div>
-        </div>
     </div>
     <section class="is-hero-bar">
         <div class="flex flex-row items-center">
@@ -157,19 +143,26 @@
             </button>
         </div>
     </section>
-    <form style="display: flex; align-items: center; border-radius: 5px; margin-top: 10px; flex-wrap: wrap;" asp-action="OrderCancel" asp-controller="Admin" method="get">
+    <form style="display: flex; align-items: center; border-radius: 5px; margin-top: 10px; flex-wrap: wrap;" asp-action="OrderReturn" asp-controller="Admin" method="get">
         <div class="input-group input-group-sm" style="margin-right: -23px; margin-bottom: 10px;" margin-left: -28px;>
-            <input value="" class="form-control" type="text" name="Email" placeholder="Email" style="height: 45px; font-size: 0.765625rem; padding: 4px 8px; background-color: #F1F1F1; border-radius: 5px; width: 120px; margin-left: 2px;" />
+            <input value="" class="form-control" type="text" name="Description" placeholder="Description" style="height: 45px; font-size: 0.765625rem; padding: 4px 8px; background-color: #F1F1F1; border-radius: 5px; width: 120px; margin-left: 2px;" />
         </div>
         <div class="input-group input-group-sm" style=" margin-right: 5px; margin-bottom: 10px;">
-            <input value="" class="form-control" type="text" name="Telephone" placeholder="Telephone" style="height: 45px; font-size: 0.765625rem; padding: 4px 8px; background-color: #F1F1F1; border-radius: 5px; width: 120px; margin-left: 28px;" />
+            <input value="" class="form-control" type="text" name="ReturnDate" placeholder="Return Date" style="height: 45px; font-size: 0.765625rem; padding: 4px 8px; background-color: #F1F1F1; border-radius: 5px; width: 120px; margin-left: 28px;" />
         </div>
         <div class="input-group input-group-sm" style=" margin-right: 5px; margin-bottom: 10px;">
-            <input value="" class="form-control" type="text" name="TotalAmount" placeholder="Total Amount" style="height: 45px; font-size: 0.765625rem; padding: 4px 8px; background-color: #F1F1F1; border-radius: 5px; width: 120px; margin-right: -10px;" />
+            <select value="" style="height: 45px; font-size: 0.765625rem; padding: 4px 8px; background-color: #F1F1F1; border-radius: 5px; width: 150px; margin-right: -10px;" name="Status" class="form-control">
+                <option value="">select status</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+              
+            </select>
         </div>
-
-
-        <div class="input-group input-group-sm" style="margin-left: 5px; margin-bottom: 10px;">
+        <div class="input-group input-group-sm" style=" margin-left: 10px; margin-bottom: 10px;">
+            <input value="" class="form-control" type="text" name="RefundAmount" placeholder="Refund Amount" style="height: 45px; font-size: 0.765625rem; padding: 4px 8px; background-color: #F1F1F1; border-radius: 5px; width: 120px; margin-right: -10px;" />
+        </div>
+        <div class="input-group input-group-sm" style="margin-left: 7px; margin-bottom: 10px;">
             <input value="" type="text" name="search" class="form-control" placeholder="Search" style="height: 45px; font-size: 0.765625rem; padding: 4px 8px; background-color: #F1F1F1; border-radius: 5px; width: 300px; margin-left:7px;" />
         </div>
         <div class="input-group input-group-sm" style="margin-bottom: 10px; margin-left: -5px;">
@@ -185,7 +178,7 @@
                 Order
             </p>
 
-            <form class="card-header-icon" asp-controller="Admin" asp-action="OrderCancel" method="get" onchange="this.submit()">
+            <form class="card-header-icon" asp-controller="Admin" asp-action="OrderReturn" method="get" onchange="this.submit()">
 
                 <select style="margin-left:-10px; padding: 5px 10px;border:1px solid #F1F1F1 " name="PageSize">
                     <option value="10"
@@ -218,32 +211,89 @@
                 <thead>
                     <tr>
                         <th width="10"><input type="checkbox" id="all"></th>
+                       
                         <th>Id</th>
-                        <th>Order Id</th>
-                        <th>Full name</th>
-                        <th>Email</th>
-                        <th>Telephone</th>
-                        <th>Total Amount</th>
+                        <th>Return Date</th>
                         <th>Reason</th>
+                        @*<th>Description</th>*@
+                        <th>Refund Amount</th>
+                        <th>Image</th>
+                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var orderCancel in Model)
+                    <!-- Dữ liệu danh sách đơn hàng đã trả về -->
+                    @foreach (var orderReturn in Model)
                     {
                         <tr>
-                            <td width="10"><input type="checkbox" name="check1" value="1"></td>
-                            <td>@orderCancel.OrderCancelId</td>
-                            <td>@orderCancel.OrderId</td>
-                            <td>@orderCancel.FullName</td>
-                            <td>@orderCancel.Email</td>
-                            <td>@orderCancel.Telephone</td>
-                            <td>@orderCancel.TotalAmount</td>
-                            <td>@orderCancel.Reason</td>
-                            <td>
+                            <td><input type="checkbox" class="checkbox"></td>
 
-                                <a asp-action="OrderCancelDetails" asp-controller="Admin" class="btn btn-primary" style="background-color:green; color:white;" asp-route-id="@orderCancel.OrderId">Details</a>
+                            <td>@orderReturn.OrderReturnId</td>
+                            <td>@orderReturn.ReturnDate</td>
+
+                            <td>@orderReturn.Reason</td>
+                            @*<td>@orderReturn.Description</td>*@
+                            <td>@orderReturn.RefundAmount</td>
+                            <td>
+                                <!-- Hiển thị hình ảnh -->
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); grid-gap: 10px;">
+                                    @if (orderReturn.ReturnImages != null && orderReturn.ReturnImages.Any())
+                                    {
+                                        @foreach (var image in orderReturn.ReturnImages)
+                                        {
+                                            <div>
+                                                <img style="width:200px; height:100px;" src="@image.ImagePath" alt="Image" />
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span>No image</span>
+                                    }
+                                </div>
                             </td>
+
+                            <td>
+                                @if (orderReturn.Status == "pending")
+                                {
+                                    <span class="badge bg-warning text-pending">
+                                        <!-- Sử dụng lớp 'text-pending' -->
+                                        @orderReturn.Status
+                                    </span>
+                                }
+                                else if (orderReturn.Status == "approved")
+                                {
+                                    <span class="badge bg-primary text-approved">
+                                        <!-- Sử dụng lớp 'text-approved' -->
+                                        @orderReturn.Status
+                                    </span>
+                                }
+                                else if (orderReturn.Status == "rejected")
+                                {
+                                    <span class="badge bg-danger text-rejected">
+                                        <!-- Sử dụng lớp 'text-rejected' -->
+                                        @orderReturn.Status
+                                    </span>
+                                }
+                            </td>
+
+                            <td class="actions-cell">
+                                <div class="buttons right nowrap">
+
+                                    <a asp-action="detailsProduct" asp-controller="Admin" class="btn btn-primary" style="background-color:green; color:white;" asp-route-productId="@orderReturn.ProductId">
+                                        <span class="icon"><i class="mdi mdi-eye"></i></span>
+                                    </a>
+                                </div>
+                            </td>
+                            <td class="actions-cell">
+                                <div class="buttons right nowrap">
+                                    <a asp-action="DetailsReturn" asp-controller="Admin" asp-route-id="@orderReturn.OrderReturnId" class="btn btn-primary" style="background-color:#FBE2C5; color:#F59D39;">
+                                        <span class="icon"><i class="mdi mdi-refresh"></i></span>
+                                    </a>
+                                </div>
+                            </td>
+
                         </tr>
                     }
 
@@ -253,9 +303,10 @@
             <div class="table-pagination">
                 <div class="flex items-center justify-between">
                     <div class="buttons">
+                        <!-- Tạo nút phân trang cho mỗi trang -->
                         @for (int i = 1; i <= ViewBag.TotalPages; i++)
                         {
-                            <button type="button" class="button @(ViewBag.CurrentPage == i ? "active" : "")" onclick="location.href='@Url.Action("OrderCancel", new { page = i, pageSize = ViewBag.PageSize })'">@i</button>
+                            <button type="button" class="button @(ViewBag.CurrentPage == i ? "active" : "")" onclick="location.href='@Url.Action("OrderReturn", new { page = i, pageSize = ViewBag.PageSize })'">@i</button>
                         }
                     </div>
                     <small>Page @ViewBag.CurrentPage of @ViewBag.TotalPages</small>
@@ -382,12 +433,8 @@
         border: none;
         font - weight: 600;
         padding: 10px 20px; /* Điều chỉnh kích thước theo ý muốn */
-    }
-</script>
-<script>
-    function exportReviewToExcel() {
+    }</script>
+<script>function exportReviewToExcel() {
         // Gọi phương thức trong controller để xuất Excel
         window.location.href = '/Excel/ExportCanceledOrdersToExcel';
-    }
-
-</script>
+    }</script>

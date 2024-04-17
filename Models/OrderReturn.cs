@@ -6,6 +6,7 @@ namespace OnlineJwellery_Shopping.Models
     {
         public int OrderReturnId { get; set; }
         public int OrderId { get; set; }
+        public int ProductId { get; set; }
         public int UserId { get; set; }
         public DateTime ReturnDate { get; set; }
         public string Status { get; set; }
@@ -15,5 +16,8 @@ namespace OnlineJwellery_Shopping.Models
 
         public Order Order { get; set; }
         public User User { get; set; }
+        public Product Product { get; set; }
+
+        public ICollection<ReturnImages> ReturnImages { get; set; }
     }
 }

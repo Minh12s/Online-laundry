@@ -42,30 +42,32 @@
                 </div>
             </div>
         </div>
+
         <div class="card">
             <div class="card-content">
                 <div class="flex items-center justify-between">
                     <div class="widget-label">
                         <h3>
                             <a href="/Admin/Product">
-                                TotalProduct
+                                Total Product
                             </a>
                         </h3>
                         <h1>
                             @ViewBag.TotalProducts
                         </h1>
                     </div>
-                    <span class="icon widget-icon text-green-500"><i class="mdi mdi-account-multiple mdi-48px"></i></span>
+                    <span class="icon widget-icon text-green-500"><i class="mdi mdi-package-variant-closed mdi-48px"></i></span>
                 </div>
             </div>
         </div>
+
         <div class="card">
             <div class="card-content">
                 <div class="flex items-center justify-between">
                     <div class="widget-label">
                         <h3>
                             <a href="/Admin/Order">
-                                TotalOrder
+                                Total Order
                             </a>
                         </h3>
                         <h1>
@@ -83,14 +85,32 @@
                     <div class="widget-label">
                         <h3>
                             <a href="#">
-                                OutOfStockProduct
+                                Out Of Stock Product
                             </a>
                         </h3>
                         <h1>
                             @ViewBag.OutOfStockProductCount
                         </h1>
                     </div>
-                    <span class="icon widget-icon text-red-500"><i class="mdi mdi-finance mdi-48px"></i></span>
+                    <span class="icon widget-icon text-red-500"><i class="mdi mdi-alert mdi-48px"></i></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-content">
+                <div class="flex items-center justify-between">
+                    <div class="widget-label">
+                        <h3>
+                            <a href="/Admin/Order?Status=cancel">
+                                Cancelled Orders
+                            </a>
+                        </h3>
+                        <h1>
+                            @ViewBag.CancelledOrders
+                        </h1>
+                    </div>
+                    <span class="icon widget-icon text-red-500"><i class="mdi mdi-cancel mdi-48px"></i></span>
                 </div>
             </div>
         </div>
@@ -100,17 +120,19 @@
                     <div class="widget-label">
                         <h3>
                             <a href="/Admin/Order?Status=cancel">
-                                CancelledOrders
+                                Return Orders
                             </a>
                         </h3>
                         <h1>
-                            @ViewBag.CancelledOrders
+                            @ViewBag.TotalOrderReturns
                         </h1>
                     </div>
-                    <span class="icon widget-icon text-red-500"><i class="mdi mdi-finance mdi-48px"></i></span>
+                    <span class="icon widget-icon text-red-500"><i class="mdi mdi-replay mdi-48px"></i></span>
                 </div>
             </div>
         </div>
+
+
     </div>
 
 
@@ -132,7 +154,7 @@
             <header class="card-header">
                 <p class="card-header-title">
                     <span class="icon"><i class="mdi mdi-account-multiple"></i></span>
-                    BestSellingProducts
+                    Best Selling Products
                 </p>
                 <a href="#" class="card-header-icon">
                     <span class="icon"><i class="mdi mdi-reload"></i></span>
@@ -147,7 +169,7 @@
                             <th>Thumbnail</th>
                             <th>ProductName</th>
                             <th>Price</th>
-                            <th>qty</th>
+                            <th>Quantity sold</th>
 
                             <th width="40px">Action</th>
 
@@ -165,7 +187,7 @@
                                 <td data-label="Total Quantity Sold">@product.TotalQuantitySold</td>
                                 <td class="actions-cell">
                                     <div class="buttons right nowrap">
-                                        <a asp-controller="Admin" asp-action="detailsProduct" asp-route-ProductId="@product.Product.ProductId" class="button small green --jb-modal" data-target="sample-modal-2" type="button">
+                                        <a asp-controller="Admin" asp-action="detailsProduct" asp-route-ProductId="@product.Product.ProductId" class="button small green --jb-modal" type="button">
                                             <span class="icon"><i class="mdi mdi-eye"></i></span>
                                         </a>
 
@@ -187,7 +209,7 @@
                 <p class="card-header-title">
                     <a href="/Admin/Order?Status=pending">
                         <span class="icon"><i class="mdi mdi-account-multiple"></i></span>
-                        OrderPending
+                        Order Pending
                     </a>
                 </p>
                 <a href="#" class="card-header-icon">
@@ -269,7 +291,7 @@
                 <p class="card-header-title">
 
                     <span class="icon"><i class="mdi mdi-account-multiple"></i></span>
-                    OutOfStockProducts
+                    Out Of Stock Products
 
                 </p>
                 <a href="#" class="card-header-icon">
@@ -335,7 +357,7 @@
             <header class="card-header">
                 <p class="card-header-title">
                     <span class="icon"><i class="mdi mdi-account-multiple"></i></span>
-                    PendingReviews
+                    Pending Reviews
                 </p>
                 <a href="#" class="card-header-icon">
                     <span class="icon"><i class="mdi mdi-reload"></i></span>
@@ -373,7 +395,7 @@
                                 <td data-label="Total Quantity Sold">@item.Status</td>
                                 <td class="actions-cell">
                                     <div class="buttons right nowrap">
-                                        <a asp-controller="Admin" asp-action="DetailsReview" asp-route-id="@item.Id" class="button small green --jb-modal" data-target="sample-modal-2" type="button">
+                                        <a asp-controller="Admin" asp-action="DetailsReview" asp-route-id="@item.Id" class="button small green --jb-modal" type="button">
                                             <span class="icon"><i class="mdi mdi-eye"></i></span>
                                         </a>
 
@@ -398,5 +420,81 @@
             </div>
         </div>
     </div>
+    <div class="notification ">
+        <div class="card has-table">
+            <header class="card-header">
+                <p class="card-header-title">
+                    <span class="icon"><i class="mdi mdi-account-multiple"></i></span>
+                    Pending Order Return
+               </p>
+                <a href="#" class="card-header-icon">
+                    <span class="icon"><i class="mdi mdi-reload"></i></span>
+                </a>
+            </header>
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order Return Id</th>
+                            <th>Return Date</th>
+                            <th>Reason</th>
 
+                            <th>Description</th>
+                            <th>RefundAmount</th>
+
+                            <th>Status</th>
+
+                            <th width="40px">Action</th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (ViewBag.PendingOrderReturns != null)
+                        {
+                            @foreach (var item in ViewBag.PendingOrderReturns)
+                            {
+                                <tr>
+                                    <td data-label="Order Return ID">@item.OrderReturnId</td>
+                                    <td data-label="Return Date">@item.ReturnDate</td>
+                                    <td data-label="Reason">@item.Reason</td>
+                                    <td data-label="Description">@item.Description</td>
+                                    <td data-label="Refund Amount">@item.RefundAmount</td>
+                                    <td data-label="Status">@item.Status</td>
+                                    <td class="actions-cell">
+                                        <div class="buttons right nowrap">
+                                            <a asp-controller="Admin" asp-action="OrderReturn"  class="button small green --jb-modal"  type="button">
+                                                <span class="icon"><i class="mdi mdi-eye"></i></span>
+                                            </a>
+
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7">No pending order returns found.</td>
+                            </tr>
+                        }
+                    </tbody>
+
+
+                </table>
+                <div class="table-pagination">
+                    <div class="flex items-center justify-between">
+                        <div class="buttons">
+                            @for (int i = 1; i <= ViewBag.PendingReviewTotalPages; i++)
+                            {
+                                <button type="button" class="button @(i == ViewBag.CurrentPage ? "active" : "")" onclick="location.href='@Url.Action("Dashboard", new { page = i,pageSize = ViewBag.PageSize })'">@i</button>
+                            }
+                        </div>
+                        <small>Page @ViewBag.CurrentPage of @ViewBag.PendingOrderReturnsTotalPages</small>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
