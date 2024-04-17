@@ -28,18 +28,6 @@
         padding: 10px 20px; /* Điều chỉnh kích thước theo ý muốn */
     }
 
-    .btn-print {
-        color: white;
-        background-color: black;
-        border-color: none;
-        /* border-top-left-radius: 10px !important; */
-        /* border-bottom-right-radius: 10px !important; */
-        border-radius: .357rem;
-        border: none;
-        font-weight: 600;
-        padding: 10px 20px; /* Điều chỉnh kích thước theo ý muốn */
-    }
-
     .btn-danger {
         color: #FFF;
         background-color: #dc3545;
@@ -90,28 +78,15 @@
 </section>
 <section class="is-hero-bar">
     <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
-        <div class="col-sm-2 flex items-center">
-            <!-- Nút "Add Product" -->
-            <a class="btn btn-add" asp-controller="Admin" asp-action="addProduct" title="Thêm">
-                <i class="fas fa-plus"></i>
-                Add Product
-            </a>
-        </div>
-        <div class="col-sm-2 flex items-center">
-            <!-- Nút "Print PDF" -->
-            <button onclick="myApp.printTable()" class="btn btn-print">
-                <i class="fas fa-file-pdf"></i>
-                Print PDF
-            </button>
-        </div>
-        <div class="col-sm-2 flex items-center">
-            <!-- Nút "Export Excel" sử dụng cùng một lớp với nút "Print PDF" -->
-            <button onclick="exportToExcel()" class="btn btn-print" style="margin-right:740px">
-                <i class="fas fa-file-excel"></i>
-                Export Excel
-            </button>
-        </div>
     </div>
+    <div class="col-sm-2">
+
+        <a class="btn btn-add " asp-controller="Admin" asp-action="addProduct" title="Thêm">
+            <i class="fas fa-plus"></i>
+            Add Product
+        </a>
+    </div>
+
 </section>
 <form style="display: flex; align-items: center; border-radius: 5px; margin-top: 10px; flex-wrap: wrap;" asp-action="Product" asp-controller="Admin" method="get">
     <div class="input-group input-group-sm" style="flex-grow: 1; margin-right: 10px; margin-bottom: 10px; margin-left: 30px;">
@@ -178,17 +153,26 @@
 
     <div class="card has-table">
         <header class="card-header">
-            <p class="card-header-title">
-                @*<span class="icon"><i class="mdi mdi-shopping"></i></span>*@
-                Product
-            </p>
-<form class="card-header-icon asp-controller="Admin" asp-action="Product" method="get" onchange="this.submit()">
+
+            <form class="card-header-title asp-controller="Admin" asp-action="Product" method="get">
+                <div>
+                    <select style=" padding:5px 5px; border: 1px solid black; display: inline-block;" name="sortOrder" onchange="this.form.submit()">
+                        <option value="">Sort By: </option>
+                        <option value="price_asc">Price Low to High</option>
+                        <option value="price_desc">Price High to Low</option>
+                        <option value="newest">Newest</option>
+                        <option value="BestSelling">Best selling product</option>
+                    </select>
+                </div>
+            </form>
+
+            <form class="card-header-icon asp-controller="Admin" asp-action="Product" method="get" onchange="this.submit()">
 
                 <select style="margin-left:-10px; padding: 5px 10px;border:1px solid #F1F1F1 " name="PageSize">
                     <option value="10"
                             selected="@(ViewBag.PageSize == 10)">
                         10
-                    </option>                 
+                    </option>
                     <option value="20"
                             selected="@(ViewBag.PageSize == 20)">
                         20
@@ -256,59 +240,36 @@
 
 
             <div class="table-pagination">
-                    <div class="flex items-center justify-between">
-                        <div class="buttons">
-                            @for (int i = 1; i <= ViewBag.TotalPages; i++)
-                            {
+                <div class="flex items-center justify-between">
+                    <div class="buttons">
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
                             <button type="button" class="button @(i == ViewBag.CurrentPage ? "active" : "")" onclick="location.href='@Url.Action("Product", new { page = i, CategoryId = ViewBag.CategoryId, BrandId = ViewBag.BrandId, GoldAgeId = ViewBag.GoldAgeId, ProductName = ViewBag.ProductName, Price_from = ViewBag.Price_from, Price_to = ViewBag.Price_to, StoneType = ViewBag.StoneType, TotalWeight_from = ViewBag.TotalWeight_from, TotalWeight_to = ViewBag.TotalWeight_to, Color = ViewBag.Color, Size = ViewBag.Size, Material = ViewBag.Material, CertificationCode = ViewBag.CertificationCode, search = ViewBag.Search,pageSize = ViewBag.PageSize })'">@i</button>
                         }
-                        </div>
-                        <small>Page @ViewBag.CurrentPage of @ViewBag.TotalPages</small>
                     </div>
+                    <small>Page @ViewBag.CurrentPage of @ViewBag.TotalPages</small>
                 </div>
+            </div>
 
         </div>
     </div>
 
 </section>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.2/xlsx.full.min.js"></script>
 <script>
-    // Hàm xuất Excel
-    function exportToExcel() {
-        $.ajax({
-            url: '/Excel/ExportProductsToExcel',
-            type: 'GET',
-            success: function (data) {
-                // Xử lý dữ liệu JSON trả về ở đây và xuất vào tệp Excel
-                var wb = XLSX.utils.book_new();
-                var ws = XLSX.utils.json_to_sheet(data);
-                XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-                var wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' });
-                var blob = new Blob([s2ab(wbout)], { type: 'application/octet-stream' });
-                var link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = 'products.xlsx';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            },
-            error: function (error) {
-                console.log(error);
-            }
+    document.addEventListener("DOMContentLoaded", function () {
+        var selectBox = document.querySelector('select[name="sortOrder"]');
+
+        // Lưu giá trị đã chọn vào Local Storage khi thay đổi
+        selectBox.addEventListener("change", function () {
+            var selectedValue = this.value;
+            localStorage.setItem("selectedSortOrder", selectedValue);
         });
-    }
 
-    // Hàm chuyển đổi chuỗi sang mảng byte
-    function s2ab(s) {
-        var buf = new ArrayBuffer(s.length);
-        var view = new Uint8Array(buf);
-        for (var i = 0; i != s.length; ++i) view[i] = s.charCodeAt(i) & 0xFF;
-        return buf;
-    }
+        // Thiết lập lại lựa chọn khi trang được load lại
+        var selectedValue = localStorage.getItem("selectedSortOrder");
+        if (selectedValue) {
+            selectBox.value = selectedValue;
+        }
+    });
 </script>
-
-
-
-

@@ -215,22 +215,23 @@ namespace OnlineJwellery_Shopping.Controllers
         [Authentication]
         // Product Management
         public async Task<IActionResult> Product(
-     int? CategoryId,
-     int? BrandId,
-     int? GoldAgeId,
-     string ProductName,
-     decimal? Price_from,
-     decimal? Price_to,
-     string? StoneType,
-     decimal? TotalWeight_from,
-     decimal? TotalWeight_to,
-     string? Color,
-     string? Size,
-     string? Material,
-     string? CertificationCode,
-     string search,
-     int page = 1,
-     int pageSize = 10)
+string sortOrder,
+int? CategoryId,
+int? BrandId,
+int? GoldAgeId,
+string ProductName,
+decimal? Price_from,
+decimal? Price_to,
+string? StoneType,
+decimal? TotalWeight_from,
+decimal? TotalWeight_to,
+string? Color,
+string? Size,
+string? Material,
+string? CertificationCode,
+string search,
+int page = 1,
+int pageSize = 10)
         {
             var categories = await _context.Category.ToListAsync();
             var brands = await _context.Brand.ToListAsync();
@@ -315,6 +316,32 @@ namespace OnlineJwellery_Shopping.Controllers
 
             }
 
+
+            // Sắp xếp dữ liệu
+            switch (sortOrder)
+            {
+                case "price_asc":
+                    products = products.OrderBy(p => (double)p.Price);
+                    break;
+                case "price_desc":
+                    products = products.OrderByDescending(p => (double)p.Price);
+                    break;
+                case "newest":
+                    products = products.OrderByDescending(p => p.ProductId);
+                    break;
+                case "BestSelling":
+                    // Sắp xếp theo số lượng sản phẩm đã bán
+                    products = products.OrderByDescending(p =>
+                        _context.OrderProduct
+                            .Where(op => op.Order.Status == "complete" && op.ProductId == p.ProductId)
+                            .Sum(op => op.Qty)
+                    );
+                    break;
+
+                default:
+                    break;
+            }
+
             // Phân trang
             var totalProducts = await products.CountAsync();
             var totalPages = (int)Math.Ceiling((double)totalProducts / pageSize);
@@ -331,6 +358,7 @@ namespace OnlineJwellery_Shopping.Controllers
             // Trả về view với danh sách sản phẩm đã lọc và thông tin phân trang
             return View("ProductManagement/Product", productList);
         }
+
 
 
 
