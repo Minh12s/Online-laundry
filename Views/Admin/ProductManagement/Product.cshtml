@@ -78,23 +78,28 @@
 </section>
 <section class="is-hero-bar">
     <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+        <div class="col-sm-2 flex items-center">
+            <!-- Nút "Add Product" -->
+            <a class="btn btn-add" asp-controller="Admin" asp-action="addProduct" title="Thêm">
+                <i class="fas fa-plus"></i>
+                Add Product
+            </a>
+        </div>
+        <div class="col-sm-2 flex items-center">
+            <!-- Nút "Print PDF" -->
+            <button onclick="myApp.printTable()" class="btn btn-add">
+                <i class="fas fa-file-pdf"></i>
+                Print PDF
+            </button>
+        </div>
+        <div class="col-sm-2 flex items-center">
+            <!-- Nút "Export Excel" sử dụng cùng một lớp với nút "Print PDF" -->
+            <button onclick="exportToExcel()" class="btn btn-add" style="margin-right:750px">
+                <i class="fas fa-file-excel"></i>
+                Export Excel
+            </button>
+        </div>
     </div>
-    <div class="col-sm-2">
-
-        <a class="btn btn-add " asp-controller="Admin" asp-action="addProduct" title="Thêm">
-            <i class="fas fa-plus"></i>
-            Add Product
-        </a>
-        <button onclick="myApp.printTable()" class="btn btn-add">
-            <i class="fas fa-file-pdf"></i>
-            Print PDF
-        </button>
-        <button onclick="exportToExcel()" class="btn btn-add" style="margin-right:800px">
-            <i class="fas fa-file-excel"></i>
-            Export Excel
-        </button>
-    </div>
-    
 </section>
 <form style="display: flex; align-items: center; border-radius: 5px; margin-top: 10px; flex-wrap: wrap;" asp-action="Product" asp-controller="Admin" method="get">
     <div class="input-group input-group-sm" style="flex-grow: 1; margin-right: 10px; margin-bottom: 10px; margin-left: 30px;">
