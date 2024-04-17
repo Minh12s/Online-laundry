@@ -1,5 +1,5 @@
 ﻿
-@model OnlineJwellery_Shopping.Models.OrderReturnViewModel
+@model OnlineJwellery_Shopping.Models.OrderReturn
 
 
 @{
@@ -120,7 +120,8 @@
 </section>
 
 <div>
-    <input type="hidden" name="id" value="@Model.OrderReturnId" />
+  
+
     <!-- Thêm input hidden để chứa giá trị returnUrl -->
     <input type="hidden" id="returnUrl" name="returnUrl" value="@Url.Action("OrderReturn", "Admin")" />
 
@@ -134,8 +135,10 @@
         else if (Model.Status == "pending")
         {
             <div>
-                <form method="post" action="@Url.Action("UpdateReturnStatus", "Admin", new { id = Model.OrderReturnId, status = "approved" })">
+                <form method="post" action="@Url.Action("UpdateReturnStatus", "Admin", new { id = Model.OrderReturnId, status = "approved" ,returnUrl = Url.Action("OrderReturn", "Admin") })">
                     @Html.AntiForgeryToken()
+                
+
                     <button onclick="return confirm('Surely you want to approve this return')" type="submit" class="btn btn-success" style="padding: 5px 10px; border-radius: 5px; margin-right: 10px; background-color: green; color: white;">
                         Approve
                     </button>
@@ -144,8 +147,10 @@
 
             <!-- Cập nhật form để bao gồm tham số returnUrl -->
             <div>
-                <form method="post" action="@Url.Action("UpdateReturnStatus", "Admin", new { id = Model.OrderReturnId, status = "rejected" })">
+                <form method="post" action="@Url.Action("UpdateReturnStatus", "Admin", new { id = Model.OrderReturnId, status = "rejected", returnUrl = Url.Action("OrderReturn", "Admin") })">
                     @Html.AntiForgeryToken()
+                 
+
                     <button onclick="return confirm('Surely you want to reject this return')" type="submit" class="btn btn-danger" style="padding: 5px 10px; border-radius: 5px; margin-right: 10px; background-color: red; color: white;">
                         Reject
                     </button>
@@ -154,6 +159,7 @@
         }
     </div>
 </div>
+
 
 
 

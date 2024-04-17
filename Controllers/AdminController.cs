@@ -1211,25 +1211,12 @@ namespace OnlineJwellery_Shopping.Controllers
                 return NotFound(); // Trả về lỗi 404 nếu không tìm thấy đơn hàng trả về
             }
 
-            // Chuyển đổi OrderReturn sang OrderReturnViewModel
-            var orderReturnViewModel = new OrderReturnViewModel
-            {
-                OrderId = orderReturn.OrderId,
-                ProductId = orderReturn.ProductId,
-                UserId = orderReturn.UserId,
-                ReturnDate = orderReturn.ReturnDate,
-                Status = orderReturn.Status,
-                Reason = orderReturn.Reason,
-                Description = orderReturn.Description,
-                RefundAmount = orderReturn.RefundAmount,
-               
-            };
-
-            return View("OrderReturnManagement/detailsReturn", orderReturnViewModel);
+            return View("OrderReturnManagement/detailsReturn", orderReturn);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateReturnStatus(int id, string status)
+        public async Task<IActionResult> UpdateReturnStatus(int id, string status, string returnUrl)
         {
             // Tìm kiếm đơn hàng trả về dựa trên orderReturnId
             var orderReturn = await _context.OrderReturn.FirstOrDefaultAsync(or => or.OrderReturnId == id);
@@ -1244,9 +1231,10 @@ namespace OnlineJwellery_Shopping.Controllers
             _context.Update(orderReturn);
             await _context.SaveChangesAsync();
 
-            // Chuyển hướng đến trang OrderReturn của Admin
+            // Chuyển hướng đến action OrderReturn của controller Admin
             return RedirectToAction("OrderReturn", "Admin");
         }
+
 
 
 
