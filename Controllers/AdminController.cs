@@ -1242,16 +1242,40 @@ int pageSize = 10)
             return View("OrderReturnManagement/detailsReturn", orderReturn);
         }
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateReturnStatus(int id, string status, string returnUrl)
         {
-            // Tìm kiếm đơn hàng trả về dựa trên orderReturnId
             var orderReturn = await _context.OrderReturn.FirstOrDefaultAsync(or => or.OrderReturnId == id);
 
             if (orderReturn == null)
             {
                 return NotFound(); // Trả về lỗi 404 nếu không tìm thấy đơn hàng trả về
+            }
+
+            // Lấy thông tin sản phẩm từ bảng OrderProduct
+            var orderProduct = await _context.OrderProduct.FirstOrDefaultAsync(op => op.OrderId == orderReturn.OrderId && op.ProductId == orderReturn.ProductId);
+
+            if (orderProduct == null)
+            {
+                return NotFound(); // Trả về lỗi 404 nếu không tìm thấy sản phẩm trong bảng OrderProduct
+            }
+
+            // Lấy thông tin sản phẩm từ bảng Product dựa vào ProductID từ OrderProduct
+            var product = await _context.Product.FirstOrDefaultAsync(p => p.ProductId == orderProduct.ProductId);
+
+            if (product == null)
+            {
+                return NotFound(); // Trả về lỗi 404 nếu không tìm thấy sản phẩm trong bảng Product
+            }
+
+            // Cập nhật số lượng sản phẩm trong bảng Product
+            if (status == "approved")
+            {
+                // Số lượng sản phẩm sẽ được trả lại
+                product.Qty += orderProduct.Qty; // Số lượng sản phẩm sẽ được tăng lên bằng số lượng trong OrderProduct
+                _context.Update(product);
             }
 
             // Cập nhật trạng thái cho đơn hàng trả về
@@ -1262,10 +1286,6 @@ int pageSize = 10)
             // Chuyển hướng đến action OrderReturn của controller Admin
             return RedirectToAction("OrderReturn", "Admin");
         }
-
-
-
-
 
 
 
