@@ -38,6 +38,7 @@ namespace OnlineJwellery_Shopping.Models
                         Password = BCrypt.Net.BCrypt.HashPassword("admin123"),
                         Email = "admin@gmail.com",
                         Role = "Admin",
+                        AccountBalance = 10000,
                         Thumbnail = "/images/person_1.jpg",
                         PhoneNumber = "1234567890",
                         Address = "123 Main Street, City, Country"
@@ -48,6 +49,7 @@ namespace OnlineJwellery_Shopping.Models
                         Password = BCrypt.Net.BCrypt.HashPassword("123456789"),
                         Email = "user1@gmail.com",
                         Role = "User",
+                        AccountBalance = 10000,
                         Thumbnail = "/images/person_2.jpg",
                         PhoneNumber = "9876543210",
                         Address = "456 Oak Street, City, Country"
@@ -58,6 +60,7 @@ namespace OnlineJwellery_Shopping.Models
                         Password = BCrypt.Net.BCrypt.HashPassword("123456789"),
                         Email = "user2@gmail.com",
                         Role = "User",
+                        AccountBalance = 10000,
                         Thumbnail = "/images/person_3.jpg",
                         PhoneNumber = "5555555555",
                         Address = "789 Pine Street, City, Country"
@@ -167,8 +170,8 @@ namespace OnlineJwellery_Shopping.Models
                         TotalWeight = random.Next(1, 10),
                         Thumbnail = thumbnailPaths[i % 80],
                         SmallThumbnail1 = thumbnailPaths[i % 80],
-                        SmallThumbnail2 = thumbnailPaths[(i + 1) % 80], 
-                        SmallThumbnail3 = thumbnailPaths[(i + 2) % 80], 
+                        SmallThumbnail2 = thumbnailPaths[(i + 1) % 80],
+                        SmallThumbnail3 = thumbnailPaths[(i + 2) % 80],
                         SmallThumbnail4 = thumbnailPaths[(i + 3) % 80],
                         Qty = random.Next(1, 50),
                         CertificationCode = $"CERT-{i}-DTS",
@@ -401,8 +404,8 @@ namespace OnlineJwellery_Shopping.Models
                 }
                 context.SaveChanges();
             }
-         }
-     }
+        }
+    }
 }
 
 

@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Hosting;
 using NuGet.Protocol.Core.Types;
 using System.Diagnostics;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 
 
@@ -37,9 +38,8 @@ namespace OnlineJwellery_Shopping.Controllers
             _configuration = configuration;
             _env = env;
         }
-
         [Authentication]
-        public async Task<IActionResult> MyOrder(String OrderDate,String IsPaid, string searchTerm, int page = 1, int pageSize = 6)
+        public async Task<IActionResult> MyOrder(String OrderDate, String IsPaid, string searchTerm, int page = 1, int pageSize = 6)
         {
             // Kế thừa các logic chung từ BaseController
             await SetCommonViewData();
@@ -47,7 +47,7 @@ namespace OnlineJwellery_Shopping.Controllers
             // Lấy userId từ session
             int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
 
-            // Truy vấn database để lấy thông tin người dùng có đơn hàng
+            // Truy vấn database để lấy thông tin người dùng có đơn hàng và AccountBalance
             var user = db.User
                 .Include(u => u.Orders)
                 .ThenInclude(o => o.OrderProducts)
@@ -57,6 +57,9 @@ namespace OnlineJwellery_Shopping.Controllers
             {
                 return NotFound();
             }
+
+            // Lấy AccountBalance từ session
+            var accountBalance = HttpContext.Session.GetString($"AccountBalance_{userId}");
 
             // Tìm kiếm theo tên nếu có giá trị searchTerm được cung cấp
             if (!string.IsNullOrEmpty(searchTerm))
@@ -97,6 +100,7 @@ namespace OnlineJwellery_Shopping.Controllers
                 .ToList();
 
             ViewBag.TotalPages = totalPages;
+
             ViewBag.CurrentPage = page;
             ViewBag.PageSize = pageSize; // Truyền giá trị pageSize vào ViewBag
             if (page < 1 || page > totalPages)
@@ -108,10 +112,21 @@ namespace OnlineJwellery_Shopping.Controllers
             // Trả dữ liệu danh sách đơn hàng cho view
             return View(user);
         }
+
         public async Task<IActionResult> OrderDetail(int? id)
         {
             // Kế thừa các logic chung từ BaseController
             await SetCommonViewData();
+            // Lấy AccountBalance từ session
+            int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            var user = db.User.FirstOrDefault(u => u.UserId == userId);
+            var thumbnail = user?.Thumbnail ?? "default-thumbnail-url";
+            var accountBalance = user != null ? user.AccountBalance : 0; // Giả sử AccountBalance là kiểu số
+
+
+            //Truyền AccountBalance vào ViewBag để hiển thị trong view
+            ViewBag.AccountBalance = accountBalance;
+            ViewBag.Thumbnail = thumbnail;
             if (id == null)
             {
                 return NotFound(); // Trả về lỗi 404 nếu không có ID đơn hàng
@@ -129,8 +144,11 @@ namespace OnlineJwellery_Shopping.Controllers
                 return NotFound(); // Trả về lỗi 404 nếu không tìm thấy đơn hàng
             }
 
+       
+
             return View(order);
         }
+
 
 
         [Authentication]
@@ -256,6 +274,9 @@ namespace OnlineJwellery_Shopping.Controllers
             {
                 return NotFound();
             }
+            // Lấy AccountBalance từ session
+            var accountBalance = HttpContext.Session.GetString($"AccountBalance_{userId}");
+
             // Logic phân trang ở đây
             var totalOrders = user.Orders.Count(o => o.Status == "pending");
             var totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
@@ -293,6 +314,9 @@ namespace OnlineJwellery_Shopping.Controllers
             {
                 return NotFound();
             }
+            // Lấy AccountBalance từ session
+            var accountBalance = HttpContext.Session.GetString($"AccountBalance_{userId}");
+
             // Logic phân trang ở đây
             var totalOrders = user.Orders.Count(o => o.Status == "confirmed");
             var totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
@@ -330,6 +354,9 @@ namespace OnlineJwellery_Shopping.Controllers
             {
                 return NotFound();
             }
+            // Lấy AccountBalance từ session
+            var accountBalance = HttpContext.Session.GetString($"AccountBalance_{userId}");
+
             // Logic phân trang ở đây
             var totalOrders = user.Orders.Count(o => o.Status == "shipping");
             var totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
@@ -367,6 +394,9 @@ namespace OnlineJwellery_Shopping.Controllers
             {
                 return NotFound();
             }
+            // Lấy AccountBalance từ session
+            var accountBalance = HttpContext.Session.GetString($"AccountBalance_{userId}");
+
             // Logic phân trang ở đây
             var totalOrders = user.Orders.Count(o => o.Status == "shipped");
             var totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
@@ -403,6 +433,10 @@ namespace OnlineJwellery_Shopping.Controllers
             {
                 return NotFound();
             }
+            // Lấy AccountBalance từ session
+            var accountBalance = HttpContext.Session.GetString($"AccountBalance_{userId}");
+
+
             // Logic phân trang ở đây
             var totalOrders = user.Orders.Count(o => o.Status == "complete");
             var totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
@@ -439,6 +473,9 @@ namespace OnlineJwellery_Shopping.Controllers
             {
                 return NotFound();
             }
+            // Lấy AccountBalance từ session
+            var accountBalance = HttpContext.Session.GetString($"AccountBalance_{userId}");
+
             // Logic phân trang ở đây
             var totalOrders = user.Orders.Count(o => o.Status == "cancel");
             var totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
@@ -460,8 +497,17 @@ namespace OnlineJwellery_Shopping.Controllers
             // Kế thừa các logic chung từ BaseController
             await SetCommonViewData();
 
-            // Lấy UserId từ Session
+            // Lấy AccountBalance từ session
             int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            var user = db.User.FirstOrDefault(u => u.UserId == userId);
+            var thumbnail = user?.Thumbnail ?? "default-thumbnail-url";
+            var accountBalance = user != null ? user.AccountBalance : 0; // Giả sử AccountBalance là kiểu số
+
+
+            //Truyền AccountBalance vào ViewBag để hiển thị trong view
+            ViewBag.AccountBalance = accountBalance;
+            ViewBag.Thumbnail = thumbnail;
+
 
             // Truy vấn database để lấy thông tin về các sản phẩm hoàn trả của người dùng có trạng thái "pending"
             var pendingOrderReturns = _context.OrderReturn
@@ -475,7 +521,7 @@ namespace OnlineJwellery_Shopping.Controllers
                     p => p.ProductId, // Khóa chính trong Product
                     (or, p) => new // Chọn các trường bạn muốn từ cả hai bảng
                     {
-             
+
                         ProductName = p.ProductName,
                         Thumbnail = p.Thumbnail,
                         OrderReturnId = or.OrderReturnId,
@@ -504,6 +550,19 @@ namespace OnlineJwellery_Shopping.Controllers
         [HttpGet]
         public async Task<IActionResult> ReasonCancel()
         {
+            // Kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
+
+            // Lấy AccountBalance từ session
+            int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            var user = db.User.FirstOrDefault(u => u.UserId == userId);
+            var thumbnail = user?.Thumbnail ?? "default-thumbnail-url";
+            var accountBalance = user != null ? user.AccountBalance : 0; // Giả sử AccountBalance là kiểu số
+
+
+            //Truyền AccountBalance vào ViewBag để hiển thị trong view
+            ViewBag.AccountBalance = accountBalance;
+            ViewBag.Thumbnail = thumbnail;
             return View();
         }
         [HttpPost]
@@ -511,6 +570,17 @@ namespace OnlineJwellery_Shopping.Controllers
         {
             // Kế thừa các logic chung từ BaseController
             await SetCommonViewData();
+
+            // Lấy AccountBalance từ session
+            int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            var user = db.User.FirstOrDefault(u => u.UserId == userId);
+            var thumbnail = user?.Thumbnail ?? "default-thumbnail-url";
+            var accountBalance = user != null ? user.AccountBalance : 0; // Giả sử AccountBalance là kiểu số
+
+
+            //Truyền AccountBalance vào ViewBag để hiển thị trong view
+            ViewBag.AccountBalance = accountBalance;
+            ViewBag.Thumbnail = thumbnail;
             // Lấy thông tin đơn hàng từ cơ sở dữ liệu
             var order = await _context.Order
                 .Include(o => o.OrderProducts)
@@ -586,7 +656,18 @@ namespace OnlineJwellery_Shopping.Controllers
         public async Task<IActionResult> RequestRefund(int productId, decimal total, int orderId)
         {
             ViewBag.Total = total;
-            var userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            // Kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
+            // Lấy AccountBalance từ session
+            int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            var user = db.User.FirstOrDefault(u => u.UserId == userId);
+            var thumbnail = user?.Thumbnail ?? "default-thumbnail-url";
+            var accountBalance = user != null ? user.AccountBalance : 0; // Giả sử AccountBalance là kiểu số
+
+
+            //Truyền AccountBalance vào ViewBag để hiển thị trong view
+            ViewBag.AccountBalance = accountBalance;
+            ViewBag.Thumbnail = thumbnail;
             // Thêm logic lấy thông tin đơn hàng từ orderId và userId nếu cần
             var order = await _context.Order.FindAsync(orderId);
             if (order == null || order.UserId != userId)
@@ -604,7 +685,18 @@ namespace OnlineJwellery_Shopping.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RequestRefund(OrderReturnViewModel model, List<IFormFile> ImagePath)
         {
-            var userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            // Kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
+            // Lấy AccountBalance từ session
+            int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            var user = db.User.FirstOrDefault(u => u.UserId == userId);
+            var thumbnail = user?.Thumbnail ?? "default-thumbnail-url";
+            var accountBalance = user != null ? user.AccountBalance : 0; // Giả sử AccountBalance là kiểu số
+
+
+            //Truyền AccountBalance vào ViewBag để hiển thị trong view
+            ViewBag.AccountBalance = accountBalance;
+            ViewBag.Thumbnail = thumbnail;
 
             if (model == null || model.OrderId == 0)
             {
@@ -747,6 +839,16 @@ namespace OnlineJwellery_Shopping.Controllers
         [Authentication]
         public async Task<IActionResult> ChangePassword()
         {
+            // Lấy AccountBalance từ session
+            int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            var user = db.User.FirstOrDefault(u => u.UserId == userId);
+            var thumbnail = user?.Thumbnail ?? "default-thumbnail-url";
+            var accountBalance = user != null ? user.AccountBalance : 0; // Giả sử AccountBalance là kiểu số
+
+
+            //Truyền AccountBalance vào ViewBag để hiển thị trong view
+            ViewBag.AccountBalance = accountBalance;
+            ViewBag.Thumbnail = thumbnail;
 
             return View();
         }
@@ -760,9 +862,19 @@ namespace OnlineJwellery_Shopping.Controllers
                 TempData["MessageColor"] = "alert-danger"; // Màu đỏ
                 return RedirectToAction("ChangePassword", "MyOrder");
             }
+            // Kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
 
-            var userId = HttpContext.Session.GetString("UserId");
-            var user = await db.User.FindAsync(int.Parse(userId));
+            // Lấy AccountBalance từ session
+            int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            var user = db.User.FirstOrDefault(u => u.UserId == userId);
+            var thumbnail = user?.Thumbnail ?? "default-thumbnail-url";
+            var accountBalance = user != null ? user.AccountBalance : 0; // Giả sử AccountBalance là kiểu số
+
+
+            //Truyền AccountBalance vào ViewBag để hiển thị trong view
+            ViewBag.AccountBalance = accountBalance;
+            ViewBag.Thumbnail = thumbnail;
 
             if (user == null)
             {
@@ -788,6 +900,8 @@ namespace OnlineJwellery_Shopping.Controllers
         {
             // Lấy userId từ session
             int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+            // Lấy AccountBalance từ session
+            var accountBalance = HttpContext.Session.GetString($"AccountBalance_{userId}");
 
             // Truy vấn database để lấy thông tin người dùng
             var user = db.User.FirstOrDefault(u => u.UserId == userId);
@@ -806,6 +920,7 @@ namespace OnlineJwellery_Shopping.Controllers
         {
             // Truy vấn database để lấy thông tin người dùng
             var user = db.User.FirstOrDefault(u => u.UserId == id);
+          
 
             if (user == null)
             {
@@ -823,6 +938,8 @@ namespace OnlineJwellery_Shopping.Controllers
             {
                 // Lấy userId từ session
                 int userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
+                // Lấy AccountBalance từ session
+                var accountBalance = HttpContext.Session.GetString($"AccountBalance_{userId}");
 
                 // Truy vấn database để lấy thông tin người dùng
                 var user = await _context.User.FirstOrDefaultAsync(u => u.UserId == userId);
@@ -877,6 +994,8 @@ namespace OnlineJwellery_Shopping.Controllers
         [Authentication]
         public async Task<IActionResult> Review(int productId)
         {
+            // Kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
             // Lấy thông tin người dùng từ HttpContext
             var userId = Convert.ToInt32(HttpContext.Session.GetString("UserId"));
 
@@ -887,6 +1006,8 @@ namespace OnlineJwellery_Shopping.Controllers
         [HttpPost]
         public async Task<IActionResult> Review(int productId, int ratingValue, string comment, string email)
         {
+            // Kế thừa các logic chung từ BaseController
+            await SetCommonViewData();
             // Kiểm tra xem sản phẩm có tồn tại không
             var product = await _context.Product.FirstOrDefaultAsync(p => p.ProductId == productId);
             if (product == null)

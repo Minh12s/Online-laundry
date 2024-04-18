@@ -1264,18 +1264,27 @@ int pageSize = 10)
 
             // Lấy thông tin sản phẩm từ bảng Product dựa vào ProductID từ OrderProduct
             var product = await _context.Product.FirstOrDefaultAsync(p => p.ProductId == orderProduct.ProductId);
+            // Lấy thông tin người dùng từ UserId trong OrderReturn
+            var user = await _context.User.FirstOrDefaultAsync(u => u.UserId == orderReturn.UserId);
+
 
             if (product == null)
             {
                 return NotFound(); // Trả về lỗi 404 nếu không tìm thấy sản phẩm trong bảng Product
             }
-
+            if (user == null)
+            {
+                return NotFound(); // Trả về lỗi 404 nếu không tìm thấy thông tin người dùng
+            }
             // Cập nhật số lượng sản phẩm trong bảng Product
             if (status == "approved")
             {
                 // Số lượng sản phẩm sẽ được trả lại
                 product.Qty += orderProduct.Qty; // Số lượng sản phẩm sẽ được tăng lên bằng số lượng trong OrderProduct
                 _context.Update(product);
+
+                user.AccountBalance += orderReturn.RefundAmount; // Tăng AccountBalance bằng RefundAmount
+                _context.Update(user);
             }
 
             // Cập nhật trạng thái cho đơn hàng trả về

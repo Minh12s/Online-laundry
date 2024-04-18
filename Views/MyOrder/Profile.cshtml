@@ -19,6 +19,7 @@
         <img src="@Model.Thumbnail"
              alt="Avatar" class="profile-img">
         <div class="username">@Context.Session.GetString("Username")</div>
+        <div class="accountBalance">Account Balance: $@(Model != null ? Model.AccountBalance.ToString() : "N/A")</div>
 
         <form asp-controller="Page" asp-action="Logout" method="post">
             <button type="submit" class="logout-button" style="background-color: #FFA45C;">Log out</button>

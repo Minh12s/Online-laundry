@@ -98,10 +98,33 @@ namespace OnlineJwellery_Shopping.Controllers
                         // Cập nhật giá trị TotalAmount cho đối tượng Order bằng tổng số tiền, bao gồm cả thuế và phí vận chuyển
                         order.TotalAmount = subtotal + tax + shippingFee;
 
-                        // Kiểm tra phương thức thanh toán là PayPal hay không
-                        if (order.PaymentMethod == "PayPal")
+                        // Kiểm tra phương thức thanh toán là PayPal hay PBB
+                        if (order.PaymentMethod == "PayPal" || order.PaymentMethod == "PBB")
                         {
-                            order.IsPaid = "paid"; // Cập nhật trạng thái thanh toán thành 'paid'
+                            order.IsPaid = "paid";
+
+                            // Trừ số tiền từ tài khoản của người dùng nếu phương thức thanh toán là PBB
+                            if (order.PaymentMethod == "PBB")
+                            {
+                                // Tìm người dùng trong cơ sở dữ liệu
+                                var user = _context.User.Find(userId);
+                                if (user != null)
+                                {
+                                    // Kiểm tra số dư tài khoản có đủ để thanh toán không
+                                    if (user.AccountBalance >= order.TotalAmount)
+                                    {
+                                        // Trừ số tiền từ tài khoản của người dùng
+                                        user.AccountBalance -= order.TotalAmount;
+                                        // Cập nhật thông tin người dùng vào cơ sở dữ liệu
+                                        _context.User.Update(user);
+                                        _context.SaveChanges();
+                                    }
+                                    else
+                                    {
+
+                                    }
+                                }
+                            }
                         }
 
                         // Lưu đơn đặt hàng vào cơ sở dữ liệu
@@ -117,7 +140,7 @@ namespace OnlineJwellery_Shopping.Controllers
                                 ProductId = cartItem.ProductId,
                                 Qty = cartItem.Qty,
                                 Price = cartItem.Price,
-                                Status = 0 
+                                Status = 0
                             };
 
                             _context.OrderProduct.Add(orderProduct);
@@ -149,9 +172,8 @@ namespace OnlineJwellery_Shopping.Controllers
             return View("Checkout", model);
         }
 
-
-        // Hàm lấy phí vận chuyển dựa trên phương thức vận chuyển
-        private decimal GetShippingFee(string shippingMethod)
+            // Hàm lấy phí vận chuyển dựa trên phương thức vận chuyển
+            private decimal GetShippingFee(string shippingMethod)
         {
             switch (shippingMethod)
             {
