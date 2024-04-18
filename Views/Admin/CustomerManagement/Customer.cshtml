@@ -128,7 +128,7 @@
                                 @Html.DisplayFor(modelItem => item.PhoneNumber)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.AccountBalance)
+                                $@Html.DisplayFor(modelItem => item.AccountBalance)
                             </td>
                             <td>
                                 <a asp-action="OrderUser" asp-route-id="@item.UserId" class="btn btn-primary" style="background-color:green; color:white;">Order</a>
