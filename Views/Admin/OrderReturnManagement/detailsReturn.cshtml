@@ -119,8 +119,9 @@
 
 </section>
 
+
 <div>
-  
+
 
     <!-- Thêm input hidden để chứa giá trị returnUrl -->
     <input type="hidden" id="returnUrl" name="returnUrl" value="@Url.Action("OrderReturn", "Admin")" />
@@ -137,7 +138,7 @@
             <div>
                 <form method="post" action="@Url.Action("UpdateReturnStatus", "Admin", new { id = Model.OrderReturnId, status = "approved" ,returnUrl = Url.Action("OrderReturn", "Admin") })">
                     @Html.AntiForgeryToken()
-                
+
 
                     <button onclick="return confirm('Surely you want to approve this return')" type="submit" class="btn btn-success" style="padding: 5px 10px; border-radius: 5px; margin-right: 10px; background-color: green; color: white;">
                         Approve
@@ -149,7 +150,7 @@
             <div>
                 <form method="post" action="@Url.Action("UpdateReturnStatus", "Admin", new { id = Model.OrderReturnId, status = "rejected", returnUrl = Url.Action("OrderReturn", "Admin") })">
                     @Html.AntiForgeryToken()
-                 
+
 
                     <button onclick="return confirm('Surely you want to reject this return')" type="submit" class="btn btn-danger" style="padding: 5px 10px; border-radius: 5px; margin-right: 10px; background-color: red; color: white;">
                         Reject
@@ -159,7 +160,5 @@
         }
     </div>
 </div>
-
-
 
 

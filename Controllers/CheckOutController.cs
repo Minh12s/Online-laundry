@@ -172,8 +172,8 @@ namespace OnlineJwellery_Shopping.Controllers
             return View("Checkout", model);
         }
 
-            // Hàm lấy phí vận chuyển dựa trên phương thức vận chuyển
-            private decimal GetShippingFee(string shippingMethod)
+        // Hàm lấy phí vận chuyển dựa trên phương thức vận chuyển
+        private decimal GetShippingFee(string shippingMethod)
         {
             switch (shippingMethod)
             {

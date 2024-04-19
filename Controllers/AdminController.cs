@@ -1126,7 +1126,7 @@ int pageSize = 10)
         {
             // Lấy danh sách các đơn hàng đã trả về từ cơ sở dữ liệu, sắp xếp theo thời gian trả về giảm dần
             var orderReturns = await _context.OrderReturn
-                .Include(o => o.ReturnImages) 
+                .Include(o => o.ReturnImages)
                 .OrderByDescending(o => o.ReturnDate)
                 .ToListAsync();
 
@@ -1193,7 +1193,7 @@ int pageSize = 10)
                 Reason = o.Reason,
                 Description = o.Description,
                 RefundAmount = o.RefundAmount,
-               ReturnImages = o.ReturnImages.ToList()
+                ReturnImages = o.ReturnImages.ToList()
             }).ToList();
 
             // Tạo một Dictionary để lưu số lần xuất hiện của mỗi lý do
@@ -1247,7 +1247,7 @@ int pageSize = 10)
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateReturnStatus(int id, string status, string returnUrl)
         {
-            var orderReturn = await _context.OrderReturn.FirstOrDefaultAsync(or => or.OrderReturnId == id);
+              var orderReturn = await _context.OrderReturn.FirstOrDefaultAsync(or => or.OrderReturnId == id);
 
             if (orderReturn == null)
             {
@@ -1266,7 +1266,6 @@ int pageSize = 10)
             var product = await _context.Product.FirstOrDefaultAsync(p => p.ProductId == orderProduct.ProductId);
             // Lấy thông tin người dùng từ UserId trong OrderReturn
             var user = await _context.User.FirstOrDefaultAsync(u => u.UserId == orderReturn.UserId);
-
 
             if (product == null)
             {
@@ -1298,6 +1297,7 @@ int pageSize = 10)
 
 
 
+
         public async Task<IActionResult> DataStatistics()
         {
             return View("DataStatistics/DataStatistics");
@@ -1323,7 +1323,7 @@ int pageSize = 10)
                 {
                     Month = g.Key,
                     ProductsSold = g.Sum(o => o.OrderProducts.Sum(op => (double)op.Qty)), // Chuyển đổi sang kiểu double trước khi tính tổng
-                  
+
                 })
                 .OrderBy(g => g.Month)
                 .ToList();
@@ -1363,7 +1363,7 @@ int pageSize = 10)
                 .Select(g => new
                 {
                     Month = g.Key,
-                  
+
                     TotalRevenue = g.Sum(o => (double)o.TotalAmount) // Chuyển đổi sang kiểu double trước khi tính tổng
                 })
                 .OrderBy(g => g.Month)
