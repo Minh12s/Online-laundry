@@ -21,10 +21,13 @@ namespace OnlineJwellery_Shopping.Controllers
     public class AdminController : Controller
     {
         private readonly JwelleryShoppingContext _context;
-
-        public AdminController(JwelleryShoppingContext context)
+        private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _env;
+        public AdminController(JwelleryShoppingContext context, IConfiguration configuration, IWebHostEnvironment env)
         {
             _context = context;
+            _configuration = configuration;
+            _env = env;
         }
         [Authentication]
         public IActionResult Dashboard(int UserId, int page = 1, int pageSize = 10)
@@ -1284,6 +1287,7 @@ int pageSize = 10)
 
                 user.AccountBalance += orderReturn.RefundAmount; // Tăng AccountBalance bằng RefundAmount
                 _context.Update(user);
+                await SendApprovedEmail(orderReturn);
             }
 
             // Cập nhật trạng thái cho đơn hàng trả về
@@ -1295,7 +1299,58 @@ int pageSize = 10)
             return RedirectToAction("OrderReturn", "Admin");
         }
 
+        private async Task SendApprovedEmail(OrderReturn orderReturn)
+        {
+            var order = await _context.Order.FirstOrDefaultAsync(o => o.OrderId == orderReturn.OrderId);
 
+            if (order == null)
+            {
+                throw new Exception("Order not found.");
+            }
+
+            string recipientEmail = order.Email;
+            string emailContent = GenerateApprovedEmailContent(orderReturn);
+
+            string smtpServer = _configuration["EmailSettings:SmtpServer"];
+            int port = _configuration.GetValue<int>("EmailSettings:Port");
+            string username = _configuration["EmailSettings:Username"];
+            string password = _configuration["EmailSettings:Password"];
+
+            using (var client = new SmtpClient(smtpServer))
+            {
+                client.Port = port;
+                client.Credentials = new System.Net.NetworkCredential(username, password);
+                client.EnableSsl = true;
+
+                var message = new MailMessage(username, recipientEmail)
+                {
+                    Subject = "Return instructions",
+                    Body = emailContent,
+                    IsBodyHtml = true
+                };
+
+                try
+                {
+                    await client.SendMailAsync(message);
+                    ViewBag.Message = "Cancellation email sent successfully";
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Error = $"Failed to send cancellation email: {ex.Message}";
+                }
+            }
+        }
+
+        private string GenerateApprovedEmailContent(OrderReturn orderReturn)
+        {
+            // Đọc nội dung mẫu email từ file
+            string emailTemplatePath = _env.ContentRootPath + "/Views/Email/ApprovedEmail.cshtml";
+            string emailContent = System.IO.File.ReadAllText(emailTemplatePath);
+
+
+
+            return emailContent;
+        }
 
 
         public async Task<IActionResult> DataStatistics()
