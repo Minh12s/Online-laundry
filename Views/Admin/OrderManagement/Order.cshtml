@@ -193,9 +193,14 @@
                             <td>
                                 @Html.DisplayFor(modelItem => item.IsPaid)
                             </td>
-                            <td>
+                        
+                            <td class="actions-cell">
+                                <div class="buttons right nowrap">
 
-                                <a asp-action="detailOrder" class="btn btn-primary" style="background-color:green; color:white;" asp-route-id="@item.OrderId">Details</a>
+                                    <a asp-action="detailOrder" class="btn btn-primary" style="background-color:green; color:white;" asp-route-id="@item.OrderId">
+                                    <span class="icon"><i class="mdi mdi-eye"></i></span>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     }

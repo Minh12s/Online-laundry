@@ -240,9 +240,14 @@
                             <td>@orderCancel.Telephone</td>
                             <td>@orderCancel.TotalAmount</td>
                             <td>@orderCancel.Reason</td>
-                            <td>
+                           
+                            <td class="actions-cell">
+                                <div class="buttons right nowrap">
 
-                                <a asp-action="OrderCancelDetails" asp-controller="Admin" class="btn btn-primary" style="background-color:green; color:white;" asp-route-id="@orderCancel.OrderId">Details</a>
+                                    <a asp-action="OrderCancelDetails" asp-controller="Admin" class="btn btn-primary" style="background-color:green; color:white;" asp-route-id="@orderCancel.OrderId">
+                                    <span class="icon"><i class="mdi mdi-eye"></i></span>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     }

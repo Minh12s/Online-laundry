@@ -235,13 +235,16 @@
                             <td>
                                 <div class="button-group">
                                     <a style="background-color:green; color:white;" class="btn btn-primary" asp-controller="Admin" asp-action="detailsProduct" asp-route-ProductId="@product.ProductId">
-                                        <i class="fas fa-info-circle"></i> Details
+                                        <span class="icon"><i class="mdi mdi-eye"></i></span>
                                     </a>
                                     <a class="btn btn-primary" asp-controller="Admin" asp-action="editProduct" asp-route-id="@product.ProductId">
-                                        <i class="fas fa-edit"></i> Edit
+                                        <span class="icon"><i class="mdi mdi-pencil"></i></span>
+
                                     </a>
                                     <form asp-controller="Admin" asp-action="deleteProduct" asp-route-id="@product.ProductId" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa sản phẩm này không?')">
-                                        <button class="btn btn-danger">Delete</button>
+                                        <button class="btn btn-danger">
+                                            <span class="icon"><i class="mdi mdi-delete"></i></span>
+                                        </button>
                                     </form>
                                 </div>
 

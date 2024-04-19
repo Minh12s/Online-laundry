@@ -127,10 +127,12 @@
                                     <div class="button-group">
 
                                         <a class="btn btn-primary" asp-controller="Admin" asp-action="editBlog" asp-route-id="@blog.Id">
-                                            <i class="fas fa-edit"></i> Edit
+                                            <span class="icon"><i class="mdi mdi-pencil"></i></span>
                                         </a>
                                         <form asp-controller="Admin" asp-action="deleteBlog" asp-route-id="@blog.Id" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa sản phẩm này không?')">
-                                            <button class="btn btn-danger">Delete</button>
+                                            <button class="btn btn-danger">
+                                            <span class="icon"><i class="mdi mdi-delete"></i></span>
+                                            </button>
                                         </form>
                                     </div>
 

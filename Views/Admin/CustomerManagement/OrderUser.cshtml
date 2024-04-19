@@ -44,8 +44,14 @@
                             <td><span class="badge bg-success">@order.Status</span></td>
                             <td><span>@order.IsPaid</span></td>
                             <td>@order.OrderDate</td>
-                            <td>
-                                <a class="btn btn-primary" style="background-color:green; color:white;" asp-action="OrderDetailsUser" asp-route-id="@order.OrderId">OrderDetails</a>
+                          
+                            <td class="actions-cell">
+                                <div class="buttons right nowrap">
+
+                                    <a class="btn btn-primary" style="background-color:green; color:white;" asp-action="OrderDetailsUser" asp-route-id="@order.OrderId">
+                                    <span class="icon"><i class="mdi mdi-eye"></i></span>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
 

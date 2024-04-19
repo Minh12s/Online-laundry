@@ -69,8 +69,14 @@
                                         <span class="badge bg-info text-rejected">@Html.DisplayFor(modelItem => review.Status)</span>
                                     }
                                 </td>
-                                <td>
-                                    <a asp-controller="Admin" asp-action="DetailsReview" asp-route-id="@review.Id" class="btn btn-primary" style="background-color:green; color:white;">Details</a>
+                                
+                                <td class="actions-cell">
+                                    <div class="buttons right nowrap">
+
+                                        <a asp-controller="Admin" asp-action="DetailsReview" asp-route-id="@review.Id" class="btn btn-primary" style="background-color:green; color:white;">
+                                            <span class="icon"><i class="mdi mdi-eye"></i></span>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         }

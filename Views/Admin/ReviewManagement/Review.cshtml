@@ -106,10 +106,16 @@
                             <td>@item.Product.ProductName</td>
                             <td>@item.Product.Price</td>
                             <td>@item.AvgRating</td>
-                            <td>
-                                <a asp-controller="Admin" asp-action="ListReview" asp-route-productId="@item.Product.ProductId" class="btn btn-primary" style="background-color:green; color:white;">List Review</a>
-                            </td>
+                          
+                            <td class="actions-cell">
+                                <div class="buttons right nowrap">
 
+                                    <a asp-controller="Admin" asp-action="ListReview" asp-route-productId="@item.Product.ProductId" class="btn btn-primary" style="background-color:green; color:white;">
+                                        <span class="icon"><i class="mdi mdi-comment-text-outline"></i></span>
+
+                                    </a>
+                                </div>
+                            </td>
                         </tr>
                     }
                 </tbody>

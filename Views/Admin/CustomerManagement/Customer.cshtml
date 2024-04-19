@@ -130,8 +130,14 @@
                             <td>
                                 $@Html.DisplayFor(modelItem => item.AccountBalance)
                             </td>
-                            <td>
-                                <a asp-action="OrderUser" asp-route-id="@item.UserId" class="btn btn-primary" style="background-color:green; color:white;">Order</a>
+              
+                            <td class="actions-cell">
+                                <div class="buttons right nowrap">
+
+                                    <a asp-action="OrderUser" asp-route-id="@item.UserId" class="btn btn-primary" style="background-color:green; color:white;">
+                                        <span class="icon"><i class="mdi mdi-cart"></i></span>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     }
