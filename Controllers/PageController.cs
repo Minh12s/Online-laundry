@@ -604,6 +604,8 @@ namespace OnlineJwellery_Shopping.Controllers
             // Lưu thông tin đăng nhập vào phiên làm việc
             HttpContext.Session.SetString("Username", user.Username);
             HttpContext.Session.SetString("Role", user.Role);
+            HttpContext.Session.SetString("UserId", user.UserId.ToString());
+
 
             return RedirectToAction("Home", "Page");
         }
