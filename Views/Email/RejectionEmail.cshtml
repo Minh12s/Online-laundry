@@ -1,0 +1,94 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Rejection Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #FFA45C;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+
+        .navbar-brand {
+            display: inline-block;
+            padding-top: 0.3125rem;
+            padding-bottom: 0.3125rem;
+            margin-right: 1rem;
+            font-size: 1.25rem;
+            line-height: inherit;
+            white-space: nowrap;
+            margin-top: 22px;
+            margin-left: 20px;
+        }
+
+            .navbar-brand:hover, .navbar-brand:focus {
+                text-decoration: none;
+            }
+
+        .ftco-navbar-light .navbar-brand {
+            color: #000000;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a class="navbar-brand">Jewellery</a>
+        <div class="header">
+            <h1>Order Rejection Confirmation</h1>
+        </div>
+        <p>Dear Valued Customer,</p>
+        <p>We regret to inform you that your refund request could not be processed successfully at this time.</p>
+        <p>We understand that circumstances change, and sometimes orders need to be cancelled or refunded. We want you to know that we're here to assist you every step of the way.</p>
+        <p>Your satisfaction is our top priority, and while we're disappointed that we couldn't fulfill your request immediately, we're committed to resolving any issues and ensuring your experience with us is positive.</p>
+        <!-- Reason for rejection here -->
+        <p>Reason for rejection: <strong>{Reason}</strong></p>
+        <p>If you have any questions or need further assistance, please don't hesitate to reach out to us. We're always here to help.</p>
+        <p>Thank you for choosing us, and we hope to serve you better in the future.</p>
+    </div>
+</body>
+</html>

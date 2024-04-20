@@ -13,10 +13,9 @@ namespace OnlineJwellery_Shopping.Models
         public string Reason { get; set; }
         public string Description { get; set; }
         public decimal RefundAmount { get; set; }
+        public string RejectReason { get; set; } // Thêm thuộc tính lý do từ chối hoàn trả
 
-        public Order Order { get; set; }
-        public User User { get; set; }
-        public Product Product { get; set; }
+
 
         public ICollection<ReturnImages> ReturnImages { get; set; }
     }

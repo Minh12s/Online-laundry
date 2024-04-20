@@ -28,6 +28,10 @@
             <i class="fas fa-file-excel"></i>
             Export Excel
         </button>
+        <button onclick="exportExcel()" class="btn btn-add">
+            <i class="fas fa-file-excel"></i>
+            Excel Filtered
+        </button>
     </div>
 </section>
 <form asp-action="Customer" asp-controller="Admin" method="get" style="display: flex; align-items: center; border-radius: 5px; margin-top: 10px; flex-wrap: wrap;">
@@ -238,3 +242,37 @@
         return buf;
     }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/exceljs/dist/exceljs.min.js"></script>
+
+<script>
+    this.exportExcel = function () {
+        // Lấy bảng cần xuất
+        var tab = document.getElementById('sampleTable');
+        // Tạo một đối tượng Excel
+        var excel = new ExcelJS.Workbook();
+        // Thêm một trang tính mới
+        var sheet = excel.addWorksheet('Sheet 1');
+        // Lặp qua các hàng và cột của bảng để đổ dữ liệu vào trang tính Excel
+        for (var i = 0; i < tab.rows.length; i++) {
+            var row = sheet.getRow(i + 1);
+            for (var j = 0; j < tab.rows[i].cells.length; j++) {
+                row.getCell(j + 1).value = tab.rows[i].cells[j].innerText;
+            }
+        }
+        // Tạo một blob từ file Excel
+        excel.xlsx.writeBuffer().then(function (buffer) {
+            var blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+            // Tạo một URL từ blob và mở cửa sổ mới để tải xuống file Excel
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement("a");
+            document.body.appendChild(a);
+            a.style = "display: none";
+            a.href = url;
+            a.download = "customerfiltered.xlsx";
+            a.click();
+            window.URL.revokeObjectURL(url);
+        });
+    }
+
+</script>
+

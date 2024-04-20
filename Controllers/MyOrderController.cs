@@ -718,7 +718,9 @@ namespace OnlineJwellery_Shopping.Controllers
                 Status = "pending",
                 Reason = model.Reason,
                 Description = model.Description,
-                RefundAmount = model.RefundAmount
+                RefundAmount = model.RefundAmount,
+                RejectReason = "", // Khởi tạo RejectReason với một giá trị mặc định
+
             };
 
             _context.OrderReturn.Add(orderReturn);

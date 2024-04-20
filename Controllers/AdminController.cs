@@ -1289,6 +1289,11 @@ int pageSize = 10)
                 _context.Update(user);
                 await SendApprovedEmail(orderReturn);
             }
+            if (status.ToLower() == "rejected")
+            {
+                // Chuyển hướng đến trang nhập lý do từ chối và truyền id của đơn hàng trả về
+                return RedirectToAction("RejectReason", "Admin", new { orderId = orderReturn.OrderReturnId });
+            }
 
             // Cập nhật trạng thái cho đơn hàng trả về
             orderReturn.Status = status;
@@ -1351,6 +1356,102 @@ int pageSize = 10)
 
             return emailContent;
         }
+        [HttpGet]
+        public IActionResult RejectReason(int orderId)
+        {
+            var orderReturn = _context.OrderReturn.FirstOrDefault(or => or.OrderReturnId == orderId);
+            if (orderReturn == null)
+            {
+                return NotFound(); // hoặc xử lý lỗi khác tùy vào trường hợp của bạn
+            }
+            return View("OrderReturnManagement/RejectReason", orderReturn);
+        }
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SubmitRejectReason(int orderId, string rejectreason)
+        {
+            var orderReturn = await _context.OrderReturn.FirstOrDefaultAsync(or => or.OrderReturnId == orderId);
+
+            if (orderReturn == null)
+            {
+                return NotFound();
+            }
+
+            // Cập nhật lý do từ chối của đơn hàng trả về
+            orderReturn.RejectReason = rejectreason;
+
+            // Cập nhật trạng thái của đơn hàng trả về thành "Rejected"
+            orderReturn.Status = "rejected";
+
+            _context.Update(orderReturn);
+            await _context.SaveChangesAsync();
+
+            // Gửi email thông báo về việc từ chối đơn hàng
+            await SendRejectionEmail(orderReturn);
+
+
+            return RedirectToAction("OrderReturn", "Admin");
+        }
+
+        private async Task SendRejectionEmail(OrderReturn orderReturn)
+        {
+            var order = await _context.Order.FirstOrDefaultAsync(o => o.OrderId == orderReturn.OrderId);
+
+            if (order == null)
+            {
+                throw new Exception("Order not found.");
+            }
+
+            string recipientEmail = order.Email;
+            string emailContent = GenerateRejectionEmailContent(orderReturn);
+
+            string smtpServer = _configuration["EmailSettings:SmtpServer"];
+            int port = _configuration.GetValue<int>("EmailSettings:Port");
+            string username = _configuration["EmailSettings:Username"];
+            string password = _configuration["EmailSettings:Password"];
+
+            using (var client = new SmtpClient(smtpServer))
+            {
+                client.Port = port;
+                client.Credentials = new System.Net.NetworkCredential(username, password);
+                client.EnableSsl = true;
+
+                var message = new MailMessage(username, recipientEmail)
+                {
+                    Subject = "Your Order Rejection Confirmation",
+                    Body = emailContent,
+                    IsBodyHtml = true
+                };
+
+                try
+                {
+                    await client.SendMailAsync(message);
+                    ViewBag.Message = "Cancellation email sent successfully";
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.Error = $"Failed to send cancellation email: {ex.Message}";
+                }
+            }
+        }
+
+        private string GenerateRejectionEmailContent(OrderReturn orderReturn)
+        {
+            // Đọc nội dung mẫu email từ file
+            string emailTemplatePath = _env.ContentRootPath + "/Views/Email/RejectionEmail.cshtml";
+            string emailContent = System.IO.File.ReadAllText(emailTemplatePath);
+
+            emailContent = emailContent.Replace("{Reason}", orderReturn.RejectReason);
+
+
+
+
+            return emailContent;
+        }
+
 
 
         public async Task<IActionResult> DataStatistics()
