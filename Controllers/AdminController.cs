@@ -132,7 +132,7 @@ namespace OnlineJwellery_Shopping.Controllers
 
             if (_context.User != null)
             {
-                IQueryable<User> query = _context.User; // Tạo một IQueryable ban đầu
+                IQueryable<User> query = _context.User.Where(u => u.Role == "User"); // Lọc ra các tài khoản có vai trò là "User"
 
                 // Áp dụng bộ lọc theo từng trường nếu có từ khóa tìm kiếm
                 if (!string.IsNullOrEmpty(userNameSearch))
@@ -173,6 +173,7 @@ namespace OnlineJwellery_Shopping.Controllers
                 return Problem("Entity set 'OgainShopContext.User' is null.");
             }
         }
+
 
 
         [Authentication]
@@ -674,8 +675,9 @@ int pageSize = 10)
                                         || o.IsPaid.Contains(search)
                                         || o.Status.Contains(search));
             }
-            // Sắp xếp theo OrderDate mới nhất
-            orders = orders.OrderByDescending(o => o.OrderDate);
+           
+            // Sắp xếp theo trạng thái pending trước, sau đó mới sắp xếp theo OrderDate mới nhất
+            orders = orders.OrderBy(o => o.Status != "pending").ThenByDescending(o => o.OrderDate);
             // Tính toán số lượng đơn hàng và số trang
             int totalOrders = await orders.CountAsync();
             int totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);

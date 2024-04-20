@@ -296,6 +296,7 @@ namespace OnlineJwellery_Shopping.Models
                         Reason = returnReasons[random.Next(returnReasons.Count)],
                         Status = rerurnStatuses[random.Next(rerurnStatuses.Length)],
                         Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+                        RejectReason = "bla",
                         RefundAmount = random.Next(100, 1001)
                     };
                     context.OrderReturn.Add(orderReturn);
