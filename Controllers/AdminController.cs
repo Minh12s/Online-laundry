@@ -60,17 +60,16 @@ namespace OnlineJwellery_Shopping.Controllers
     .ToList();
 
             // Lấy danh sách đơn hàng dựa trên trang và kích thước trang
-            var orders = _context.Order.Skip((page - 1) * pageSize).Take(pageSize);
+            var pendingOrders = _context.Order.Where(o => o.Status == "pending").Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
             var Products = _context.Product.Skip((page - 1) * pageSize).Take(pageSize);
             var outOfStockProductsPaged = outOfStockProducts.Skip((page - 1) * pageSize).Take(pageSize).ToList();
             var pendingReviewsPaged = pendingReviews.Skip((page - 1) * pageSize).Take(pageSize).ToList();
             var pendingOrderReturnsPaged = pendingOrderReturns.Skip((page - 1) * pageSize).Take(pageSize).ToList();
 
-            // Lọc và tính toán số lượng trang cho từng trạng thái của đơn hàng
-            var pendingOrders = orders.Where(o => o.Status == "pending").ToList();
 
             // Tính toán số lượng trang cho từng trạng thái
-            var pendingTotalPages = (int)Math.Ceiling((double)pendingOrders.Count / pageSize);
+            var pendingTotalPages = (int)Math.Ceiling((double)_context.Order.Count(o => o.Status == "pending") / pageSize);
             var outOfStockTotalPages = (int)Math.Ceiling((double)outOfStockProducts.Count / pageSize);
             var pendingReviewTotalPages = (int)Math.Ceiling((double)pendingReviews.Count / pageSize);
             var pendingOrderReturnsTotalPages = (int)Math.Ceiling((double)pendingOrderReturns.Count / pageSize);
